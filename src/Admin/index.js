@@ -1,16 +1,42 @@
 import React, { Component } from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+import TableChart from '@material-ui/icons/TableChart';
+import AddBox from '@material-ui/icons/AddBox';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
+import NavBar from '../Components/NavBar';
+import AdminRoot from './AdminRoot';
+import Manage from "./Manage";
+import AddOfficer from "./AddOfficer";
+import Profile from './Profile';
 
 const styles = theme => ({
     wrapper: {
-        width: '100vw',
-        height: '100vh',
+        marginTop: '56px',
     }
 })
+
+const navBarItems = [
+    {
+        name: 'Manage Officers',
+        path: '/Admin/Manage',
+        icon: TableChart
+    },
+    {
+        name: 'Add Officer',
+        path: '/Admin/AddOfficer',
+        icon: AddBox
+    },
+    {
+        name: 'Profile',
+        path: '/Admin/Profile',
+        icon: AccountCircle
+    }
+];
 
 class AdminDashboard extends Component {
 
@@ -36,7 +62,16 @@ class AdminDashboard extends Component {
 
         return (
           <div className={classes.wrapper}>
-            <h1>Admin Dashboard</h1>
+            <NavBar navBarItems={navBarItems} />
+            <Switch>
+                <Route exact path="/Admin/" render={() => (<AdminRoot />)} />
+                <Route exact path="/Admin/Manage/" render={() => (<Manage />)} />
+                <Route exact path="/Admin/AddOfficer/" render={() => (<AddOfficer />)} />
+                <Route exact path="/Admin/Profile" render={() => (<Profile />)} />
+                <Route path="/Admin/*">
+                    <Redirect to="/Admin" />
+                </Route>
+            </Switch>
           </div>  
         );
     }

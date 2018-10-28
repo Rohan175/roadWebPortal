@@ -4,8 +4,11 @@ import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+
+// import Tooltip from '@material-ui/core/Tooltip';
+// import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
     appDesktop: {
@@ -24,9 +27,10 @@ const DesktopMenu = props => {
         <div className={classes.appDesktop}>
             {
                 props.menuItems.map((item, index) => (
-                    <Tooltip title={item.name} key={index}>
-                        <IconButton color="inherit" component={NavLink} to={item.path}>{<item.icon />}</IconButton>
-                    </Tooltip>
+                    <div title={item.name} key={index}>
+                        <Button variant="text" color="inherit" component={NavLink} to={item.path}>{<item.icon />} &nbsp;&nbsp;<Typography variant="body2" color="inherit" >{item.name}</Typography></Button>
+                        {/* <IconButton color="inherit" component={NavLink} to={item.path}>{<item.icon />}</IconButton> */}
+                    </div>
                 ))
             }
         </div>
