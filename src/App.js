@@ -12,30 +12,28 @@ class App extends Component {
   //state of root app
   
 
-  setLogin = () => {
+  setLogin = userType => {
     this.setState({
       isLoggedIn: true,
-      userType: 'officer'
+      userType: userType
     })     
   }
 
   constructor(props) {
     super(props);
-    let value = getCookie("roadGPortalAuth");
-    if(value !== -1) {
+    let value = getCookie("roadGPortalAuth"),
+        userType = getCookie("roadGPortalUserType");
+    if(value !== -1 && userType !== -1) {
       this.state = {
         isLoggedIn: true,
-        userType: 'officer',
+        userType: userType,
         token: value
       }
     } else {
       this.state = {
         isLoggedIn: false,
-
       }
     }
-
-    console.log("App ",this.state);
   }
 
   //checking login status for login route

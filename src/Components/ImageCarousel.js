@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import MobileStepper from '@material-ui/core/MobileStepper';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+// import Paper from '@material-ui/core/Paper';
+// import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
@@ -19,7 +19,7 @@ const styles = theme => ({
   header: {
     display: 'flex',
     alignItems: 'center',
-    height: 50,
+    // height: 50,
     paddingLeft: theme.spacing.unit * 4,
     backgroundColor: theme.palette.background.default,
     textAlign: 'center'
@@ -65,8 +65,8 @@ class ImageCarousel extends React.Component {
                 </Paper> */}
                 <img
                     className={classes.img}
-                    src={this.props.postedUsers[activeStep].url}
-                    // src={"http://192.168.43.149:3003/api/android/getImage?url=IMG_20181012_182531.jpg"}
+                    // src={this.props.postedUsers[activeStep].url}
+                    src={"http://picsum.photos/300/300"}
                     alt={this.props.postedUsers[activeStep].userId}
                 />
                 <MobileStepper

@@ -76,6 +76,7 @@ class Login extends Component {
                 if(res.success){
                     this.setCookie("roadGPortalAuth", res.data, 1);
                     this.setCookie("roadGPortalUserType", res.loginType, 1);
+                    this.setCookie("roadGPortalRole", res.role, 1);
                     this.props.setLogin(res.loginType);
                 }else{
                     this.handleDialogOpen(res.data, "Error");

@@ -4,32 +4,95 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+import TableChart from '@material-ui/icons/TableChart';
+import PieChart from '@material-ui/icons/PieChart';
+import Place from '@material-ui/icons/Place';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
 import NavBar from '../Components/NavBar';
 import DashboardRoot from './DashboardRoot';
 import ComplaintContainer from './ComplaintContainer';
-import Profile from './Profile';
+import ManageOfficer from './ManageOfficer';
+import Profile from '../Components/Profile';
+import { getCookie, hierarchy } from "../constants";
+
+import bgImage from '../res/ROHAN.svg';
 
 const styles = theme => ({
     wrapper: {
-        marginTop: '56px',
+        // background: 'black'
+        // marginTop: '35px',
+        // overflowX: 'hidden'
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'top'
+    },
+    backgr: {
+        position: 'absolute',
+        height: '100vh',
+        width: '100vw',
+        top: '0px',
+        left: '0px',
+        right: '0px',
+        zIndex: '-9',
+        // backgroundImage: `url(${bgImage})`,
+        // backgroundSize: 'cover',
+        // backgroundPosition: 'top',
+        // backgroundAttachment: 'fixed'
+    },
+    bgImage: {
+        position: 'absolute',
+        height: '100vh',
+        width: '100vw',
+        top: '0px',
+        left: '0px',
+        // right: '0px',
+        // zIndex: '-9',
     }
 })
 
+
 class Dashboard extends Component {
+
+    state = {
+        navBarItems: [
+            {
+                name: 'Complaints',
+                path: '/Dashboard/Complaints/Table',
+                icon: TableChart
+            },
+            {
+                name: 'Maps',
+                path: '/Dashboard/Complaints/Maps',
+                icon: Place
+            },
+            ... getCookie('roadGPortalRole') !== hierarchy[0] ? [{
+                name: 'Manage Officer',
+                path: '/Dashboard/ManageOfficer',
+                icon: PieChart
+            }] : [],
+            {
+                name: 'Profile',
+                path: '/Dashboard/Profile',
+                icon: AccountCircle
+            }
+        ]
+    }
 
     render() {
         let { classes } = this.props;
 
         return (
           <div className={classes.wrapper}>
+            {/* <img src={bgImage} className={classes.bgImage} /> */}
+            {/* <div className={classes.backgr}></div> */}
             {/* Insert Navbar here */}
-            <NavBar />
+            <NavBar navBarItems={this.state.navBarItems} />
             <Switch>
                 <Route exact path="/Dashboard/" render={() => (<DashboardRoot />)} />
                 <Route exact path="/Dashboard/Complaints/*" render={(locationProps) => (<ComplaintContainer {...locationProps.location.state}/>)} />
+                <Route exact path="/Dashboard/ManageOfficer" render={() => (<ManageOfficer />)} />
                 <Route exact path="/Dashboard/Profile" render={() => (<Profile />)} />
-
                 <Route path="/Dashboard/*">
                     <Redirect to="/Dashboard" />
                 </Route>

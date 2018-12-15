@@ -3,17 +3,20 @@ import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+// import Grid from '@material-ui/core/Grid';
 
 import AllInbox from '@material-ui/icons/AllInbox';
 import AddAlert from '@material-ui/icons/AddAlert';
 import Timer from '@material-ui/icons/Timer';
 import Check from '@material-ui/icons/Check';
 
-import bgImage from '../res/rnb.svg';
+// import bgImage from '../res/rnb.svg';
 
 import CardBox from '../Components/DashboardCard';
+import NewComplaintCardBox from '../Components/newComplaintCard';
 // import DashboardCard from '../Components/DashboardCard';
+
+import { getCookie, url } from '../constants';
 
 const styles = theme => ({
     wrapper: {
@@ -29,9 +32,18 @@ const styles = theme => ({
         // backgroundSize: 'cover',
         // backgroundPosition: 'center'
     },
+    dashboardwrapper: {
+        [theme.breakpoints.down('sm')]: {
+            width: 'auto',
+            margin: 'auto'
+        },
+        margin: '100px auto auto auto',
+        // background: 'black',
+        width: '40%'
+    },
     cardRoot: {
         [theme.breakpoints.down('sm')]: {
-            marginTop: '-66px',
+            // marginTop: '-66px',
             display: 'inline-block',
         },
         display: 'grid',
@@ -69,6 +81,7 @@ class DashboardRoot extends Component {
 
     state = {
         startAnimation: false,
+        newComplaints: 0,
         cardData: [
             {
                 name: "New",
@@ -77,7 +90,7 @@ class DashboardRoot extends Component {
                 color: "primary"
             },
             {
-                name: "New",
+                name: "Emergency",
                 value: 10,
                 icon: AddAlert,
                 color: "danger"
@@ -97,6 +110,34 @@ class DashboardRoot extends Component {
         ]
     }
 
+    componentWillMount() {
+        let headers = new Headers();
+        headers.append('origin', '*');
+        headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
+
+        let req = new Request(url  + "newComplaintsCount", {
+            method: "GET",
+            headers: headers,
+            mode: 'cors'
+        });
+
+        fetch(req)
+            .then(res => res.json())
+            .then(res => {
+                console.log(res);                
+                if(res.success){
+                   this.setState({
+                       newComplaints: res.data
+                   }) 
+                }else{
+                    console.log(res);
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
     componentDidMount() {
         this.setState({
             startAnimation: true
@@ -108,9 +149,9 @@ class DashboardRoot extends Component {
 
         return (
           <div className={classes.wrapper} style={{textAlign: 'center'}}>
-            <div style={{margin: 'auto'}}>
+            <div className={classes.dashboardwrapper}>
                 <div className={classes.cardRoot}>
-                    <div className={classes.card1}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.cardData[0].value} CardColor={this.state.cardData[0].color} /></div>
+                    <div className={classes.card1}><NewComplaintCardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.newComplaints} CardColor={this.state.cardData[0].color} /></div>
                     <div className={classes.card2}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[1].icon} CardName={this.state.cardData[1].name} CardValue={this.state.cardData[1].value} CardColor={this.state.cardData[1].color} /></div>
                     <div className={classes.card3}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[2].icon} CardName={this.state.cardData[2].name} CardValue={this.state.cardData[2].value} CardColor={this.state.cardData[2].color} /></div>
                     <div className={classes.card4}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[3].icon} CardName={this.state.cardData[3].name} CardValue={this.state.cardData[3].value} CardColor={this.state.cardData[3].color} /></div>

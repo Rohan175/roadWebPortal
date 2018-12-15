@@ -29,7 +29,7 @@ class ComplaintTable extends Component {
 
     state = {
         page: 0,
-        rowsPerPage: 25,
+        rowsPerPage: 5,
         openComplaintDialogState: false,
         ComplaintDialogData: null
     };
@@ -104,7 +104,7 @@ class ComplaintTable extends Component {
                             <TablePagination
                                 component="div"
                                 count={this.props.complaintsData.length}
-                                rowsPerPageOptions={[15, 30, 45]}
+                                rowsPerPageOptions={[5, 10, 15, 20]}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 backIconButtonProps={{
@@ -140,7 +140,7 @@ class ComplaintTable extends Component {
                                         <TableCell component="th" >{page * rowsPerPage + index+1}</TableCell>
                                         <TableCell>{item.grievType}</TableCell>
                                         <TableCell>{item.complaint_status}</TableCell>
-                                        <TableCell>NO</TableCell>
+                                        <TableCell>{item.isEmergency?"YES":"NO"}</TableCell>
                                         <TableCell><Button 
                                             onClick={
                                                 () => {

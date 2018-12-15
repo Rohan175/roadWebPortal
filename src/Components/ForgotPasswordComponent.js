@@ -43,27 +43,33 @@ let ForgotPasswordComponent = (props) => {
                 <div className={classes.logoWrapper}>
                     <img src={logo} className={classes.logo} alt="Road and Building" />
                 </div>
-                <div>
-                    <TextField
-                        id="phoneNo"
-                        label="Phone Number"
-                        className={classes.textField}
-                        margin="normal" />
-                </div>
-                <div>
-                    <TextField
-                        id="password"
-                        label="Password"
-                        type="password"
-                        style={{visibility: 'hidden'}}
-                        className={classes.textField}
-                        margin="small" />
-                </div>
-                <div>
-                    <Button variant="contained" className={classes.loginBtn}>
-                        Reset Password
-                    </Button>
-                </div>
+                <form onSubmit={
+                    e => {
+                        e.preventDefault();
+                    }
+                }>
+                    <div>
+                        <TextField
+                            id="phoneNo"
+                            label="Phone Number"
+                            className={classes.textField}
+                            margin="normal" />
+                    </div>
+                    <div>
+                        <TextField
+                            id="password"
+                            label="Password"
+                            type="password"
+                            style={{visibility: 'hidden'}}
+                            className={classes.textField}
+                            margin="small" />
+                    </div>
+                    <div>
+                        <Button type="submit" variant="contained" className={classes.loginBtn}>
+                            Reset Password
+                        </Button>
+                    </div>
+                </form>
                 <div>
                     <Button 
                         variant="flat" 

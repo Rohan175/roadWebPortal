@@ -4,8 +4,12 @@ import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+
+// import Tooltip from '@material-ui/core/Tooltip';
+// import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+// import { th } from 'date-fns/esm/locale';
 
 const styles = theme => ({
     appDesktop: {
@@ -15,7 +19,15 @@ const styles = theme => ({
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
-    }
+    },
+    activeLink: {
+        background: theme.palette.secondary.main,
+        color: 'white',
+        '&:hover': {
+            background: 'white',
+            color: 'black'
+        }
+    },
 })
 
 const DesktopMenu = props => {
@@ -24,9 +36,12 @@ const DesktopMenu = props => {
         <div className={classes.appDesktop}>
             {
                 props.menuItems.map((item, index) => (
-                    <Tooltip title={item.name} key={index}>
-                        <IconButton color="inherit" component={NavLink} to={item.path}>{<item.icon />}</IconButton>
-                    </Tooltip>
+                    <div title={item.name} key={index} style={{marginRight: '4px'}}>
+                        <Button variant="text" size="small" color="inherit" activeClassName={classes.activeLink} component={NavLink} to={item.path}>
+                            <Typography variant="body2" color="inherit" >{item.name}</Typography>
+                        </Button>
+                        {/* <IconButton color="inherit" component={NavLink} to={item.path}>{<item.icon />}</IconButton> */}
+                    </div>
                 ))
             }
         </div>

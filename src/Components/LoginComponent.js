@@ -43,37 +43,44 @@ let LoginComponent = (props) => {
                 <div className={classes.logoWrapper}>
                     <img src={logo} className={classes.logo} alt="Road and Building" />
                 </div>
-                <div>
-                    <TextField
-                        id="phoneNo"
-                        label="Phone Number"
-                        fullWidth
-                        type="Number"
-                        className={classes.textField}
-                        margin="normal" />
-                </div>
-                <div>
-                    <TextField
-                        id="password"
-                        label="Password"
-                        type="password"
-                        fullWidth
-                        error={false}
-                        className={classes.textField}
-                        margin="small" />
-                </div>
-                <div>
-                    <Button 
+                <form
+                    onSubmit={(e) => { 
+                        e.preventDefault();
+                        props.handleLogin(
+                            document.getElementById('phoneNo').value,
+                            document.getElementById('password').value) 
+                }}>
+                    <div>
+                        <TextField
+                            id="phoneNo"
+                            label="Phone Number"
+                            fullWidth
+                            type="number"
+                            min="1000000000"
+                            max="9999999999"
+                            className={classes.textField}
+                            margin="normal" />
+                    </div>
+                    <div>
+                        <TextField
+                            id="password"
+                            label="Password"
+                            type="password"
+                            fullWidth
+                            error={false}
+                            className={classes.textField}
+                            margin="small" />
+                    </div>
+                    <div>
+                        <Button
+                        type="submit"
                         variant="contained" 
                         className={classes.loginBtn}
-                        onClick={(e) => { props.handleLogin(
-                            
-                            document.getElementById('phoneNo').value,
-                            document.getElementById('password').value) }}
-                    >
+                        >
                         Login
-                    </Button>
-                </div>
+                        </Button>
+                    </div>
+                </form>
                 <div>
                     <Button 
                         variant="flat" 

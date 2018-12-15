@@ -90,7 +90,7 @@ class Profile extends Component {
         return (
           <div className={classes.wrapper}>
             <div style={{margin:'auto'}}>
-                <Collapse in={this.state.startAnimation}>
+                {/* <Collapse in={this.state.startAnimation}> */}
                     <Card style={{textAlign: 'center'}}>
                         <CardContent>
                             <Toolbar>
@@ -173,7 +173,7 @@ class Profile extends Component {
                             </Grid>
                         </CardContent>
                     </Card>
-                </Collapse>
+                {/* </Collapse> */}
             </div>
           </div>  
         );

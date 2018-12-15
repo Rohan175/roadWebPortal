@@ -1,4 +1,4 @@
-const host = "http://localhost:3003";
+const host = "http://192.168.2.10:3003";//"http://192.168.43.149:3003";
 const url = host + "/api/portal/";
 
 let getCookie = function(cname) {
@@ -25,6 +25,7 @@ let setCookie = (cname, cvalue, exdays) => {
 }
 
 let getFormatedDate = (date) => {
+    date = new Date(date);
     return ( 
         (date.getDate() < 10) ? '0'+date.getDate() : date.getDate() 
     ) 
@@ -58,6 +59,14 @@ const griev_type = [
     ['CRACKS LEVELING',true],
 ]
 
+const hierarchy = [
+    'Section Officer',
+    'Deputy Executive Engineer',
+    'Executive Engineer',
+    'Superintending Engineer',
+    'Chief Engineer'
+]
+
 export {
     host,
     url,
@@ -65,5 +74,6 @@ export {
     setCookie,
     getFormatedDate,
     griev_type,
-    status_type
+    status_type,
+    hierarchy
 }

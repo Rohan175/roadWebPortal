@@ -55,19 +55,13 @@ class SideFilter extends Component {
 
     state = {
         name: [],
-        expandedDate : true,
+        expandedDate : false,
         expandedStatus : false,
         expandedGriev : false,
       };
     
-      handleChange = event => {
-        this.setState({ name: event.target.value });
-      };
-
-      handleExpandClick(name) {
-        console.log(name,this.state[name],this.state.name);
-        
-        this.setState(state => ({ name : !state.name }));
+      handleExpandClick = Eventame => {
+        this.setState(state => ({ [Eventame] : !state[Eventame] }));
       };
 
     render() {
@@ -115,7 +109,7 @@ class SideFilter extends Component {
                             className={classnames(classes.expand, {
                             [classes.expandOpen]: this.state.expandedStatus,
                             })}
-                            onClick={() => this.handleExpandClick('expandedStatus')}
+                            onClick={this.handleExpandClick.bind(this,'expandedStatus')}
                             aria-expanded={this.state.expandedStatus}
                             aria-label="Show more"
                         >

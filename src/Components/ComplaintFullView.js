@@ -23,9 +23,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Slide from '@material-ui/core/Slide';
-import CardContent from '@material-ui/core/CardContent';
+// import CardContent from '@material-ui/core/CardContent';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
+// import SnackbarContent from '@material-ui/core/SnackbarContent';
 import green from '@material-ui/core/colors/green';
 import amber from '@material-ui/core/colors/amber';
 
@@ -33,6 +33,7 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import ImageCarousel from "./ImageCarousel";
 import { getFormatedDate, getCookie, url } from "../constants";
+// import { tr } from 'date-fns/esm/locale';
 
 const styles = theme => ({
     ComplaintFullView: {
@@ -119,42 +120,76 @@ class ComplaintFullView extends Component {
         })
     }
 
-    handleSave = () => {
+    handleSave = () => {        
         // updateComplaint
 
-        let reqBody = {
-            complaint_id: this.props.ComplaintDialogData._id, 
-            complaint_status: this.state.new_complaint_status,
-            estimated_completion: this.state.new_estimated_time,
-            isEmergency: this.state.new_isEmergency,
-            comment: this.state.Comment
-        }        
+        Date.prototype.withoutTime = function () {
+            var d = new Date(this);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+        let today = new Date();
+        
+        this.setState({
+            new_estimated_time: new Date(this.state.new_estimated_time)
+        },() => {
 
-        fetch(url + "updateComplaint/", {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'auth': 'token ' + getCookie("roadGPortalAuth")
-                },
-                method: "POST",
-                body: JSON.stringify(reqBody)
-            }
-        )
-        .then(res => res.json())
-        .then(res => {
-            if(res.success) {
+            console.log(this.state.new_estimated_time);
+            
+
+            if(this.state.new_estimated_time.withoutTime() < today.withoutTime()) {
                 this.setState({
                     openSnackbarState: true,
-                    snackbarMessage: 'Complaint has been updated',
+                    snackbarMessage: 'Invalid Date',
                     snackbarStyle: {
                         backgroundColor: green[600],
                         display: 'flex',
                     },
-                })
+                })    
             }
-        })
-        .catch(err => {
-            console.log(err);
+            // console.log(this.state);
+            
+
+            // this.setState({
+            //     openSnackbarState: true,
+            //     snackbarMessage: this.state.new_estimated_time,
+            // })
+
+            // return;
+            let reqBody = {
+                complaint_id: this.props.ComplaintDialogData._id, 
+                complaint_status: this.state.new_complaint_status,
+                estimated_completion: this.state.new_estimated_time,
+                isEmergency: this.state.new_isEmergency,
+                comment: this.state.Comment
+            }        
+
+            fetch(url + "updateComplaint/", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'auth': 'token ' + getCookie("roadGPortalAuth")
+                    },
+                    method: "POST",
+                    body: JSON.stringify(reqBody)
+                }
+            )
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    this.setState({
+                        openSnackbarState: true,
+                        snackbarMessage: 'Complaint has been updated',
+                    })
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({
+                    openSnackbarState: true,
+                    snackbarMessage: err.message,
+                })
+            });
         });
     }
 
@@ -167,23 +202,27 @@ class ComplaintFullView extends Component {
     }
 
     componentWillMount() {
-        this.setState({
-            Comment: null,
-            new_forword_complaint: null,
-            new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
-            new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
-            new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false
-        })
+        // this.setState({
+        //     new_forword_complaint: null,
+        //     Comment: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.comments[0] : null,
+        //     new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
+        //     new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
+        //     new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false
+        // })
     }
 
     componentWillReceiveProps(nextProps) {
-       let ComplaintDialogData = nextProps.ComplaintDialogData            
+       let ComplaintDialogData = nextProps.ComplaintDialogData;
+       
+       console.log("-----");
+       console.log(ComplaintDialogData);
+
         this.setState({
-            Comment: null,
+            Comment: ComplaintDialogData ? ComplaintDialogData.comments[0] : null,
             comments: ComplaintDialogData ? ComplaintDialogData.comments : [],
             new_forword_complaint: null,
             new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
-            new_estimated_time: ComplaintDialogData ? ComplaintDialogData.estimated_time : null,
+            new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
         })
     }
@@ -192,6 +231,7 @@ class ComplaintFullView extends Component {
         let props = this.props;
         const { classes } = props;
         const complaintData = props.ComplaintDialogData;
+
         return (
             <div>
                 <Dialog
@@ -200,30 +240,37 @@ class ComplaintFullView extends Component {
                 onClose={props.handleComplaintDialogClose}
                 TransitionComponent={Transition}
                 className={classes.ComplaintFullView} >
-                    <AppBar className={classes.appBar}>
+                    <AppBar className={classes.appBar} color="inherit">
                         <Toolbar>
-                            <IconButton color="inherit" onClick={props.handleComplaintDialogClose} aria-label="Close">
-                                <CloseIcon />
-                            </IconButton>
                             <Typography variant="h6" color="inherit" className={classes.flex}>
                                     Complaint
                             </Typography>
-                            <Button color="inherit" onClick={this.handleSave}>
+                            <IconButton color="inherit" onClick={props.handleComplaintDialogClose} aria-label="Close">
+                                <CloseIcon />
+                            </IconButton>
+                            {/* <Button color="inherit" onClick={this.handleSave}>
                                 Save
-                            </Button>
+                            </Button> */}
                         </Toolbar>
                     </AppBar>
                 {/* complaint content here */}
                     <Grid container>
-                        <Grid item xs={12} md className={classes.paddingClass}>
-                            <ImageCarousel postedUsers={complaintData? complaintData.postedUsers : null} />
+                        <Grid item xs={12} md={4} className={classes.paddingClass}>
+                            <Grid container>
+                                <Grid item xs={12}>
+                                    <ImageCarousel postedUsers={complaintData? complaintData.postedUsers : null} />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <br />
+                                    <Divider />
+                                    <br />
+                                    <Typography variant="headline" style={{textAlign: 'center'}}>{(complaintData? complaintData.name : null)}</Typography>
+                                </Grid>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md className={classes.paddingClass}>
-                            <Typography variant="headline">{(complaintData? complaintData.name : null)}</Typography>
+                        <Grid item xs={12} md={7} className={classes.paddingClass}>
                             <br />
-                            <Divider />
-                            <br />
-                            <Typography>{ "Grievance :   ".toUpperCase() + (complaintData? complaintData.grievType : null)} <Button color="secondary" size="small" style={{float: 'right'}}>view on map</Button></Typography>
+                            <Typography>{ "Grievance :   ".toUpperCase() + (complaintData? complaintData.grievType : null)} <Button color="secondary" size="small" style={{float: 'right', display: 'none'}}>view on map</Button></Typography>
                             <br />
                             <Typography>{ "Status :   ".toUpperCase() + (complaintData? complaintData.complaint_status : null)}</Typography>
                             <br />
@@ -231,53 +278,79 @@ class ComplaintFullView extends Component {
                             <br />
                             <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? (complaintData.isEmergency) ? "YES": "NO" : null)}</Typography>
                             <br />
-                            <Typography>{ "Description :   ".toUpperCase() + (complaintData? complaintData.description : null)}</Typography>
-                            { complaintData && complaintData.estimated_time ? <Typography><br />{ "Estimated Date :   ".toUpperCase() + (complaintData? complaintData.estimated_time : null)}</Typography> : null }
-                            <br />
+                            {/* <Typography>{ "Description :   ".toUpperCase() + (complaintData? complaintData.description : null)}</Typography>
+                            { this.state.new_estimated_time ? <Typography><br />{ "Estimated Date :   ".toUpperCase() + getFormatedDate(this.state.new_estimated_time)}</Typography> : null }
+                            <br /> */}
                             <Divider />
-                            <br />
                             <Grid container>
                                 <Grid item xs={12} md className={classes.textWrapper}>
-                                    <FormControlLabel
-                                        checked={this.state.new_isEmergency}
-                                        onChange={this.handleIsEmergency}
-                                        value="isEmergency"
-                                        control={ <Checkbox /> }
-                                        label="Mark Complaint as Emergency" />
+                                    <Grid container>
+                                        <Grid item xs={12} md className={classes.textWrapper}>
+                                            <FormControlLabel
+                                                checked={this.state.new_isEmergency}
+                                                onChange={this.handleIsEmergency}
+                                                value="isEmergency"
+                                                control={ <Checkbox /> }
+                                                label="Mark Complaint as Emergency" />
+                                        </Grid>
+                                        <Grid item xs={12} md className={classes.textWrapper}>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel htmlFor="complaint_status">Change Complaint Status</InputLabel>
+                                                <Select
+                                                    value={this.state.new_complaint_status}
+                                                    onChange={this.handleChange}
+                                                    inputProps={{
+                                                        name: 'new_complaint_status',
+                                                        id: 'new_complaint_status',
+                                                    }} >
+                                                    <MenuItem value="Pending" disabled>Pending</MenuItem>
+                                                    <MenuItem value="Approved">Approved</MenuItem>
+                                                    <MenuItem value="Rejected">Rejected</MenuItem>
+                                                    <MenuItem value="In Progress">In Progress</MenuItem>
+                                                    <MenuItem value="Completed">Completed</MenuItem>
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={12} md className={classes.textWrapper}>
+                                            <br />
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <Typography variant="caption">Set Estimated Date</Typography>
+                                            <DatePicker 
+                                                error={this.state.estimated_time_Error}
+                                                helperText={this.state.estimated_time_helper_text}
+                                                value={this.state.new_estimated_time}
+                                                onChange={this.handleEstimatedDateChange}
+                                                style={{width: '100%'}}
+                                            />
+                                            </MuiPickersUtilsProvider>
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
                                 <Grid item xs={12} md className={classes.textWrapper}>
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel htmlFor="complaint_status">Change Complaint Status</InputLabel>
-                                        <Select
-                                            value={this.state.new_complaint_status}
-                                            onChange={this.handleChange}
-                                            inputProps={{
-                                                name: 'new_complaint_status',
-                                                id: 'new_complaint_status',
-                                            }} >
-                                            <MenuItem value="Pending" disabled>Pending</MenuItem>
-                                            <MenuItem value="Approved">Approved</MenuItem>
-                                            <MenuItem value="Rejected">Rejected</MenuItem>
-                                            <MenuItem value="In Progress">In Progress</MenuItem>
-                                            <MenuItem value="Completed">Completed</MenuItem>
-                                        </Select>
-                                    </FormControl>
+                                    <TextField
+                                        id="Comment"
+                                        label="Comment"
+                                        multiline
+                                        value={this.state.Comment}
+                                        error={this.state.comment_error}
+                                        helperText={this.state.comment_helper_text}
+                                        rows="5"
+                                        onChange={this.handleComment}
+                                        // defaultValue="Enter Your Coment Here.."
+                                        className={classes.textField}
+                                        // InputLabelProps={{
+                                        //     shrink: false,
+                                        // }}
+                                        style={{margin: '10px'}}
+                                        margin="normal" />
+                                        <br />
+                                        <br />
+                                    <Button variant="raised" onClick={this.handleSave} style={{width: '100%'}} color="secondary">Save</Button>
                                 </Grid>
                             </Grid>
+                            <Divider />
                             <Grid container>
                                 <Grid item xs={12} md className={classes.textWrapper}>
-                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <Typography variant="caption">Set Estimated Date</Typography>
-                                        <DatePicker 
-                                            error={this.state.estimated_time_Error}
-                                            helperText={this.state.estimated_time_helper_text}
-                                            value={this.state.new_estimated_time}
-                                            onChange={this.handleEstimatedDateChange}
-                                            style={{width: '100%'}}
-                                        />
-                                    </MuiPickersUtilsProvider>
-                                </Grid>
-                                <Grid xs={12} md className={classes.textWrapper}>
                                     <FormControl className={classes.formControl}>
                                         <InputLabel htmlFor="new_forword_complaint">Forword Complaint To</InputLabel>
                                         <Select
@@ -295,26 +368,12 @@ class ComplaintFullView extends Component {
                                         </Select>
                                     </FormControl>
                                 </Grid>
+                                <Grid xs={12} md className={classes.textWrapper}>
+                                    <br />
+                                    <Button variant="raised" style={{width: '100%'}} color="secondary">foreword</Button>
+                                </Grid>
                             </Grid>
-                            <br />
-                            <TextField
-                                id="Comment"
-                                label="Comment"
-                                multiline
-                                error={this.state.comment_error}
-                                helperText={this.state.comment_helper_text}
-                                rows="4"
-                                onChange={this.handleComment}
-                                // defaultValue="Enter Your Coment Here.."
-                                className={classes.textField}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
-                                style={{margin: '10px'}}
-                                margin="normal" />
-                            <br />
-                            <Typography variant="title">Comments : </Typography>
-                            <br />
+                            {/* <Typography variant="title">Comments : </Typography> */}
                             {
                                 // this.state.comments.map((comment, index) => (
                                 //     <CardContent key={index}>
@@ -335,9 +394,7 @@ class ComplaintFullView extends Component {
                     'aria-describedby': 'message-id',
                     }}
                     message={
-                        <SnackbarContent style={this.state.snackbarStyle}>
-                            <span id="message-id" >{this.state.snackbarMessage}</span>
-                        </SnackbarContent>
+                        <span id="message-id" >{this.state.snackbarMessage}</span>
                     } />
             </div>
         );

@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 // import { Route, Switch, Redirect } from 'react-router-dom';
-// import {NavLink} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -12,23 +12,28 @@ import Paper from '@material-ui/core/Paper';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 // import CardMedia from '@material-ui/core/CardMedia';
-// import Button from '@material-ui/core/Button';
+import CardIcon from '@material-ui/icons/ArrowForward';
+// import CardIdcon2 from '@material-ui/icons/AddAPhoto';
 import Typography from '@material-ui/core/Typography';
+
+// import bgImage from '../res/newComplaint.png';
 
 
 const styles = theme => ({
+    imageClass: {
+
+    },
     Card: { 
         // minWidth: '150px',
         // display:'inline-block', 
         margin: '15px',
-        height:'92%',
+        height:'91%',
         position: 'relative',
         color: 'white',
-        display: 'flex',
         backgroundColor: 'black',
         [theme.breakpoints.down('sm')]: {
             // marginTop: '-66px',
-            // display: 'flex',
+            display: 'flex',
             minWidth: '150px'
         },
     },
@@ -41,26 +46,7 @@ const styles = theme => ({
         }
     },
     media: {
-        // ⚠️ object-fit is not supported by IE 11.
         objectFit: 'cover',
-    },
-    topLeft: {
-        position: 'absolute',
-        top: '-5px',
-        left: '-5px',
-        borderLeft: '1px solid black',
-        borderTop: '1px solid black',
-        height: '30px',
-        width: '30px'
-    },
-    bottomRight: {
-        position: 'absolute',
-        bottom: '-5px',
-        right: '-5px',
-        borderBottom: '1px solid black',
-        borderRight: '1px solid black',
-        height: '30px',
-        width: '30px'
     },
     primary: {
         backgroundColor: 'rgba(0, 0, 255, 0.1)',
@@ -73,6 +59,44 @@ const styles = theme => ({
     },
     success: {
         backgroundColor: 'rgba(0, 255, 0, 0.1)',
+    },
+    uppderDiv: {
+        width: '100%',
+        height: "50%",
+        display: 'flex',
+        backgroundColor: 'rgba(0, 0, 255, 0.3)',
+        backgroundOpacity: '0.1',
+        // backgroundImage: `url(${bgImage})`,
+        // backgroundSize: 'cover'
+        [theme.breakpoints.down('sm')]: {
+            // marginTop: '-66px',
+            display: 'none',
+        },
+    },
+    lowerDiv: {
+        width: '100%',
+        height: "50%",
+        textAlign: 'left',
+        padding: '20px',
+        [theme.breakpoints.down('sm')]: {
+            // marginTop: '-66px',
+            display: 'none',
+        },
+    },
+    mobileCard: {
+        [theme.breakpoints.down('sm')]: {
+            // marginTop: '-66px',
+            display: 'inline-block',
+        },
+        display: 'none'
+    },
+    numberWrapper: {
+        display: 'flex',
+        width: '100%'
+    },
+    iconWrapper: {
+        display: 'flex',
+        width: '100%'
     }
 })
 
@@ -91,9 +115,22 @@ const CardBox = props => {
 
     return (
         <Zoom in={props.startAnimation}>
-            <Paper className={classNames(classes.Card, getClassName(props.CardColor))}>
-                {/* <div className={classes.topLeft}></div> */}
-                    <div style={{margin: 'auto'}} >
+            <Paper className={classNames(classes.Card, getClassName(props.CardColor))} >
+                <Link to="/Dashboard/Complaints/Table" style={{textDecoration: 'none'}}>
+                    <div className={classes.uppderDiv}>
+                        <div className={classes.numberWrapper}>
+                            <Typography variant="display2" style={{margin: 'auto auto 0px 0px', padding: '20px', color: 'white', textDecoration: ''}}>{props.CardValue}</Typography>
+                        </div>
+                        <div className={classes.iconWrapper} >
+                            <Typography variant="display1" style={{margin: '0px 0px auto auto', padding: '20px', color: 'white'}}>{<CardIcon fontSize="large" />}</Typography>
+                        </div>
+                    </div>
+                    <div className={classes.lowerDiv}>
+                        <Typography variant="h5" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
+                        <br />
+                        <Typography variant="caption">Unseen <br />compaints</Typography>
+                    </div>
+                    <div style={{margin: 'auto'}} className={classes.mobileCard} >
                         <CardContent>
                             <Typography variant="display1">{<props.CardIcon fontSize="large" />}</Typography>
                             <Typography variant="caption">{props.CardName}</Typography>
@@ -104,9 +141,7 @@ const CardBox = props => {
                             {/* <Button className={classes.CardButton} size="small" component={NavLink} to={{ pathname: '/Dashboard/Complaints/Table', state: {dashboardButton : props.CardName} }}>view</Button> */}
                         </CardActions>
                     </div>
-                    {/* </Grid> */}
-                {/* </Grid> */}
-                {/* <div className={classes.bottomRight}></div> */}
+                </Link>
             </Paper>
         </Zoom>
     )

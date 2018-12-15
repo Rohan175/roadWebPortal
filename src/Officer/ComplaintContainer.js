@@ -17,14 +17,35 @@ import { griev_type,status_type,getCookie, url } from '../constants';
 // import Card from '@material-ui/core/Card';
 
 const styles = theme => ({
+    progressWrapper: {
+        width: '100%',
+        display: 'flex'
+    },
     progress: {
-        //margin: theme.spacing.unit * 2,
+        margin: 'auto',
+        textAlign: 'center',
+        width: '100%',
     },
     wrapper: {
-        // marginTop: '-56px',
-        // width: '100vw',
-        // height: '100vh',
-        //display: 'flex'
+        paddingTop: '60px',
+        display: 'block',
+        minHeight: '90vh',
+        background: 'white'
+    },
+    filterBtn: {
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+            display: 'none',
+        },
+    },
+    SideFilter: {
+        display: 'none',
+        [theme.breakpoints.up('md')]: {
+            display: 'flex',
+        },
+    },
+    padding10: {
+        padding: '10px'
     }
 })
 
@@ -47,6 +68,8 @@ class ComplaintContainer extends Component {
         officers: this.officers,
         startAnimation: false,
         lodding : true,
+        SideFilter: true,
+        emptyList: true,
         filteredComplaints: []
     }
 
@@ -274,6 +297,18 @@ class ComplaintContainer extends Component {
                 });          
                 this.handleDialogOpen(err.message, "Error")
             });
+    }
+
+    handleFilterBar = () => {
+        this.setState({
+            filterDialogState: true
+        })
+    }
+
+    handleFilterClose = () => {
+        this.setState({
+            filterDialogState: false
+        })
     }
 
     render() {
