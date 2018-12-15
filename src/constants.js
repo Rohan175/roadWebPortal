@@ -1,4 +1,4 @@
-const host = "http://192.168.2.4:3003";
+const host = "http://localhost:3003";
 const url = host + "/api/portal/";
 
 let getCookie = function(cname) {

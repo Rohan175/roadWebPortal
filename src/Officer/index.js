@@ -27,8 +27,9 @@ class Dashboard extends Component {
             <NavBar />
             <Switch>
                 <Route exact path="/Dashboard/" render={() => (<DashboardRoot />)} />
-                <Route exact path="/Dashboard/Complaints/*" render={() => (<ComplaintContainer />)} />
+                <Route exact path="/Dashboard/Complaints/*" render={(locationProps) => (<ComplaintContainer {...locationProps.location.state}/>)} />
                 <Route exact path="/Dashboard/Profile" render={() => (<Profile />)} />
+
                 <Route path="/Dashboard/*">
                     <Redirect to="/Dashboard" />
                 </Route>

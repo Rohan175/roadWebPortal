@@ -1,73 +1,252 @@
-import React, { Component } from 'react'
-import { PieChart, Pie, Sector, Cell } from 'recharts';
-import { LineChart, Line ,BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
-export default class   extends Component {
-   
-  render() {
-    const data2 = [{name: 'Group A', value: 400}, {name: 'Group B', value: 300},
-    {name: 'Group C', value: 300}, {name: 'Group D', value: 200}];
+import React, { Component } from 'react';
+
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import Button from '@material-ui/core/Button';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+import GeneralDialog from '../Components/GeneralDialog';
+import ComplaintFullView from "../Components/ComplaintFullView";
+import { griev_type,status_type,getCookie, url } from '../constants';
+// import Card from '@material-ui/core/Card';
+
+const styles = theme => ({
+
+})
+
+class ComplaintReport extends Component {
+
+    state = {
+        openOfficerDialog: false,
+        openErrorDialog : false,
+        OfficerData: null,
+        OfficerDialogData : null,
+        Loading : true
+    };
+
+    handleOfficerDialogClose = () => {
+        this.setState({
+            OfficerDialogData: null,
+            openOfficerDialog: false
+        })
+    }
+
+    handleOfficerDialogOpen = (OfficerDialogData) => {
+
+
+        this.setState({
+            startAnimation: true,
+        })
+
+        // console.log(getCookie("roadGPortalAuth"));
+        
+
+        let headers = new Headers();
+        headers.append('origin', '*');
+        headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
+
+        let req = new Request(url  + "getComplaints?isPaginated=0", {
+            method: "GET",
+            headers: headers,
+            mode: 'cors'
+        });
+
+        fetch(req)
+            .then(res => res.json())
+            .then(res => {
+               
+                this.setState({
+                    lodding : false
+                });
+
+                if(res.success){
+                    res.complaints.map(complaint => {
+                        complaint.time = new Date(complaint.time);
+                    })
+                    
+                    this.allComplaints = res.complaints;
+                    
+                    console.log(this.allComplaints);
+                    let newFilteredComplaints = res.complaints;
+                    const newMap = new Map(this.state.status_type_map); 
+                 
+                    if(this.props.dashboardButton){
+
+                        newFilteredComplaints = newFilteredComplaints.filter(complaint => (
+                            complaint['complaint_status'] && (complaint['complaint_status'].toUpperCase() !== this.props.dashboardButton.toUpperCase())
+                        ));
+                        
+                        const checked = !newMap.get(this.props.dashboardButton)
+                        newMap.set(this.props.dashboardButton.toUpperCase(),checked);
+                        console.log(newMap,this.props.dashboardButton);
+
+                    }
+
+                    
+                    this.setState({
+                        status_type_map : newMap,
+                        filteredComplaints : newFilteredComplaints,
+                    })
+                }else{
+                    this.handleDialogOpen(res.data, "Error");
+                }
+            })
+            .catch(err => {
+                console.log(err);      
+                this.setState({
+                    lodding : false
+                });          
+                this.handleDialogOpen(err.message, "Error")
+            });
+
+        this.setState({
+            OfficerDialogData: OfficerDialogData,
+            openOfficerDialog: true
+        })
+    }
+
     
-    const data = [
-        {name: 'Page A', uv: 4000, pv: 2400, amt: 2400},
-        {name: 'Page B', uv: 3000, pv: 1398, amt: 2210},
-        {name: 'Page C', uv: 2000, pv: 9800, amt: 2290},
-        {name: 'Page D', uv: 2780, pv: 3908, amt: 2000},
-        {name: 'Page E', uv: 1890, pv: 4800, amt: 2181},
-        {name: 'Page F', uv: 2390, pv: 3800, amt: 2500},
-        {name: 'Page G', uv: 3490, pv: 4300, amt: 2100},
-    ];
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-    const RADIAN = Math.PI / 180;  
-    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-     const x  = cx + radius * Math.cos(-midAngle * RADIAN);
-     const y = cy  + radius * Math.sin(-midAngle * RADIAN);
-    console.log(`${(percent * 100).toFixed(0)}%`);
-    console.log("Hello");
+    handleDialogOpen = (dialogMsg, dialogTitle) => {        
+      this.setState({ 
+          openErrorDialog: true,
+          dialogMsg: dialogMsg,
+          dialogTitle: dialogTitle
+      });
+    };
+
+    handleClose = () => {
+        this.setState({ openErrorDialog: false });
+    };
+
+    componentDidMount() {
+
+      let headers = new Headers();
+      headers.append('origin', '*');
+      headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
+
+      let req = new Request(url  + "getComplaints?isPaginated=0", {
+          method: "GET",
+          headers: headers,
+          mode: 'cors'
+      });
+
+      fetch(req)
+          .then(res => res.json())
+          .then(res => {
+            console.log(res)
+              this.setState({
+                  Loading : true
+              });
+
+              if(res.success){
     
-     return (
-       <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} 	dominantBaseline="central">
-           {`${(percent * 100).toFixed(0)}%`}
-       </text>
-     );
-   };
-
-    return (
-      <div>
-        <PieChart width={800} height={400} onMouseEnter={this.onPieEnter}>
-            <Pie
-            data={data2} 
-            //dataKey="uv"
-            cx={300} 
-            cy={200} 
-            labelLine={false}
-            label={renderCustomizedLabel}
-            outerRadius={80} 
-            fill="#8884d8"
-            >
-            { data.map((entry, index) => <Cell fill={COLORS[index % COLORS.length]}/>) }
-            </Pie>
-      </PieChart>
-
-      <LineChart width={400} height={400} data={data}>
-        <Line type="monotone" dataKey="uv" stroke="#8884d8" />
-            <CartesianGrid stroke="#ccc" />
-            <XAxis dataKey="name" />
-            <YAxis />
-      </LineChart>
-
-      <BarChart width={600} height={300} data={data}
-            margin={{top: 5, right: 30, left: 20, bottom: 5}}>
-       <CartesianGrid strokeDasharray="3 3"/>
-       <XAxis dataKey="name"/>
-       <YAxis/>
-       <Tooltip/>
-       <Legend />
-       <Bar dataKey="pv" fill="#8884d8" />
-       <Bar dataKey="uv" fill="#82ca9d" />
-      </BarChart>
-
-      </div>
-    )
+                  this.setState({
+                    OfficerDialogData : res.data,
+                  })
+              }else{
+                  this.handleDialogOpen(res.data, "Error");
+              }
+          })
+          .catch(err => {
+              console.log(err);      
+              this.setState({
+                  Loading : false
+              });          
+              this.handleDialogOpen(err.message, "Error")
+          });
   }
-}   
+
+    render() {
+
+        return (
+            <Paper>
+                  <GeneralDialog 
+                    openDialogState = {this.state.openDialog}
+                    dialogTitle = {this.state.dialogTitle}
+                    dialogMsg = {this.state.dialogMsg}  
+                    handleClose={this.handleClose}
+                    handleDialogOpen={this.handleDialogOpen}
+                >
+                    {/* <Button>Hello</Button> */}
+                </GeneralDialog>
+                
+                <ComplaintFullView 
+                    OfficerDialogData={this.state.OfficerDialogData}
+                    handleComplaintDialogClose={this.handleOfficerDialogClose} 
+                    openComplaintDialogState={this.state.openComplaintDialogState}  />
+              
+                { this.state.Loading ? <LinearProgress /> :  
+                <div style={{overflowX: 'auto',}}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>index</TableCell>
+                                <TableCell>Officer Name</TableCell>
+                                <TableCell>Profile</TableCell>
+                                <TableCell>Complaints</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {
+                                this.state.OfficerData
+                                .map((item, index) => (
+                                    <TableRow key={index}>
+
+                                        <TableCell>{item.grievType}</TableCell>
+                                        <TableCell>{item.complaint_status}</TableCell>
+                                        <TableCell>NO</TableCell>
+                                        <TableCell>
+                                            <Button 
+                                                onClick={
+                                                    () => {
+                                                        this.handleOfficerDialogOpen(item,"Profile");
+                                                    }
+                                                }
+                                                color="secondary"
+                                                variant="outlined"
+                                                >
+                                               View
+                                              </Button>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button 
+                                                onClick={
+                                                    () => {
+                                                        this.handleOfficerDialogOpen(item,"Complaint");
+                                                    }
+                                                }
+                                                color="secondary"
+                                                variant="outlined"
+                                                >
+                                               Update
+                                              </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+                }
+            </Paper>  
+        );
+    }
+}
+
+ComplaintReport.propTypes = {
+    classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(ComplaintReport);

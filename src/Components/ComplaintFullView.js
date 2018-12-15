@@ -23,11 +23,16 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Slide from '@material-ui/core/Slide';
+import CardContent from '@material-ui/core/CardContent';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import green from '@material-ui/core/colors/green';
+import amber from '@material-ui/core/colors/amber';
 
 import CloseIcon from '@material-ui/icons/Close';
 
 import ImageCarousel from "./ImageCarousel";
-import { getFormatedDate } from "../constants";
+import { getFormatedDate, getCookie, url } from "../constants";
 
 const styles = theme => ({
     ComplaintFullView: {
@@ -61,6 +66,18 @@ const styles = theme => ({
     formControl: {
         minWidth: 280,
     },
+    success: {
+        backgroundColor: green[600],
+    },
+    error: {
+        backgroundColor: theme.palette.error.dark,
+    },
+    info: {
+        backgroundColor: theme.palette.primary.dark,
+    },
+    warning: {
+        backgroundColor: amber[700],
+    },
 });
 
 function Transition(props) {
@@ -70,11 +87,16 @@ function Transition(props) {
 class ComplaintFullView extends Component {
 
     state = {
-        new_estimated_time: null,
-        new_isEmergency: false,
-        new_complaint_status: "Pending",
+        openSnackbarState: false,
+        snackbarMessage: '',
+        snackbarVarient: '',
+
+        comments : [],
         Comment: null,
-        new_forword_complaint: null
+        new_forword_complaint: null,
+        new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
+        new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
+        new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false
     }
 
     handleIsEmergency = () => {        
@@ -84,7 +106,7 @@ class ComplaintFullView extends Component {
     }
 
     handleEstimatedDateChange = (date) => {
-        this.setState({ new_estimated_time: getFormatedDate(date) });
+        this.setState({ new_estimated_time: date });
     }
 
     handleChange = e => {    
@@ -98,24 +120,71 @@ class ComplaintFullView extends Component {
     }
 
     handleSave = () => {
-    
+        // updateComplaint
+
+        let reqBody = {
+            complaint_id: this.props.ComplaintDialogData._id, 
+            complaint_status: this.state.new_complaint_status,
+            estimated_completion: this.state.new_estimated_time,
+            isEmergency: this.state.new_isEmergency,
+            comment: this.state.Comment
+        }        
+
+        fetch(url + "updateComplaint/", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'auth': 'token ' + getCookie("roadGPortalAuth")
+                },
+                method: "POST",
+                body: JSON.stringify(reqBody)
+            }
+        )
+        .then(res => res.json())
+        .then(res => {
+            if(res.success) {
+                this.setState({
+                    openSnackbarState: true,
+                    snackbarMessage: 'Complaint has been updated',
+                    snackbarStyle: {
+                        backgroundColor: green[600],
+                        display: 'flex',
+                    },
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }
+
+    handleSnackbarClose = () => {
+        this.setState({
+            openSnackbarState: false,
+            snackbarMessage: '',
+            snackbarVarient: {},
+        })
     }
 
     componentWillMount() {
         this.setState({
-            new_complaint_status: this.props.complaintData ? this.props.complaintData.complaint_status : "Pending",
-            new_estimated_time: this.props.complaintData ? this.props.complaintData.estimated_time : null,
-            new_isEmergency: this.props.complaintData ? this.props.complaintData.isEmergency : false
+            Comment: null,
+            new_forword_complaint: null,
+            new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
+            new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
+            new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false
         })
     }
 
-    componentWillReceiveProps() {
+    componentWillReceiveProps(nextProps) {
+       let ComplaintDialogData = nextProps.ComplaintDialogData            
         this.setState({
-            new_estimated_time: null,
-            new_isEmergency: false,
-            new_complaint_status: "Pending",
             Comment: null,
-            new_forword_complaint: null
+            comments: ComplaintDialogData ? ComplaintDialogData.comments : [],
+            new_forword_complaint: null,
+            new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
+            new_estimated_time: ComplaintDialogData ? ComplaintDialogData.estimated_time : null,
+            new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
         })
     }
 
@@ -158,7 +227,7 @@ class ComplaintFullView extends Component {
                             <br />
                             <Typography>{ "Status :   ".toUpperCase() + (complaintData? complaintData.complaint_status : null)}</Typography>
                             <br />
-                            <Typography>{ "Date :   ".toUpperCase() + (complaintData? complaintData : null)}</Typography>
+                            <Typography>{ "Date :   ".toUpperCase() + (complaintData? complaintData.time : null)}</Typography>
                             <br />
                             <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? (complaintData.isEmergency) ? "YES": "NO" : null)}</Typography>
                             <br />
@@ -210,16 +279,15 @@ class ComplaintFullView extends Component {
                                 </Grid>
                                 <Grid xs={12} md className={classes.textWrapper}>
                                     <FormControl className={classes.formControl}>
-                                        <InputLabel htmlFor="new_forword_complaint">Forword Complaint</InputLabel>
+                                        <InputLabel htmlFor="new_forword_complaint">Forword Complaint To</InputLabel>
                                         <Select
                                             value={this.state.new_forword_complaint}
-                                            // onChange={this.handleChange}
+                                            onChange={this.handleChange}
                                             inputProps={{
                                                 name: 'new_forword_complaint',
                                                 id: 'new_forword_complaint',
-                                            }}
-                                             >
-                                            <MenuItem value="Pending" disabled>Pending</MenuItem>
+                                            }} >
+                                            <MenuItem value="Pending">Pending</MenuItem>
                                             <MenuItem value="Approved">Approved</MenuItem>
                                             <MenuItem value="Rejected">Rejected</MenuItem>
                                             <MenuItem value="In Progress">In Progress</MenuItem>
@@ -244,17 +312,33 @@ class ComplaintFullView extends Component {
                                 }}
                                 style={{margin: '10px'}}
                                 margin="normal" />
+                            <br />
+                            <Typography variant="title">Comments : </Typography>
+                            <br />
+                            {
+                                // this.state.comments.map((comment, index) => (
+                                //     <CardContent key={index}>
+                                //         <Typography>{comment}</Typography>
+                                //     </CardContent>
+                                // ))
+                            }
                         </Grid>
                     </Grid>
-                    {/* <Grid container>
-                        <Grid item xs={12} md className={classes.paddingClass}>
-                            
-                        </Grid>
-                        <Grid item xs={12} md className={classes.paddingClass}>
-                        
-                        </Grid>
-                    </Grid> */}
                 </Dialog>
+
+                <Snackbar
+                    anchorOrigin={{ vertical : 'bottom', horizontal : 'left' }}
+                    open={this.state.openSnackbarState}
+                    autoHideDuration={5000}
+                    onClose={this.handleSnackbarClose}
+                    ContentProps={{
+                    'aria-describedby': 'message-id',
+                    }}
+                    message={
+                        <SnackbarContent style={this.state.snackbarStyle}>
+                            <span id="message-id" >{this.state.snackbarMessage}</span>
+                        </SnackbarContent>
+                    } />
             </div>
         );
     }

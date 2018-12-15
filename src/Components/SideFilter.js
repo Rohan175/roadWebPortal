@@ -14,17 +14,65 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
+import classnames from 'classnames';
+import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import ListItemText from '@material-ui/core/ListItemText';
+import Select from '@material-ui/core/Select';
+
 
 
 const styles = theme => ({
-    
+    expand: {
+        transform: 'rotate(0deg)',
+        transition: theme.transitions.create('transform', {
+          duration: theme.transitions.duration.shortest,
+        }),
+        marginLeft: 'auto',
+        [theme.breakpoints.up('sm')]: {
+          marginRight: -8,
+        },
+      },
+      expandOpen: {
+        transform: 'rotate(180deg)',
+      },
+      alignLeft: {
+        display:'flex',justifyContent :'space-between',verticalAlign :'middle'
+      },
+      wrapperItem: {
+        marginLeft: '10px', marginRight:'10px',paddingLeft: '10px',paddingRight: '10px',paddingTop:'10px',paddingBottom:'10px', textAlign: 'left'
+      }
 })
 
 
 class SideFilter extends Component {
 
 
+    state = {
+        name: [],
+        expandedDate : true,
+        expandedStatus : false,
+        expandedGriev : false,
+      };
+    
+      handleChange = event => {
+        this.setState({ name: event.target.value });
+      };
+
+      handleExpandClick(name) {
+        console.log(name,this.state[name],this.state.name);
+        
+        this.setState(state => ({ name : !state.name }));
+      };
+
     render() {
+
+        const { classes } = this.props;
 
         const statusTypeRender = [];
         this.props.status_type_map.forEach((value, key) => statusTypeRender.push(
@@ -41,54 +89,112 @@ class SideFilter extends Component {
 
         return (
             <div>
-                <div style={{margin: '10px', padding: '10px', textAlign: 'center'}}>
-                    <Typography variant="subheading">Complaint Status</Typography>
+
+                <div className={classes.wrapperItem} style={{paddingRight:'0px'}}>
+
+                    <div className={classes.alignLeft}>
+                        <Typography variant="subheading">Emergency Complaints</Typography>
+                        
+                        <Checkbox
+                            style={{padding:'0px'}}
+                            checked={!this.props.emergency_state}
+                            onChange={this.props.handleChange('emergency_state')}
+                            value="emergency"/>
+                    </div>
+                    <br/>
+                    <Divider />
+                </div>
+                
+
+                <div className={classes.wrapperItem}>
+
+                    <div className={classes.alignLeft}>
+                        <Typography variant="subheading">Complaint Status</Typography>
+                        <IconButton
+                            style={{padding:'0px'}}
+                            className={classnames(classes.expand, {
+                            [classes.expandOpen]: this.state.expandedStatus,
+                            })}
+                            onClick={() => this.handleExpandClick('expandedStatus')}
+                            aria-expanded={this.state.expandedStatus}
+                            aria-label="Show more"
+                        >
+                            <ExpandMoreIcon />
+                        </IconButton>
+                    </div>
                     <br />
                     <Divider />
-                    <FormGroup>
-                        {statusTypeRender}
-                    </FormGroup>
+                    <Collapse in={this.state.expandedStatus} timeout="auto">
+                        <FormGroup>
+                            {statusTypeRender}
+                        </FormGroup>
+                    </Collapse>
                 </div>
-                <div style={{margin: '10px', padding: '10px', textAlign: 'center'}}>
-                    <Typography variant="subheading">Grievance Type</Typography>
+
+
+                <div className={classes.wrapperItem}>
+                    <div className={classes.alignLeft}>
+                        <Typography variant="subheading">Grievance Type</Typography>
+                        <IconButton
+                            style={{padding:'0px'}}
+                            className={classnames(classes.expand, {
+                            [classes.expandOpen]: this.state.expandedGriev,
+                            })}
+                            onClick={() => this.handleExpandClick('expandedGriev')}
+                            aria-expanded={this.state.expandedGriev}
+                            aria-label="Show more"
+                        >
+                            <ExpandMoreIcon />
+                        </IconButton>
+                    </div>
                     <br />
                     <Divider />
-                    <FormGroup>
-                        {grievTypeRender}
-                    </FormGroup>
+                    <Collapse in={this.state.expandedGriev} timeout="auto">
+                        <FormGroup>
+                            {grievTypeRender}
+                        </FormGroup>
+                    </Collapse>
                 </div>
-                <div style={{margin: '10px', padding: '10px'}}>
-                    <Typography variant="subheading" style={{textAlign: 'center'}}>Officers</Typography>
+
+
+                <div className={classes.wrapperItem}>
+                    <div className={classes.alignLeft}>
+                        <Typography variant="subheading" style={{textAlign: 'left'}}>Date</Typography>
+                        <IconButton
+                            style={{padding:'0px'}}
+                            className={classnames(classes.expand, {
+                            [classes.expandOpen]: this.state.expandedDate,
+                            })}
+                            onClick={() => this.handleExpandClick('expandedDate')}
+                            aria-expanded={this.state.expandedDate}
+                            aria-label="Show more"
+                        >
+                            <ExpandMoreIcon />
+                        </IconButton>
+                    </div>
                     <br />
                     <Divider />
-                    {/* <FormGroup>
-                        {this.officers.map((name, index) => (
-                            <FormControlLabel key={index} checked={this.state.officers.value} control={<Checkbox />} label={name.data} />
-                        ))}
-                    </FormGroup> */}
-                </div>
-                <div style={{margin: '10px', padding: '10px'}}>
-                    <Typography variant="subheading" style={{textAlign: 'center'}}>Date</Typography>
                     <br />
-                    <Divider />
-                    <br />
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <Typography variant="caption">Starting Date</Typography>
-                        <DatePicker 
-                            value={this.props.EndingDate}
-                            onChange={this.props.handleEndingDateChange}
-                        />
-                    </MuiPickersUtilsProvider>
-                    <br /><br />
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <Typography variant="caption">Ending Date</Typography>
-                        <DatePicker
-                            value={this.props.StartingDate}
-                            onChange={this.props.handleStartingDateChange}
-                        />
-                    </MuiPickersUtilsProvider>
+                    <Collapse in={this.state.expandedDate} timeout="auto">
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <Typography variant="caption">Starting Date</Typography>
+                            <DatePicker 
+                                value={this.props.EndingDate}
+                                onChange={this.props.handleEndingDateChange}
+                            />
+                        </MuiPickersUtilsProvider>
+                        <br /><br />
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <Typography variant="caption">Ending Date</Typography>
+                            <DatePicker
+                                value={this.props.StartingDate}
+                                onChange={this.props.handleStartingDateChange}
+                            />
+                        </MuiPickersUtilsProvider>
+                    </Collapse>
                 </div>
-                <Divider />
+                
+                {/* <Divider /> */}
             </div>
         )
     }

@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+import Button from '@material-ui/core/Button';
+
 import LoginComponent from '../Components/LoginComponent';
 import ForgotPasswordComponent from '../Components/ForgotPasswordComponent';
 
@@ -73,18 +75,19 @@ class Login extends Component {
                 console.log(res);
                 if(res.success){
                     this.setCookie("roadGPortalAuth", res.data, 1);
-                    this.props.setLogin();
+                    this.setCookie("roadGPortalUserType", res.loginType, 1);
+                    this.props.setLogin(res.loginType);
                 }else{
                     this.handleDialogOpen(res.data, "Error");
                 }
             })
             .catch(err => {
                 console.log(err);                
-                this.handleDialogOpen(err.message, "Error")
+                this.handleDialogOpen(err+"", "Error")
             });
             
         } else {
-            alert("Password is required and it must be between 6 to 12 character")
+            this.handleDialogOpen("Password is required and it must be between 6 to 12 character", "Error")
         }
     }
 
@@ -101,7 +104,7 @@ class Login extends Component {
                 handleClose={this.handleClose}
                 handleDialogOpen={this.handleDialogOpen}
             >
-                {/* <Button>Hello</Button> */}
+                <Button onClick={this.handleClose}>OK</Button>
             </GeneralDialog>
           </div>  
         );

@@ -10,15 +10,57 @@ import AddAlert from '@material-ui/icons/AddAlert';
 import Timer from '@material-ui/icons/Timer';
 import Check from '@material-ui/icons/Check';
 
+import bgImage from '../res/rnb.svg';
+
 import CardBox from '../Components/DashboardCard';
-import DashboardCard from '../Components/DashboardCard';
+// import DashboardCard from '../Components/DashboardCard';
 
 const styles = theme => ({
     wrapper: {
-        marginTop: '-56px',
-        width: '100vw',
+        // width: '100vw',
         height: '100vh',
         display: 'flex',
+        [theme.breakpoints.down('sm')]: {
+            marginTop: '-66px',
+            // display: 'none',
+        },
+        // background: 'white',
+        // backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${bgImage})`,
+        // backgroundSize: 'cover',
+        // backgroundPosition: 'center'
+    },
+    cardRoot: {
+        [theme.breakpoints.down('sm')]: {
+            marginTop: '-66px',
+            display: 'inline-block',
+        },
+        display: 'grid',
+        margin: 'auto',
+        'grid-template-columns': '2fr 1fr 1fr',
+        'grid-template-rows': '1fr 1fr'
+    },
+    card1:{
+        'grid-column' : '1/2',
+        display: 'inline-block',
+        'grid-row' : '1/3',
+    },
+    card2:{
+        
+        'grid-column' : '2/4',
+        display: 'inline-block',
+        'grid-row' : '1/2'
+    },
+    card3:{
+        
+        'grid-column' : '2/3',
+        display: 'inline-block',
+        'grid-row' : '2/3'
+    },
+    card4:{
+        
+        'grid-column' : '3/4',
+        display: 'inline-block',
+        'grid-row' : '2/3'
     }
 })
 
@@ -29,13 +71,13 @@ class DashboardRoot extends Component {
         startAnimation: false,
         cardData: [
             {
-                name: "Total",
+                name: "New",
                 value: 10,
                 icon: AllInbox,
                 color: "primary"
             },
             {
-                name: "Emergency",
+                name: "New",
                 value: 10,
                 icon: AddAlert,
                 color: "danger"
@@ -67,34 +109,36 @@ class DashboardRoot extends Component {
         return (
           <div className={classes.wrapper} style={{textAlign: 'center'}}>
             <div style={{margin: 'auto'}}>
-                <Grid container style={{margin:'auto'}}>
+                <div className={classes.cardRoot}>
+                    <div className={classes.card1}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.cardData[0].value} CardColor={this.state.cardData[0].color} /></div>
+                    <div className={classes.card2}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[1].icon} CardName={this.state.cardData[1].name} CardValue={this.state.cardData[1].value} CardColor={this.state.cardData[1].color} /></div>
+                    <div className={classes.card3}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[2].icon} CardName={this.state.cardData[2].name} CardValue={this.state.cardData[2].value} CardColor={this.state.cardData[2].color} /></div>
+                    <div className={classes.card4}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[3].icon} CardName={this.state.cardData[3].name} CardValue={this.state.cardData[3].value} CardColor={this.state.cardData[3].color} /></div>
+                </div>
+                {/* <Grid container style={{margin:'auto'}}>
                     <Grid item xs={12} md>
-                        <Grid container>
-                            <Grid item xs={6}>
-                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.cardData[0].value} CardColor={this.state.cardData[0].color} />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[1].icon} CardName={this.state.cardData[1].name} CardValue={this.state.cardData[1].value} CardColor={this.state.cardData[1].color} />
-                            </Grid>
-                        </Grid>
                     </Grid>
                     <Grid item xs={12} md>
-                        <Grid container>
-                            <Grid item xs={6}>
-                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[2].icon} CardName={this.state.cardData[2].name} CardValue={this.state.cardData[2].value} CardColor={this.state.cardData[2].color} />
+                        <Grid container direction="row" alignContent="stretch" alignItems="stretch">
+                            <Grid item xs={12}>
                             </Grid>
-                            <Grid item xs={6}>
-                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[3].icon} CardName={this.state.cardData[3].name} CardValue={this.state.cardData[3].value} CardColor={this.state.cardData[3].color} />
+                            <Grid item xs={12}>
+                                <Grid container>
+                                    <Grid item xs={6}>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
                     
                     {
                         // this.state.cardData.map((item, index) => (
                         //     <Grid item xs={6} md  />
                         // ))
                     }
-                </Grid>
+                {/* </Grid> */}
             </div>
           </div>
         );

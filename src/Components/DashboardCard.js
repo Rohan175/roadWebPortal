@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 // import { Route, Switch, Redirect } from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -17,6 +18,7 @@ const styles = theme => ({
         minWidth: '150px', 
         // display:'inline-block', 
         margin: '15px',
+        height:'100%',
         position: 'relative',
         color: 'white'
     },
@@ -85,7 +87,8 @@ const CardBox = props => {
                     <Typography variant="display2">{props.CardValue}</Typography>
                 </CardContent>
                 <CardActions>
-                    <Button className={classes.CardButton} size="small">view</Button>
+
+                    <Button className={classes.CardButton} size="small" component={NavLink} to={{ pathname: '/Dashboard/Complaints/Table', state: {dashboardButton : props.CardName} }}>view</Button>
                 </CardActions>
                 <div className={classes.bottomRight}></div>
             </div>

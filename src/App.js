@@ -31,8 +31,11 @@ class App extends Component {
     } else {
       this.state = {
         isLoggedIn: false,
+
       }
     }
+
+    console.log("App ",this.state);
   }
 
   //checking login status for login route
