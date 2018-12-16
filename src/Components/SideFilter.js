@@ -186,6 +186,7 @@ class SideFilter extends Component {
                             />
                         </MuiPickersUtilsProvider>
                     </Collapse>
+                    <Button onClick={this.props.exportExcel} href=""> Export Selected Data to Excel </Button>
                 </div>
                 
                 {/* <Divider /> */}

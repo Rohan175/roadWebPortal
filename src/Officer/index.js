@@ -22,10 +22,11 @@ const styles = theme => ({
     wrapper: {
         // background: 'black'
         // marginTop: '35px',
-        // overflowX: 'hidden'
+        position:'relative',
+        overflow: 'hidden',
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'top'
+        backgroundPosition: 'bottom'
     },
     backgr: {
         position: 'absolute',

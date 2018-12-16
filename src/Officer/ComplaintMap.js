@@ -37,7 +37,7 @@ export default class ComplaintMap extends Component {
     };
   }
 
-  do_load = () => {
+  do_load = (data) => {
     const mThis = this;
     console.log('maps do load fun');
 
@@ -47,9 +47,16 @@ export default class ComplaintMap extends Component {
       const map = new window.Microsoft.Maps.Map(document.getElementById('mMap'), {})
       console.log('Loaded');
       let pushpinInfos = [];
-      pushpinInfos[0] = { 'lat': 42.0076215, 'lng': 20.9689308, 'title': 'Kipper Market', 'description': 'Braka Miladinovi 178, 1200 Tetovë, Tetovo, Macedonia' };
-      pushpinInfos[1] = { 'lat': 41.799645, 'lng': 20.913514, 'title': 'Kipper Market', 'description': 'Kipper Gostilet' };
-  
+      //pushpinInfos[0] = { 'lat': 23.456574, 'lng': 72.234324, 'title': 'Kipper Market', 'description': 'Braka Miladinovi 178, 1200 Tetovë, Tetovo, Macedonia' };
+      //pushpinInfos[1] = { 'lat': 41.799645, 'lng': 20.913514, 'title': 'Kipper Market', 'description': 'Kipper Gostilet' };
+      
+      data.forEach(d => {
+        pushpinInfos.push({ 'lat': d.location[0], 'lng': d.location[1], 'title': d.name, 'description': 'Status : ' + d.complaint_status + ' \n' + d.grievType })
+        console.log(d.location[0],d.location[1],d.name);
+      });
+
+
+
       let infoboxLayer = new window.Microsoft.Maps.EntityCollection();
       let pinLayer = new window.Microsoft.Maps.EntityCollection();
       let apiKey = "<api key>";
@@ -72,7 +79,7 @@ export default class ComplaintMap extends Component {
   
       map.entities.push(pinLayer);
       map.entities.push(infoboxLayer);
-  
+      console.log('Pins : ',pinLayer)
       let bestview = window.Microsoft.Maps.LocationRect.fromLocations(locs);
       map.setView({ center: bestview.center, zoom: 11 });
 
@@ -91,7 +98,7 @@ export default class ComplaintMap extends Component {
       this.setState({ status: 'loading' });
       console.log('Maps loading');
 
-      this.do_load();
+      this.do_load(this.props.complaintsData);
     }
 
   }

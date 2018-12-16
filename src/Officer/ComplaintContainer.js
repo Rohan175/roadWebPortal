@@ -110,7 +110,8 @@ class ComplaintContainer extends Component {
                 
                 if(name === "status_type_map"){
 
-                    console.log("here2")
+                    console.log("here2",oldState.emergency_state,this.allComplaints[0].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[0].isEmergency));
+                    console.log("here3",oldState.emergency_state,this.allComplaints[1].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[1].isEmergency));
                     // console.log("adding status : " + value ) 
                     // console.log(this.allComplaints);
                     // console.log(oldState.griev_type_map);
@@ -121,10 +122,10 @@ class ComplaintContainer extends Component {
                                 && complaint.complaint_status.toUpperCase() == value.toUpperCase() 
                                 && complaint.grievType
                                 && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
-                                && oldState.emergency_state !== complaint.isEmergency
+                                && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                         });
                     
-                    newFilteredComplaints = oldState.filteredComplaints.concat(newFilteredComplaints)
+                    newFilteredComplaints = newFilteredComplaints.concat(oldState.filteredComplaints)
                     //console.log(newFilteredComplaints);
 
                 }else if(name === "griev_type_map"){
@@ -175,9 +176,9 @@ class ComplaintContainer extends Component {
                     oldState.filteredComplaints = this.allComplaints;
                 }
 
-                if(name === "emergenjcy_state"){
+                if(name === "emergency_state"){
                     
-                    console.log(oldState.filteredComplaints, oldState.filteredComplaints[0]['isEmergency']);
+                    //console.log(oldState.filteredComplaints, oldState.filteredComplaints[0]['isEmergency']);
                     
                     newFilteredComplaints = oldState.filteredComplaints.filter(complaint => (
                         complaint['isEmergency'] && (complaint['isEmergency'] == true)
@@ -194,7 +195,7 @@ class ComplaintContainer extends Component {
                         jsonName = "grievType"
                     }
 
-                    console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
+                    //console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
 
                     newFilteredComplaints = oldState.filteredComplaints.filter(complaint => (
                         complaint[jsonName] && (complaint[jsonName].toUpperCase() !== value.toUpperCase())
@@ -305,6 +306,36 @@ class ComplaintContainer extends Component {
         })
     }
 
+    exportExcel(e){
+
+        console.log(this.state.filteredComplaints);
+        var Headers = Object.keys(this.state.filteredComplaints[0]);
+        console.log(Headers);
+        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType",
+        // "description","complaint_status","time","estimated_completion"];
+            
+          
+        
+        var CsvString = "";
+        this.state.filteredComplaints.forEach(function(RowItem, RowIndex) {
+          Headers.forEach(function(ColItem, ColIndex) {
+            CsvString += RowItem[ColItem] + ',';
+          });
+          CsvString += "\r\n";
+        });
+        
+        let link = document.createElement('a');
+        link.setAttribute('href','data:application/vnd.ms-excel;charset=utf-8,'+encodeURIComponent(CsvString));
+        link.setAttribute('download','R&BPortal_Data.csv');
+        link.click();
+
+        //e.downlaod = "R&BPortal_Data.xls"
+        //window.open("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet," + encodeURIComponent(CsvString));
+        console.log("Exprot excel ",e);
+        //window.open('data:application/vnd.ms-excel,' + encodeURIComponent(CsvString));
+        
+    }
+
     handleFilterClose = () => {
         this.setState({
             filterDialogState: false
@@ -332,6 +363,7 @@ class ComplaintContainer extends Component {
                                     handleChange={this.handleChange}
                                     handleEndingDateChange = {this.handleEndingDateChange}
                                     handleStartingDateChange ={this.handleStartingDateChange}
+                                    exportExcel = {this.exportExcel.bind(this)}
                         /> 
                     </Slide>
                 </Grid>

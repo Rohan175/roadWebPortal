@@ -72,7 +72,7 @@ class Login extends Component {
             )
             .then(res => res.json())
             .then(res => {
-                console.log(res);
+                console.log("Auth : ",res);
                 if(res.success){
                     this.setCookie("roadGPortalAuth", res.data, 1);
                     this.setCookie("roadGPortalUserType", res.loginType, 1);

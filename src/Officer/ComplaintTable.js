@@ -29,7 +29,7 @@ class ComplaintTable extends Component {
 
     state = {
         page: 0,
-        rowsPerPage: 5,
+        rowsPerPage: 10,
         openComplaintDialogState: false,
         ComplaintDialogData: null
     };
@@ -63,28 +63,6 @@ class ComplaintTable extends Component {
     };
     //----------------------------------------------
 
-    exportExcel(e){
-        var Results = [
-            ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType","description","complaint_status","time","estimated_completion"],
-            ["Data", 50, 100, 500],
-            ["Data", -100, 20, 100],
-          ];
-        
-        var CsvString = "";
-        Results.forEach(function(RowItem, RowIndex) {
-          RowItem.forEach(function(ColItem, ColIndex) {
-            CsvString += ColItem + ',';
-          });
-          CsvString += "\r\n";
-        });
-
-        window.open("data:application/csv," + encodeURIComponent(CsvString));
-        console.log("Exprot excel ",e);
-        //window.open('data:application/vnd.ms-excel,' + encodeURIComponent(CsvString));
-        
-    }
-
-
     render() {
         // let { classes } = this.props;
         const { rowsPerPage, page } = this.state;
@@ -100,7 +78,7 @@ class ComplaintTable extends Component {
                             
                         </Grid>
                         <Grid item xs>
-                            <Button onClick={this.exportExcel} href=""> Export for Excel </Button>
+                            
                             <TablePagination
                                 component="div"
                                 count={this.props.complaintsData.length}

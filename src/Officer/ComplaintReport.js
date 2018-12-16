@@ -24,7 +24,6 @@ import ComplaintContainer from './ComplaintContainer';
 import GeneralDialog from '../Components/GeneralDialog';
 import ComplaintFullView from "../Components/ComplaintFullView";
 import { griev_type,status_type,getCookie, url } from '../constants';
-// import Card from '@material-ui/core/Card';
 
 const styles = theme => ({
 
@@ -32,7 +31,7 @@ const styles = theme => ({
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
-  }
+}
 
 
 class ComplaintReport extends Component {
@@ -53,6 +52,40 @@ class ComplaintReport extends Component {
         Loading : true
     };
 
+    jrdOfficerList() {
+        let headers = new Headers();
+            headers.append('origin', '*');
+            headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
+    
+            let req = new Request(url  + "getJrOfficerList", {
+                method: "GET",
+                headers: headers,
+                mode: 'cors'
+            });
+    
+            fetch(req)
+                .then(res => res.json())
+                .then(res => {
+                    this.setState({
+                        lodding : false
+                    });
+                    if(res){
+                        this.setState({
+                            data: res,
+                        })
+                    }else{
+                        this.handleDialogOpen(res.data, "Error");
+                    }
+                })
+                .catch(err => {
+                    console.log(err);      
+                    this.setState({
+                        lodding : false
+                    });          
+                    this.handleDialogOpen(err.message, "Error")
+                });
+      }
+      
      //handling table pagination
      handleChangePage = (event, page) => {
         this.setState({ page });
