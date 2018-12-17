@@ -16,6 +16,7 @@ import ComplaintMap from "./ComplaintMap";
 import GeneralDialog from '../Components/GeneralDialog';
 import { griev_type,status_type,getCookie, url } from '../constants';
 // import Card from '@material-ui/core/Card';
+import Empty from '../res/empty.svg';
 
 const styles = theme => ({
     progressWrapper: {
@@ -28,7 +29,7 @@ const styles = theme => ({
         width: '100%',
     },
     wrapper: {
-        paddingTop: '60px',
+      //  paddingTop: '60px',
         display: 'block',
         // minHeight: '90vh',
         background: 'white'
@@ -229,6 +230,36 @@ class ComplaintContainer extends Component {
         this.setState({ openDialog: false });
     };
 
+    exportExcel(e){
+
+        console.log(this.state.filteredComplaints);
+        var Headers = Object.keys(this.state.filteredComplaints[0]);
+        console.log(Headers);
+        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType",
+        // "description","complaint_status","time","estimated_completion"];
+            
+          
+        
+        var CsvString = "";
+        this.state.filteredComplaints.forEach(function(RowItem, RowIndex) {
+          Headers.forEach(function(ColItem, ColIndex) {
+            CsvString += RowItem[ColItem] + ',';
+          });
+          CsvString += "\r\n";
+        });
+        
+        let link = document.createElement('a');
+        link.setAttribute('href','data:application/vnd.ms-excel;charset=utf-8,'+encodeURIComponent(CsvString));
+        link.setAttribute('download','R&BPortal_Data.csv');
+        link.click();
+
+        //e.downlaod = "R&BPortal_Data.xls"
+        //window.open("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet," + encodeURIComponent(CsvString));
+        console.log("Exprot excel ",e);
+        //window.open('data:application/vnd.ms-excel,' + encodeURIComponent(CsvString));
+        
+    }
+
     componentDidMount() {
         this.setState({
             startAnimation: true,
@@ -327,6 +358,7 @@ class ComplaintContainer extends Component {
                         <SideFilter 
                             status_type_map={this.state.status_type_map} 
                             griev_type_map={this.state.griev_type_map} 
+                            exportExcel = {this.exportExcel.bind(this)}
                             emergency_state={this.state.emergency_state}
                             handleChange={this.handleChange}
                             handleEndingDateChange = {this.handleEndingDateChange}

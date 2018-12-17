@@ -69,9 +69,9 @@ class ComplaintTable extends Component {
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, this.props.complaintsData.length - page * rowsPerPage);
 
         return (
-            <Paper>
+            <Paper style={{'padding' : '5px'}}>
                 <ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  />
-                <Toolbar style={{overflowX: 'auto',}}>
+                <Toolbar>
                     <Grid container>
                         <Grid item xs>
                             
