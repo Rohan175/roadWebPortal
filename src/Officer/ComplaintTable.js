@@ -29,7 +29,7 @@ class ComplaintTable extends Component {
 
     state = {
         page: 0,
-        rowsPerPage: 10,
+        rowsPerPage: 5,
         openComplaintDialogState: false,
         ComplaintDialogData: null
     };
@@ -63,20 +63,40 @@ class ComplaintTable extends Component {
     };
     //----------------------------------------------
 
+    exportExcel(e){
+        var Results = [
+            ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType","description","complaint_status","time","estimated_completion"],
+            ["Data", 50, 100, 500],
+            ["Data", -100, 20, 100],
+          ];
+        
+        var CsvString = "";
+        Results.forEach(function(RowItem, RowIndex) {
+          RowItem.forEach(function(ColItem, ColIndex) {
+            CsvString += ColItem + ',';
+          });
+          CsvString += "\r\n";
+        });
+
+        window.open("data:application/csv," + encodeURIComponent(CsvString));
+        console.log("Exprot excel ",e);
+        //window.open('data:application/vnd.ms-excel,' + encodeURIComponent(CsvString));
+        
+    }
+
+
     render() {
         // let { classes } = this.props;
         const { rowsPerPage, page } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, this.props.complaintsData.length - page * rowsPerPage);
 
         return (
-            <Paper>
+            <Paper style={{padding: '5px'}}>
                 <ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  />
-                <Toolbar style={{overflowX: 'auto',}}>
+                <Toolbar style={{}}>
                     <Grid container>
                         <Grid item xs>
-                            
                             <TablePagination
-                                style={{'padding' : 0}}
                                 component="div"
                                 count={this.props.complaintsData.length}
                                 rowsPerPageOptions={[5, 10, 15, 20]}
@@ -90,7 +110,9 @@ class ComplaintTable extends Component {
                                 }}
                                 onChangePage={this.handleChangePage}
                                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                            />
+                            >
+                            
+                            </TablePagination>
                         </Grid>
                     </Grid>
                 </Toolbar>

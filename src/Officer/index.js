@@ -13,20 +13,18 @@ import NavBar from '../Components/NavBar';
 import DashboardRoot from './DashboardRoot';
 import ComplaintContainer from './ComplaintContainer';
 import ManageOfficer from './ManageOfficer';
+import AddOfficer from './AddOfficer';
 import Profile from '../Components/Profile';
 import { getCookie, hierarchy } from "../constants";
 
 import bgImage from '../res/ROHAN.svg';
+// import AddOfficer from './AddOfficer';
 
 const styles = theme => ({
     wrapper: {
-        // background: 'black'
-        // marginTop: '35px',
-        position:'relative',
-        overflow: 'hidden',
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'bottom'
+        backgroundPosition: 'top'
     },
     backgr: {
         position: 'absolute',
@@ -36,10 +34,6 @@ const styles = theme => ({
         left: '0px',
         right: '0px',
         zIndex: '-9',
-        // backgroundImage: `url(${bgImage})`,
-        // backgroundSize: 'cover',
-        // backgroundPosition: 'top',
-        // backgroundAttachment: 'fixed'
     },
     bgImage: {
         position: 'absolute',
@@ -72,6 +66,11 @@ class Dashboard extends Component {
                 path: '/Dashboard/ManageOfficer',
                 icon: PieChart
             }] : [],
+            ... getCookie('roadGPortalRole') === hierarchy[hierarchy.length - 1] ? [{
+                name: 'Add Officer',
+                path: '/Dashboard/AddOfficer',
+                icon: PieChart
+            }] : [],
             {
                 name: 'Profile',
                 path: '/Dashboard/Profile',
@@ -93,6 +92,7 @@ class Dashboard extends Component {
                 <Route exact path="/Dashboard/" render={() => (<DashboardRoot />)} />
                 <Route exact path="/Dashboard/Complaints/*" render={(locationProps) => (<ComplaintContainer {...locationProps.location.state}/>)} />
                 <Route exact path="/Dashboard/ManageOfficer" render={() => (<ManageOfficer />)} />
+                <Route exact path="/Dashboard/AddOfficer" render={() => (<AddOfficer />)} />
                 <Route exact path="/Dashboard/Profile" render={() => (<Profile />)} />
                 <Route path="/Dashboard/*">
                     <Redirect to="/Dashboard" />

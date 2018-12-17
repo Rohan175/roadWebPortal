@@ -7,6 +7,7 @@ import Slide from '@material-ui/core/Slide';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 import SideFilter from "../Components/SideFilter";
 import ComplaintTable from "./ComplaintTable";
@@ -15,6 +16,8 @@ import ComplaintMap from "./ComplaintMap";
 import GeneralDialog from '../Components/GeneralDialog';
 import { griev_type,status_type,getCookie, url } from '../constants';
 // import Card from '@material-ui/core/Card';
+
+import Empty from '../res/empty.svg'
 
 const styles = theme => ({
     progressWrapper: {
@@ -27,9 +30,9 @@ const styles = theme => ({
         width: '100%',
     },
     wrapper: {
-        paddingTop: '60px',
+        // paddingTop: '60px',
         display: 'block',
-        minHeight: '90vh',
+        // minHeight: '90vh',
         background: 'white'
     },
     filterBtn: {
@@ -110,8 +113,7 @@ class ComplaintContainer extends Component {
                 
                 if(name === "status_type_map"){
 
-                    console.log("here2",oldState.emergency_state,this.allComplaints[0].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[0].isEmergency));
-                    console.log("here3",oldState.emergency_state,this.allComplaints[1].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[1].isEmergency));
+                    console.log("here2")
                     // console.log("adding status : " + value ) 
                     // console.log(this.allComplaints);
                     // console.log(oldState.griev_type_map);
@@ -122,10 +124,10 @@ class ComplaintContainer extends Component {
                                 && complaint.complaint_status.toUpperCase() == value.toUpperCase() 
                                 && complaint.grievType
                                 && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
-                                && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
+                                && oldState.emergency_state !== complaint.isEmergency
                         });
                     
-                    newFilteredComplaints = newFilteredComplaints.concat(oldState.filteredComplaints)
+                    newFilteredComplaints = oldState.filteredComplaints.concat(newFilteredComplaints)
                     //console.log(newFilteredComplaints);
 
                 }else if(name === "griev_type_map"){
@@ -151,7 +153,12 @@ class ComplaintContainer extends Component {
                     console.log("here ",this.allComplaints,oldState)
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
-                    
+                        
+                        console.log(complaint.grievType
+                            , complaint.grievType && oldState.griev_type_map.get(complaint.grievType.toUpperCase()) 
+                            , complaint.complaint_status
+                            , complaint.complaint_status && oldState.status_type_map.get(complaint.complaint_status.toUpperCase()))
+
                         return complaint.grievType
                             && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
                             && complaint.complaint_status
@@ -171,9 +178,9 @@ class ComplaintContainer extends Component {
                     oldState.filteredComplaints = this.allComplaints;
                 }
 
-                if(name === "emergency_state"){
+                if(name === "emergenjcy_state"){
                     
-                    //console.log(oldState.filteredComplaints, oldState.filteredComplaints[0]['isEmergency']);
+                    console.log(oldState.filteredComplaints, oldState.filteredComplaints[0]['isEmergency']);
                     
                     newFilteredComplaints = oldState.filteredComplaints.filter(complaint => (
                         complaint['isEmergency'] && (complaint['isEmergency'] == true)
@@ -190,7 +197,7 @@ class ComplaintContainer extends Component {
                         jsonName = "grievType"
                     }
 
-                    //console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
+                    console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
 
                     newFilteredComplaints = oldState.filteredComplaints.filter(complaint => (
                         complaint[jsonName] && (complaint[jsonName].toUpperCase() !== value.toUpperCase())
@@ -233,9 +240,6 @@ class ComplaintContainer extends Component {
             startAnimation: true,
         })
 
-        // console.log(getCookie("roadGPortalAuth"));
-        
-
         let headers = new Headers();
         headers.append('origin', '*');
         headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
@@ -255,10 +259,11 @@ class ComplaintContainer extends Component {
                 });
 
                 if(res.success){
+                    console.log("complaints ", res);
+                    
                     res.complaints.map(complaint => {
                         complaint.time = new Date(complaint.time);
                     })
-                    
                     this.allComplaints = res.complaints;
                     
                     console.log(this.allComplaints);
@@ -301,36 +306,6 @@ class ComplaintContainer extends Component {
         })
     }
 
-    exportExcel(e){
-
-        console.log(this.state.filteredComplaints);
-        var Headers = Object.keys(this.state.filteredComplaints[0]);
-        console.log(Headers);
-        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType",
-        // "description","complaint_status","time","estimated_completion"];
-            
-          
-        
-        var CsvString = "";
-        this.state.filteredComplaints.forEach(function(RowItem, RowIndex) {
-          Headers.forEach(function(ColItem, ColIndex) {
-            CsvString += RowItem[ColItem] + ',';
-          });
-          CsvString += "\r\n";
-        });
-        
-        let link = document.createElement('a');
-        link.setAttribute('href','data:application/vnd.ms-excel;charset=utf-8,'+encodeURIComponent(CsvString));
-        link.setAttribute('download','R&BPortal_Data.csv');
-        link.click();
-
-        //e.downlaod = "R&BPortal_Data.xls"
-        //window.open("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet," + encodeURIComponent(CsvString));
-        console.log("Exprot excel ",e);
-        //window.open('data:application/vnd.ms-excel,' + encodeURIComponent(CsvString));
-        
-    }
-
     handleFilterClose = () => {
         this.setState({
             filterDialogState: false
@@ -351,36 +326,65 @@ class ComplaintContainer extends Component {
             >
                 {/* <Button>Hello</Button> */}
             </GeneralDialog>
-            <Grid container spacing={8} style={{margin:'auto'}}>
-                <Grid item sm={3} xs={12} style={{height: '90vh', overflowY:'scroll'}}>
-                    <Slide direction="right" in={true}>
-                        <SideFilter status_type_map={this.state.status_type_map}  griev_type_map={this.state.griev_type_map} emergency_state={this.state.emergency_state}
-                                    handleChange={this.handleChange}
-                                    handleEndingDateChange = {this.handleEndingDateChange}
-                                    handleStartingDateChange ={this.handleStartingDateChange}
-                                    exportExcel = {this.exportExcel.bind(this)}
-                        /> 
-                    </Slide>
+            {
+                this.allComplaints && this.allComplaints.length !== 0 ?
+                <Grid container spacing={0} style={{margin:'auto'}}>
+                    <Grid item md={3} xs={12} style={{height: '97vh', paddingTop: '56px', overflowY: 'scroll', overflowX: 'hidden'}}>
+                        <SideFilter 
+                            status_type_map={this.state.status_type_map} 
+                            griev_type_map={this.state.griev_type_map} 
+                            emergency_state={this.state.emergency_state}
+                            handleChange={this.handleChange}
+                            handleEndingDateChange = {this.handleEndingDateChange}
+                            handleStartingDateChange ={this.handleStartingDateChange}
+                        />
+                    </Grid>
+                    <Grid item md={9} xs={12} >
+                        {
+                            (this.state.filteredComplaints && this.state.filteredComplaints.length != 0)
+                            ?(
+                                this.state.lodding
+                                    ? (<CircularProgress className={classes.progress} />)
+                                    :
+                                    (<div style={{paddingTop: '60px'}}>
+                                        <Switch >
+                                            <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} />)} />
+                                            <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
+                                            <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints} />)} />
+                                            <Route path="/Dashboard/Complaints/*">
+                                                <Redirect to="/Dashboard/" />
+                                            </Route>
+                                        </Switch>
+                                    </div>)
+                            ) 
+                            :(
+                                <div className={classes.progressWrapper} style={{height: '100vh'}}>
+                                    <div style={{margin: 'auto', textAlign: 'center'}}>
+                                        <img src={Empty} style={{width: '100px'}} />
+                                        <br />
+                                        <br />
+                                        <Typography variant="display2" style={{color: 'black'}}>No such Complaints</Typography>
+                                        <br />
+                                        <Typography variant="headline" style={{color: 'rgba(0,0,0,0.5)'}}>Try some diffrent combinations</Typography>
+                                    </div>
+                                </div>
+                            )
+
+                        } 
+                    </Grid>
                 </Grid>
-                <Grid item sm={9} xs={12} >
-                    
-                    {this.state.lodding
-                        ? (<CircularProgress className={classes.progress} />)
-                        :
-                        
-                        (<div style={{margin: '10px', heightY: '80vh', overflowY:'scroll'}}>
-                            <Switch >
-                                <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} />)} />
-                                <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
-                                <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints} />)} />
-                                <Route path="/Dashboard/Complaints/*">
-                                    <Redirect to="/Dashboard/" />
-                                </Route>
-                            </Switch>
-                        </div>)
-                    }
-                </Grid>
-            </Grid>
+                :
+                <div className={classes.progressWrapper} style={{height: '100vh'}}>
+                    <div style={{margin: 'auto', textAlign: 'center'}}>
+                        <img src={Empty} style={{width: '100px'}} />
+                        <br />
+                        <br />
+                        <Typography variant="display2" style={{color: 'black'}}>No Complaints...Yet!</Typography>
+                        <br />
+                        <Typography variant="headline" style={{color: 'rgba(0,0,0,0.5)'}}>Complaints posted by citizen will be shown here</Typography>
+                    </div>
+                </div>
+            }
           </div>  
         );
     }

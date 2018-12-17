@@ -173,29 +173,22 @@ class RoadCode extends React.Component {
   };
 
   handleChange = value => {
-    console.log(value);
-    
     let newopt = value.map(item => {
       return {
           label: item.value,
           value: item.value
       }
     })
-
-    console.log(newopt);
-    
-
     this.props.setRoadCodes(newopt);
     this.setState({
       multi: newopt
     })
+    // this.setState({
+    //   multi: newopt,
+    // }, () => {
+    //   
+    // });
   };
-
-  componentWillReceiveProps() {
-    this.setState({
-      multi: this.props.values
-    })
-  }
 
   render() {
     const { classes, theme } = this.props;
@@ -224,7 +217,7 @@ class RoadCode extends React.Component {
             }}
             options={this.props.options}
             components={components}
-            value={this.props.values}
+            value={this.state.multi}
             onChange={this.handleChange}
             placeholder="Select Roads"
             isMulti

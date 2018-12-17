@@ -7,6 +7,7 @@ import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsPr
 import DateFnsUtils from 'material-ui-pickers/utils/date-fns-utils';
 import DatePicker from 'material-ui-pickers/DatePicker';
 
+import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -17,6 +18,14 @@ import classnames from 'classnames';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import ListItemText from '@material-ui/core/ListItemText';
+import Select from '@material-ui/core/Select';
+
+
 
 const styles = theme => ({
     expand: {
@@ -40,22 +49,46 @@ const styles = theme => ({
       }
 })
 
+
 class SideFilter extends Component {
+
 
     state = {
         name: [],
         expandedDate : false,
         expandedStatus : false,
         expandedGriev : false,
-    };
+      };
     
     handleExpandClick = Eventame => {
         this.setState(state => ({ [Eventame] : !state[Eventame] }));
     };
 
+    exportExcel(e){
+        var Results = [
+            ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType","description","complaint_status","time","estimated_completion"],
+            ["Data", 50, 100, 500],
+            ["Data", -100, 20, 100],
+          ];
+        
+        var CsvString = "";
+        Results.forEach(function(RowItem, RowIndex) {
+          RowItem.forEach(function(ColItem, ColIndex) {
+            CsvString += ColItem + ',';
+          });
+          CsvString += "\r\n";
+        });
+
+        window.open("data:application/csv," + encodeURIComponent(CsvString));
+        console.log("Exprot excel ",e);
+        //window.open('data:application/vnd.ms-excel,' + encodeURIComponent(CsvString));
+        
+    }
+
     render() {
 
         const { classes } = this.props;
+
         const statusTypeRender = [];
         this.props.status_type_map.forEach((value, key) => statusTypeRender.push(
             <FormControlLabel key={key} checked={value} value={key} 
@@ -70,8 +103,10 @@ class SideFilter extends Component {
 
 
         return (
-            <div>
+            <div >
+
                 <div className={classes.wrapperItem} style={{paddingRight:'0px'}}>
+
                     <div className={classes.alignLeft}>
                         <Typography variant="subheading">Emergency Complaints</Typography>
                         
@@ -172,7 +207,8 @@ class SideFilter extends Component {
                             />
                         </MuiPickersUtilsProvider>
                     </Collapse>
-                    <Button onClick={this.props.exportExcel} href=""> Export Selected Data to Excel </Button>
+                    <br />
+                    <Button onClick={this.exportExcel} href=""> Export for Excel </Button>
                 </div>
                 
                 {/* <Divider /> */}
