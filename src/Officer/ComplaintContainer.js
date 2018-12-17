@@ -151,12 +151,7 @@ class ComplaintContainer extends Component {
                     console.log("here ",this.allComplaints,oldState)
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
-                        
-                        console.log(complaint.grievType
-                            , complaint.grievType && oldState.griev_type_map.get(complaint.grievType.toUpperCase()) 
-                            , complaint.complaint_status
-                            , complaint.complaint_status && oldState.status_type_map.get(complaint.complaint_status.toUpperCase()))
-
+                    
                         return complaint.grievType
                             && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
                             && complaint.complaint_status
@@ -372,6 +367,7 @@ class ComplaintContainer extends Component {
                     {this.state.lodding
                         ? (<CircularProgress className={classes.progress} />)
                         :
+                        
                         (<div style={{margin: '10px', heightY: '80vh', overflowY:'scroll'}}>
                             <Switch >
                                 <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} />)} />

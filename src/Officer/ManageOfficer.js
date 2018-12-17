@@ -3,6 +3,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import Divider from '@material-ui/core/Divider';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+// import Typography from '@material-ui/core/Typography';
+import { Button } from '@material-ui/core';
+import classnames from 'classnames';
+import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';
+import SideFilter from "../Components/SideFilter";
 import Dialog from '@material-ui/core/Dialog';
 import Paper from '@material-ui/core/Paper';
 import Slide from '@material-ui/core/Slide';
@@ -12,10 +23,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
+// import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import Profile from './Profile';
-import IconButton from '@material-ui/core/IconButton';
+// import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import LinearProgress from '@material-ui/core/LinearProgress';
@@ -23,7 +34,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import ComplaintContainer from './ComplaintContainer';
 import GeneralDialog from '../Components/GeneralDialog';
 import ComplaintFullView from "../Components/ComplaintFullView";
-import { griev_type,status_type,getCookie, url } from '../constants';
+import { griev_type,status_type,getCookie, url ,hierarchy} from '../constants';
 
 const styles = theme => ({
     wrapper: {
@@ -39,8 +50,15 @@ const styles = theme => ({
         // backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${bgImage})`,
         // backgroundSize: 'cover',
         // backgroundPosition: 'center'
-    },
+        },
+        alignLeft: {
+            display:'flex',justifyContent :'space-between',verticalAlign :'middle'
+        },
+        wrapperItem: {
+        marginLeft: '10px', marginRight:'10px',paddingLeft: '10px',paddingRight: '10px',paddingTop:'10px',paddingBottom:'10px', textAlign: 'left'
+        }
 })
+
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -55,16 +73,79 @@ class ManageOfficer extends Component {
 
         openOfficerDialogState: false,
         openComplaintDialogState : false,
+        expandOfficerFilters : true,
         openErrorDialog : false,
 
         OfficerData: [],
+        OfficerMap: null,
 
         OfficerDialogData : null,
         ComplaintDialogData : null,
         
-        Loading : true
+        Loading : true        
     };
+
+    officerMap  = null;
+    allOfficersData = [];
     
+    handleChange = name => e  => {
+        
+        this.setState({
+            Loading : true
+        });
+
+        const value = e.target.value;
+        console.log(value,name);
+        
+        this.setState( oldState  => {
+            
+            let checked,newMap;
+            newMap = new Map(oldState[name]);  
+            checked = !newMap.get(value) 
+            newMap.set(value,checked);
+            console.log('nwer map ', newMap);
+            
+        
+            let newFilteredOfficersDataArray = [];
+
+            if(checked){
+
+                console.log(this.allOfficersData);
+                
+                newFilteredOfficersDataArray = this.allOfficersData.filter(complaint => {
+                        return complaint.role
+                            && complaint.role.toUpperCase() == value.toUpperCase() 
+                    });
+                
+                newFilteredOfficersDataArray = newFilteredOfficersDataArray.concat(oldState.OfficerData)
+                console.log("Added",newFilteredOfficersDataArray);
+
+            }else{ //Checked Else
+                if(oldState.OfficerData == []){
+                    oldState.OfficerData = this.allOfficersData;
+                }
+                let jsonName = 'role';
+                newFilteredOfficersDataArray = oldState.OfficerData.filter(complaint => (
+                    complaint[jsonName] && (complaint[jsonName].toUpperCase() !== value.toUpperCase())
+                ));
+            }
+
+
+            return {
+                [name] : newMap,
+                Loading : false,
+                OfficerData : newFilteredOfficersDataArray
+            }
+          });
+
+
+    }
+
+    
+    handleExpandClick = Eventame => {
+        this.setState(state => ({ [Eventame] : !state[Eventame] }));
+    };
+
      //handling table pagination
      handleChangePage = (event, page) => {
         this.setState({ page });
@@ -128,15 +209,15 @@ class ManageOfficer extends Component {
                         complaint.time = new Date(complaint.time);
                     })
                     
-                    this.allComplaints = res.complaints;
+                    this.allOfficersData = res.complaints;
                     
-                    console.log(this.allComplaints);
-                    let newFilteredComplaints = res.complaints;
+                    console.log(this.allOfficersData);
+                    let newFilteredOfficersDataArray = res.complaints;
                     const newMap = new Map(this.state.status_type_map); 
                  
                     if(this.props.dashboardButton){
 
-                        newFilteredComplaints = newFilteredComplaints.filter(complaint => (
+                        newFilteredOfficersDataArray = newFilteredOfficersDataArray.filter(complaint => (
                             complaint['complaint_status'] && (complaint['complaint_status'].toUpperCase() !== this.props.dashboardButton.toUpperCase())
                         ));
                         
@@ -149,7 +230,7 @@ class ManageOfficer extends Component {
                     
                     this.setState({
                         status_type_map : newMap,
-                        filteredComplaints : newFilteredComplaints,
+                        OfficerData : newFilteredOfficersDataArray,
                     })
                 }else{
                     this.handleDialogOpen(res.data, "Error");
@@ -182,6 +263,15 @@ class ManageOfficer extends Component {
         this.setState({ openErrorDialog: false });
     };
 
+    componentWillMount() {
+        this.officerMap = new Map();
+        hierarchy.slice(0,hierarchy.indexOf(getCookie('roadGPortalRole'))).forEach(e => this.officerMap.set(e , true));    
+        console.log(this.officerMap);
+        this.setState({
+            OfficerMap : this.officerMap
+        })
+    }
+
     componentDidMount() {
 
       let headers = new Headers();
@@ -198,9 +288,9 @@ class ManageOfficer extends Component {
           .then(res => res.json())
           .then(res => {
             
-            console.log("officerData",res);
+              console.log("officerData",res);
 
-              
+              this.allOfficersData = res.data;
               if(res.success){
                   
                   this.setState({
@@ -218,14 +308,24 @@ class ManageOfficer extends Component {
               });          
               this.handleDialogOpen(err.message, "Error")
           });
-  }
+    }
 
     render() {
         let { classes } = this.props;
 
         const { rowsPerPage, page } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, this.state.OfficerData.length - page * rowsPerPage);
-    
+        const officerRoleRender = []
+
+        console.log("Helo",this.officerMap);
+        
+        this.state.OfficerMap.forEach((value,key) => console.log("hello",value,key));
+        this.state.OfficerMap.forEach((value, key) => officerRoleRender.push(
+            <FormControlLabel key={key} checked={value} value={key} 
+                            onChange={this.handleChange('OfficerMap')} control={<Checkbox/>} label={key} />
+        ))
+        
+
         return (
             <div className={classes.wrapper}>
                 <GeneralDialog 
@@ -239,11 +339,12 @@ class ManageOfficer extends Component {
                 </GeneralDialog>
 
                 <Dialog
-                        fullScreen
-                        open={this.state.openComplaintDialogState}
-                        onClose={this.handleComplaintDialogOpen}
-                        TransitionComponent={Transition}
-                    >
+                    fullScreen
+                    open={this.state.openComplaintDialogState}
+                    onClose={this.handleComplaintDialogOpen}
+                    TransitionComponent={Transition}
+                >
+
                     <Toolbar>
                         <IconButton color="inherit" onClick={this.handleComplaintDialogClose} aria-label="Close">
                             <CloseIcon />
@@ -253,38 +354,77 @@ class ManageOfficer extends Component {
                 </Dialog>
 
                 <Dialog
-                        fullScreen
-                        open={this.state.openOfficerDialogState}
-                        onClose={this.handleOfficerDialogClose}
-                        TransitionComponent={Transition}
-                    >
+                    fullScreen
+                    open={this.state.openOfficerDialogState}
+                    onClose={this.handleOfficerDialogClose}
+                    TransitionComponent={Transition}
+                >
+                
                     <Toolbar>
-                        <IconButton color="inherit" onClick={this.handleOfficerDialogClose} aria-label="Close">
-                            <CloseIcon />
-                        </IconButton>
+                    <IconButton color="inherit" onClick={this.handleOfficerDialogClose} aria-label="Close">
+                        <CloseIcon />
+                    </IconButton>
                     </Toolbar>
                     <Profile OfficerData={this.state.OfficerDialogData}/>
                 </Dialog>
+
                 <Paper style={{margin: 'auto'}}>
 
                     { this.state.Loading ? <LinearProgress /> :  
+
+
                     <div style={{overflowX: 'auto',}}>
 
-                                <TablePagination
-                                    component="div"
-                                    count={this.state.OfficerData.length}
-                                    rowsPerPageOptions={[15, 30, 45]}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    backIconButtonProps={{
-                                    'aria-label': 'Previous Page',
-                                    }}
-                                    nextIconButtonProps={{
-                                    'aria-label': 'Next Page',
-                                    }}
-                                    onChangePage={this.handleChangePage}
-                                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                                />
+                <Grid container spacing={8} style={{margin:'auto'}}>
+                    <Grid item sm={3} xs={12} style={{height: '90vh', overflowY:'scroll'}}>
+                        <Slide direction="right" in={true}>
+                            <div>
+
+                                <div className={classes.wrapperItem}>
+                                    <div className={classes.alignLeft}>
+                                        <Typography variant="subheading">Officer Role</Typography>
+                                        <IconButton
+                                            style={{padding:'0px'}}
+                                            className={classnames(classes.expand, {
+                                            [classes.expandOpen]: this.state.expandOfficerFilters,
+                                            })}
+                                            onClick={() => this.handleExpandClick('expandOfficerFilters')}
+                                            aria-expanded={this.state.expandOfficerFilters}
+                                            aria-label="Show more"
+                                        >
+                                            <ExpandMoreIcon />
+                                        </IconButton>
+                                    </div>
+                                    <br />
+                                    <Divider />
+                                    <Collapse in={this.state.expandOfficerFilters} timeout="auto">
+                                        <FormGroup>
+                                            {officerRoleRender}
+                                        </FormGroup>
+                                    </Collapse>
+                                </div>
+
+                            </div> 
+                        </Slide>
+                    </Grid>
+                    <Grid item sm={9} xs={12} >
+            
+
+                        <TablePagination
+                            component="div"
+                            count={this.state.OfficerData.length}
+                            rowsPerPageOptions={[15, 30, 45]}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            backIconButtonProps={{
+                            'aria-label': 'Previous Page',
+                            }}
+                            nextIconButtonProps={{
+                            'aria-label': 'Next Page',
+                            }}
+                            onChangePage={this.handleChangePage}
+                            onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                        />
 
                         <Table>
                             <TableHead>
@@ -344,6 +484,9 @@ class ManageOfficer extends Component {
                             )}
 
                         </Table>
+
+                        </Grid>
+                    </Grid>
                     </div>
                     }
                 </Paper>  

@@ -1,5 +1,6 @@
-//const host = "http://192.168.2.12:3003";//"http://192.168.43.149:3003";
-const host = "http://localhost:3003";
+//const host = "http://192.168.2.12:3003";
+//const host = "http://localhost:3003";
+const host = "http://192.168.43.149:3003";
 const url = host + "/api/portal/";
 
 let getCookie = function(cname) {
@@ -35,8 +36,6 @@ let getFormatedDate = (date) => {
      + ":" + date.getFullYear();
 }
 
-
-
 const status_type = [
     ['PENDING',true],
     ['APPROVED',true],
@@ -44,7 +43,6 @@ const status_type = [
     ['IN PROGRESS',true],
     ['COMPLETED',true]
 ]
-
 
 const griev_type = [
     ['DAMAGED BRIDGE',true],

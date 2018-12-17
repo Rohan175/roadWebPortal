@@ -26,7 +26,7 @@ function hideInfobox(e) {
 
 // Promise Interface can ensure load the script only once.
 var mMapScript = loadMaps('https://www.bing.com/api/maps/mapcontrol?key=AjlGU3ieeFyzhwTbfMkukBolwpcjkab8my5_x_qfnz88Kc5RHh04Y8dL5_acLQ3P');
-var pinInfobox;
+var pinInfobox,map;
 
 export default class ComplaintMap extends Component {
 
@@ -37,72 +37,111 @@ export default class ComplaintMap extends Component {
     };
   }
 
+
+  load_Data = (data) => {
+    
+    let pushpinInfos = [];
+    //pushpinInfos[0] = { 'lat': 23.456574, 'lng': 72.234324, 'title': 'Kipper Market', 'description': 'Braka Miladinovi 178, 1200 Tetovë, Tetovo, Macedonia' };
+    //pushpinInfos[1] = { 'lat': 41.799645, 'lng': 20.913514, 'title': 'Kipper Market', 'description': 'Kipper Gostilet' };
+    //console.log(data);
+    
+    data.forEach(d => {
+      pushpinInfos.push({ 'lat': d.location[1] + Math.random(), 'lng': d.location[0] + Math.random(), 'title': d.name, 'description': 'Status : ' + d.complaint_status + ' \n' + d.grievType })
+    });
+
+    let apiKey = "<api key>";
+
+    //let map = new window.Microsoft.Maps.Map(document.getElementById("map"), { credentials: apiKey });
+    let infoboxLayer = new window.Microsoft.Maps.EntityCollection();
+    let pinLayer = new window.Microsoft.Maps.EntityCollection();  
+
+    // Create the info box for the pushpin
+    pinInfobox = new window.Microsoft.Maps.Infobox(new window.Microsoft.Maps.Location(0, 0), { visible: false });
+    infoboxLayer.push(pinInfobox);
+
+
+    //console.log(pinLayer, infoboxLayer, map, pinLayer['_primitives'],pinLayer['_id']);
+
+    //pinLayer['_primitives'] = []
+
+
+    let locs = [];
+    for (let i = 0 ; i < pushpinInfos.length; i++) {
+        locs[i] = new window.Microsoft.Maps.Location(pushpinInfos[i].lat, pushpinInfos[i].lng);
+        let pin = new window.Microsoft.Maps.Pushpin(locs[i]);
+        pin.Title = pushpinInfos[i].title;
+        pin.Description = pushpinInfos[i].description;
+        pinLayer.push(pin); 
+        window.Microsoft.Maps.Events.addHandler(pin, 'click', displayInfobox);
+    }
+
+    //console.log(map.entities, typeof map.entities);
+
+    map.entities.push(pinLayer);
+    map.entities.push(infoboxLayer);
+    //console.log('Pins : ', pinLayer)
+    let bestview = window.Microsoft.Maps.LocationRect.fromLocations(locs);
+    map.setView({ center: bestview.center, zoom: 8 });
+}
+
   do_load = (data) => {
     const mThis = this;
-    console.log('maps do load fun');
+    
+    //console.log(data);
+    
 
     mMapScript.then(function () {
-      mThis.setState({ 'status': 'done' });
+      //console.log(data);
+      // window.onload = () => {
+        mThis.setState({ 'status': 'done' });
 
-      const map = new window.Microsoft.Maps.Map(document.getElementById('mMap'), {})
-      console.log('Loaded');
-      let pushpinInfos = [];
-      //pushpinInfos[0] = { 'lat': 23.456574, 'lng': 72.234324, 'title': 'Kipper Market', 'description': 'Braka Miladinovi 178, 1200 Tetovë, Tetovo, Macedonia' };
-      //pushpinInfos[1] = { 'lat': 41.799645, 'lng': 20.913514, 'title': 'Kipper Market', 'description': 'Kipper Gostilet' };
+        map = new window.Microsoft.Maps.Map(document.getElementById('mMap'), {})
+    
+        //console.log('Loaded');
+        mThis.load_Data(data);
+
+    }).catch(function (err) {
+      //console.log(err);
       
-      data.forEach(d => {
-        pushpinInfos.push({ 'lat': d.location[0], 'lng': d.location[1], 'title': d.name, 'description': 'Status : ' + d.complaint_status + ' \n' + d.grievType })
-        console.log(d.location[0],d.location[1],d.name);
-      });
-
-
-
-      let infoboxLayer = new window.Microsoft.Maps.EntityCollection();
-      let pinLayer = new window.Microsoft.Maps.EntityCollection();
-      let apiKey = "<api key>";
-  
-      //let map = new window.Microsoft.Maps.Map(document.getElementById("map"), { credentials: apiKey });
-  
-      // Create the info box for the pushpin
-      pinInfobox = new window.Microsoft.Maps.Infobox(new window.Microsoft.Maps.Location(0, 0), { visible: false });
-      infoboxLayer.push(pinInfobox);
-  
-      let locs = [];
-      for (let i = 0 ; i < pushpinInfos.length; i++) {
-          locs[i] = new window.Microsoft.Maps.Location(pushpinInfos[i].lat, pushpinInfos[i].lng);
-          let pin = new window.Microsoft.Maps.Pushpin(locs[i]);
-          pin.Title = pushpinInfos[i].title;
-          pin.Description = pushpinInfos[i].description;
-          pinLayer.push(pin); 
-          window.Microsoft.Maps.Events.addHandler(pin, 'click', displayInfobox);
-      }
-  
-      map.entities.push(pinLayer);
-      map.entities.push(infoboxLayer);
-      console.log('Pins : ',pinLayer)
-      let bestview = window.Microsoft.Maps.LocationRect.fromLocations(locs);
-      map.setView({ center: bestview.center, zoom: 11 });
-
-    }).catch(function () {
       mThis.setState({ 'status': 'error' });
-      console.log('Error');
+      //console.log('Error');
 
     })
   }
 
- 
 
   componentWillMount() {
 
     if (this.state.status === 'start') {
       this.setState({ status: 'loading' });
       console.log('Maps loading');
-
-      this.do_load(this.props.complaintsData);
+      if(document.readyState != 'complete') {
+        window.onload = () => {
+          this.do_load(this.props.complaintsData);
+        }
+      } else {
+        this.do_load(this.props.complaintsData);
+      }
     }
 
   }
 
+  componentWillReceiveProps(newProps){
+    
+    if(this.state.status === 'done'){ 
+      console.log("semdomg ", newProps.complaintsData.length);
+
+
+      for (var i = map.entities.getLength() - 1; i >= 0; i--) {
+        var pushpin = map.entities.get(i);
+        if (pushpin instanceof window.Microsoft.Maps.Pushpin) {
+            map.entities.removeAt(i);
+        }
+      }
+
+      this.load_Data(newProps.complaintsData);
+    }
+  }
 
   render() {
 

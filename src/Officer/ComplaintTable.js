@@ -74,12 +74,9 @@ class ComplaintTable extends Component {
                 <Toolbar style={{overflowX: 'auto',}}>
                     <Grid container>
                         <Grid item xs>
-                            <Typography variant="title">Complaints Table</Typography>
-                            
-                        </Grid>
-                        <Grid item xs>
                             
                             <TablePagination
+                                style={{'padding' : 0}}
                                 component="div"
                                 count={this.props.complaintsData.length}
                                 rowsPerPageOptions={[5, 10, 15, 20]}

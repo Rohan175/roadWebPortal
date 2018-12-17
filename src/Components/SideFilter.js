@@ -7,7 +7,6 @@ import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsPr
 import DateFnsUtils from 'material-ui-pickers/utils/date-fns-utils';
 import DatePicker from 'material-ui-pickers/DatePicker';
 
-import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -18,14 +17,6 @@ import classnames from 'classnames';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
-
-
 
 const styles = theme => ({
     expand: {
@@ -49,25 +40,22 @@ const styles = theme => ({
       }
 })
 
-
 class SideFilter extends Component {
-
 
     state = {
         name: [],
         expandedDate : false,
         expandedStatus : false,
         expandedGriev : false,
-      };
+    };
     
-      handleExpandClick = Eventame => {
+    handleExpandClick = Eventame => {
         this.setState(state => ({ [Eventame] : !state[Eventame] }));
-      };
+    };
 
     render() {
 
         const { classes } = this.props;
-
         const statusTypeRender = [];
         this.props.status_type_map.forEach((value, key) => statusTypeRender.push(
             <FormControlLabel key={key} checked={value} value={key} 
@@ -83,9 +71,7 @@ class SideFilter extends Component {
 
         return (
             <div>
-
                 <div className={classes.wrapperItem} style={{paddingRight:'0px'}}>
-
                     <div className={classes.alignLeft}>
                         <Typography variant="subheading">Emergency Complaints</Typography>
                         
