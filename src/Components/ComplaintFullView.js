@@ -32,7 +32,7 @@ import amber from '@material-ui/core/colors/amber';
 import CloseIcon from '@material-ui/icons/Close';
 
 import ImageCarousel from "./ImageCarousel";
-import { getFormatedDate, getCookie, url } from "../constants";
+import { getFormatedDate, getCookie, url, hierarchy } from "../constants";
 // import { tr } from 'date-fns/esm/locale';
 
 const styles = theme => ({
@@ -94,10 +94,12 @@ class ComplaintFullView extends Component {
 
         comments : [],
         Comment: null,
-        new_forword_complaint: null,
+        new_forword_complaint: "",
         new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
         new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
-        new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false
+        new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false,
+
+        srOfficerArray: []
     }
 
     handleIsEmergency = () => {        
@@ -110,7 +112,7 @@ class ComplaintFullView extends Component {
         this.setState({ new_estimated_time: date });
     }
 
-    handleChange = e => {    
+    handleChange = e => {
         this.setState({ [e.target.name]: e.target.value });
     };
 
@@ -193,6 +195,39 @@ class ComplaintFullView extends Component {
         });
     }
 
+    handleForeword = () => {
+        fetch(url + "forewordComplaint/", {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'auth': 'token ' + getCookie("roadGPortalAuth")
+            },
+            method: "POST",
+            body: JSON.stringify({
+                officerId: this.state.new_forword_complaint,
+                complaint_id: this.props.ComplaintDialogData._id
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            console.log("foreword complaint response", res);
+            
+            // if(res.success) {
+            //     this.setState({
+            //         openSnackbarState: true,
+            //         snackbarMessage: 'Complaint is now foreworded',
+            //     })
+            // }
+        })
+        .catch(err => {
+            console.log(err);
+            this.setState({
+                openSnackbarState: true,
+                snackbarMessage: err.message,
+            })
+        });
+    }
+
     handleSnackbarClose = () => {
         this.setState({
             openSnackbarState: false,
@@ -202,13 +237,30 @@ class ComplaintFullView extends Component {
     }
 
     componentWillMount() {
-        // this.setState({
-        //     new_forword_complaint: null,
-        //     Comment: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.comments[0] : null,
-        //     new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
-        //     new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
-        //     new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false
-        // })
+        fetch(url + "getSrIdsForeword/", {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'auth': 'token ' + getCookie("roadGPortalAuth")
+            },
+            method: "GET",
+        })
+        .then(res => res.json())
+        .then(res => {
+            // console.log("Foreword Complaints", res);
+            if(res.success) {
+                this.setState({
+                    srOfficerArray: res.data
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            this.setState({
+                openSnackbarState: true,
+                snackbarMessage: err.message,
+            })
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -220,7 +272,7 @@ class ComplaintFullView extends Component {
         this.setState({
             Comment: ComplaintDialogData ? ComplaintDialogData.comments[0] : null,
             comments: ComplaintDialogData ? ComplaintDialogData.comments : [],
-            new_forword_complaint: null,
+            // new_forword_complaint: null,
             new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
             new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
@@ -285,7 +337,7 @@ class ComplaintFullView extends Component {
                             <Grid container>
                                 <Grid item xs={12} md className={classes.textWrapper}>
                                     <Grid container>
-                                        <Grid item xs={12} md className={classes.textWrapper}>
+                                        <Grid item xs={12} className={classes.textWrapper}>
                                             <FormControlLabel
                                                 checked={this.state.new_isEmergency}
                                                 onChange={this.handleIsEmergency}
@@ -293,7 +345,7 @@ class ComplaintFullView extends Component {
                                                 control={ <Checkbox /> }
                                                 label="Mark Complaint as Emergency" />
                                         </Grid>
-                                        <Grid item xs={12} md className={classes.textWrapper}>
+                                        <Grid item xs={12} className={classes.textWrapper}>
                                             <FormControl className={classes.formControl}>
                                                 <InputLabel htmlFor="complaint_status">Change Complaint Status</InputLabel>
                                                 <Select
@@ -311,7 +363,7 @@ class ComplaintFullView extends Component {
                                                 </Select>
                                             </FormControl>
                                         </Grid>
-                                        <Grid item xs={12} md className={classes.textWrapper}>
+                                        <Grid item xs={12} className={classes.textWrapper}>
                                             <br />
                                             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                             <Typography variant="caption">Set Estimated Date</Typography>
@@ -360,17 +412,18 @@ class ComplaintFullView extends Component {
                                                 name: 'new_forword_complaint',
                                                 id: 'new_forword_complaint',
                                             }} >
-                                            <MenuItem value="Pending">Pending</MenuItem>
-                                            <MenuItem value="Approved">Approved</MenuItem>
-                                            <MenuItem value="Rejected">Rejected</MenuItem>
-                                            <MenuItem value="In Progress">In Progress</MenuItem>
-                                            <MenuItem value="Completed">Completed</MenuItem>
+                                            {
+                                                this.state.srOfficerArray.map(item => (
+                                                    <MenuItem value={item.id}>{item.role}</MenuItem>
+                                                ))
+                                            }
+
                                         </Select>
                                     </FormControl>
                                 </Grid>
                                 <Grid xs={12} md className={classes.textWrapper}>
                                     <br />
-                                    <Button variant="raised" style={{width: '100%'}} color="secondary">foreword</Button>
+                                    <Button variant="raised" style={{width: '100%'}} onClick={this.handleForeword} color="secondary">foreword</Button>
                                 </Grid>
                             </Grid>
                             {/* <Typography variant="title">Comments : </Typography> */}

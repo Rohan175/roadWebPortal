@@ -11,7 +11,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import NavBar from '../Components/NavBar';
 import AdminRoot from './AdminRoot';
 import Manage from "./Manage";
-import AddOfficer from "./AddOfficer";
+// import AddOfficer from "../Officer/AddOfficer";
 import Profile from '../Components/Profile';
 
 import bgImage from '../res/ROHAN.svg';
@@ -26,11 +26,11 @@ const styles = theme => ({
 })
 
 const navBarItems = [
-    {
-        name: 'Manage Officers',
-        path: '/Admin/Manage',
-        icon: TableChart
-    },
+    // {
+    //     name: 'Manage Officers',
+    //     path: '/Admin/Manage',
+    //     icon: TableChart
+    // },
     {
         name: 'Add Officer',
         path: '/Admin/AddOfficer',
@@ -71,7 +71,7 @@ class AdminDashboard extends Component {
             <Switch>
                 <Route exact path="/Admin/" render={() => (<AdminRoot />)} />
                 <Route exact path="/Admin/Manage/" render={() => (<Manage />)} />
-                <Route exact path="/Admin/AddOfficer/" render={() => (<AddOfficer />)} />
+                {/* <Route exact path="/Admin/AddOfficer/" render={() => (<AddOfficer />)} /> */}
                 <Route exact path="/Admin/Profile" render={() => (<Profile />)} />
                 <Route path="/Admin/*">
                     <Redirect to="/Admin" />
