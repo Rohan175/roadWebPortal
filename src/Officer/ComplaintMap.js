@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 function loadMaps(src) {
   return new Promise(function (resolve, reject) {
@@ -144,9 +145,15 @@ export default class ComplaintMap extends Component {
   }
 
   render() {
+    const LoadingState = (this.state.status == 'loading');
 
     return (
-      <div id="mMap" style={{ width: 'auto', height: '90vh' }}> mMap</div>
+
+      <div>
+        { LoadingState ? (<LinearProgress />) :
+        (<div id="mMap" style={{ width: 'auto', height: '90vh' }}> mMap</div>)
+        }
+      </div>
     )
   }
 

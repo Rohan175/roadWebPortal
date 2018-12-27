@@ -73,10 +73,20 @@ class ComplaintTable extends Component {
                 <ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  />
                 <Toolbar>
                     <Grid container>
-                        <Grid item xs>
+                        <Grid item xs style={{display : 'flex',overflow:'auto'}}>
                             
+                            <div style={{'flex' : 1,height:'56px',marginTop : '10px'}}>
+                            <Typography variant="headline" style={{display:'inline-block'}}>
+                                {this.props.complaintsData.length + ""} 
+                            </Typography>
+
+                            <Typography variant="subheading" style={{display:'inline-block'}}>
+                                &nbsp;&nbsp;Complaints
+                            </Typography>
+                            </div>
+
                             <TablePagination
-                                style={{'padding' : 0}}
+                                style={{'padding' : 0,'flex' : 1}}
                                 component="div"
                                 count={this.props.complaintsData.length}
                                 rowsPerPageOptions={[5, 10, 15, 20]}
@@ -123,7 +133,7 @@ class ComplaintTable extends Component {
                                                 }
                                             }
                                             color="secondary"
-                                            variant="raised"
+                                            variant="outlined"
                                         >view</Button></TableCell>
                                     </TableRow>
                                 ))

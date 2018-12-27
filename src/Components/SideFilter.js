@@ -158,21 +158,23 @@ class SideFilter extends Component {
                     <Collapse in={this.state.expandedDate} timeout="auto">
                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                             <Typography variant="caption">Starting Date</Typography>
-                            <DatePicker 
-                                value={this.props.EndingDate}
-                                onChange={this.props.handleEndingDateChange}
-                            />
-                        </MuiPickersUtilsProvider>
-                        <br /><br />
-                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                            <Typography variant="caption">Ending Date</Typography>
+
                             <DatePicker
                                 value={this.props.StartingDate}
                                 onChange={this.props.handleStartingDateChange}
                             />
                         </MuiPickersUtilsProvider>
+                        <br /><br />
+                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                            <Typography variant="caption">Ending Date</Typography>
+                            <DatePicker 
+                                value={this.props.EndingDate}
+                                onChange={this.props.handleEndingDateChange}
+                            />
+                        </MuiPickersUtilsProvider>
                     </Collapse>
-                    <Button onClick={this.props.exportExcel} href=""> Export Selected Data to Excel </Button>
+                    <br /><br />
+                    {/* <Button onClick={this.props.exportExcel} href=""> Export Selected Data to Excel </Button> */}
                 </div>
                 
                 {/* <Divider /> */}

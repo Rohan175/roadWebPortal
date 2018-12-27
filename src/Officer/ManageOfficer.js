@@ -10,6 +10,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 // import Typography from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
 import classnames from 'classnames';
+import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
@@ -28,13 +29,13 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Profile from './Profile';
 // import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ComplaintContainer from './ComplaintContainer';
 import GeneralDialog from '../Components/GeneralDialog';
 import ComplaintFullView from "../Components/ComplaintFullView";
 import { griev_type,status_type,getCookie, url ,hierarchy} from '../constants';
+import ManageComplaints from './ManageComplaints';
 
 const styles = theme => ({
     wrapper: {
@@ -179,74 +180,19 @@ class ManageOfficer extends Component {
     }
 
     handleComplaintDialogOpen = (OfficerDialogData) => {
+        let data = []
+        console.log("OfficerDialog ",OfficerDialogData,typeof OfficerDialogData);
+        if(Array.isArray(OfficerDialogData)){
+            
+            for(let i=0; i < OfficerDialogData.length; i++)
+            data.push(OfficerDialogData[i]['_id'])
+        }else{
+            data.push(OfficerDialogData['_id']);
+        }
 
         this.setState({
-            OfficerDialogData: OfficerDialogData,
+            OfficerIdArray: data,
             openComplaintDialogState : true
-        })
-
-
-        let headers = new Headers();
-        headers.append('origin', '*');
-        headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
-
-        let req = new Request(url  + "testOfficers", {
-            method: "GET",
-            headers: headers,
-            mode: 'cors'
-        });
-
-        fetch(req)
-            .then(res => res.json())
-            .then(res => {
-               
-                this.setState({
-                    Loading : false
-                });
-
-                if(res.success){
-                    res.complaints.map(complaint => {
-                        complaint.time = new Date(complaint.time);
-                    })
-                    
-                    this.allOfficersData = res.complaints;
-                    
-                    console.log(this.allOfficersData);
-                    let newFilteredOfficersDataArray = res.complaints;
-                    const newMap = new Map(this.state.status_type_map); 
-                 
-                    if(this.props.dashboardButton){
-
-                        newFilteredOfficersDataArray = newFilteredOfficersDataArray.filter(complaint => (
-                            complaint['complaint_status'] && (complaint['complaint_status'].toUpperCase() !== this.props.dashboardButton.toUpperCase())
-                        ));
-                        
-                        const checked = !newMap.get(this.props.dashboardButton)
-                        newMap.set(this.props.dashboardButton.toUpperCase(),checked);
-                        console.log(newMap,this.props.dashboardButton);
-
-                    }
-
-                    
-                    this.setState({
-                        status_type_map : newMap,
-                        OfficerData : newFilteredOfficersDataArray,
-                    })
-                }else{
-                    this.handleDialogOpen(res.data, "Error");
-                }
-            })
-            .catch(err => {
-                console.log(err);      
-                this.setState({
-                    lodding : false
-                });          
-                this.handleDialogOpen(err.message, "Error")
-            });
-
-        this.setState({
-            OfficerDialogData: OfficerDialogData,
-            openOfficerDialog: true
         })
     }
 
@@ -262,7 +208,9 @@ class ManageOfficer extends Component {
     handleClose = () => {
         this.setState({ openErrorDialog: false });
     };
-
+    handleCheckBoxChange = name => {
+        
+    }
     componentWillMount() {
         this.officerMap = new Map();
         hierarchy.slice(0,hierarchy.indexOf(getCookie('roadGPortalRole'))).forEach(e => this.officerMap.set(e , true));    
@@ -344,13 +292,7 @@ class ManageOfficer extends Component {
                     onClose={this.handleComplaintDialogOpen}
                     TransitionComponent={Transition}
                 >
-
-                    <Toolbar>
-                        <IconButton color="inherit" onClick={this.handleComplaintDialogClose} aria-label="Close">
-                            <CloseIcon />
-                        </IconButton>
-                    </Toolbar>
-                    <ComplaintContainer />
+                    <ManageComplaints OfficerIdArray={this.state.OfficerIdArray} handleComplaintDialogClose={this.handleComplaintDialogClose}/>
                 </Dialog>
 
                 <Dialog
@@ -397,11 +339,28 @@ class ManageOfficer extends Component {
                                     </div>
                                     <br />
                                     <Divider />
+                                    
                                     <Collapse in={this.state.expandOfficerFilters} timeout="auto">
                                         <FormGroup>
                                             {officerRoleRender}
                                         </FormGroup>
                                     </Collapse>
+                                    <br />
+                                    <Divider />
+                                    <br />
+                                    
+                                    <br />
+                                    <Button 
+                                        onClick={
+                                            () => {
+                                                this.handleComplaintDialogOpen(this.allOfficersData);
+                                            }
+                                        }
+                                        color="secondary"
+                                        variant="outlined"
+                                        >
+                                    View All 
+                                    </Button>
                                 </div>
 
                             </div> 
@@ -429,7 +388,7 @@ class ManageOfficer extends Component {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>#</TableCell>
+                                    {/* <TableCell> <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
                                     <TableCell>Officer Name</TableCell>
                                     <TableCell>Officer Role</TableCell>
                                     <TableCell>Profile</TableCell>
@@ -443,7 +402,7 @@ class ManageOfficer extends Component {
                                     .map((item, index) => (
                                         <TableRow key={index}>
 
-                                            <TableCell> </TableCell>
+                                            {/* <TableCell><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
                                             <TableCell>{item.name}</TableCell>
                                             <TableCell>{item.role}</TableCell>
                                             
@@ -457,7 +416,7 @@ class ManageOfficer extends Component {
                                                     color="secondary"
                                                     variant="outlined"
                                                     >
-                                                View
+                                                Update
                                                 </Button>
                                             </TableCell>
                                             <TableCell>
@@ -470,7 +429,7 @@ class ManageOfficer extends Component {
                                                     color="secondary"
                                                     variant="outlined"
                                                     >
-                                                Update
+                                                View
                                                 </Button>
                                             </TableCell>
                                         </TableRow>

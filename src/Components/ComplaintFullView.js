@@ -294,9 +294,6 @@ class ComplaintFullView extends Component {
                 className={classes.ComplaintFullView} >
                     <AppBar className={classes.appBar} color="inherit">
                         <Toolbar>
-                            <Typography variant="h6" color="inherit" className={classes.flex}>
-                                    Complaint
-                            </Typography>
                             <IconButton color="inherit" onClick={props.handleComplaintDialogClose} aria-label="Close">
                                 <CloseIcon />
                             </IconButton>
@@ -326,7 +323,17 @@ class ComplaintFullView extends Component {
                             <br />
                             <Typography>{ "Status :   ".toUpperCase() + (complaintData? complaintData.complaint_status : null)}</Typography>
                             <br />
-                            <Typography>{ "Date :   ".toUpperCase() + (complaintData? complaintData.time : null)}</Typography>
+                            <Typography>{ "Date :   ".toUpperCase() + 
+                            (complaintData
+                                        ? new Date(complaintData.time)
+                                          .toLocaleDateString("en-US",{
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            }) 
+                                        : null)}
+                            </Typography>
                             <br />
                             <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? (complaintData.isEmergency) ? "YES": "NO" : null)}</Typography>
                             <br />

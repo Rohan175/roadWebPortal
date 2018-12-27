@@ -3,7 +3,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+
 import Button from '@material-ui/core/Button';
+
+import Paper from '@material-ui/core/Paper';
 
 import LoginComponent from '../Components/LoginComponent';
 import ForgotPasswordComponent from '../Components/ForgotPasswordComponent';
@@ -17,7 +20,7 @@ const styles = theme => ({
         width: '100vw',
         height: '100vh',
         display: 'flex'
-    }
+    },
 })
 
 class Login extends Component {
@@ -97,7 +100,13 @@ class Login extends Component {
 
         return (
           <div className={classes.wrapper}>
-            { this.state.loginTab ? <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} /> : <ForgotPasswordComponent toLoginTab={this.toLoginTab} /> }
+           <Paper style={{margin:'auto',padding:'50px'}}>
+            {/* { this.state.loginTab 
+                ? 
+                <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} /> 
+                : <ForgotPasswordComponent toLoginTab={this.toLoginTab} /> } */}
+                <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} /> 
+            </Paper>
             <GeneralDialog 
                 openDialogState = {this.state.openDialog}
                 dialogTitle = {this.state.dialogTitle}

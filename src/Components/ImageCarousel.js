@@ -65,8 +65,8 @@ class ImageCarousel extends React.Component {
                 </Paper> */}
                 <img
                     className={classes.img}
-                    // src={this.props.postedUsers[activeStep].url}
-                    src={"http://picsum.photos/300/300"}
+                     src={this.props.postedUsers[activeStep].url}
+                    //src={"http://picsum.photos/300/300"}
                     alt={this.props.postedUsers[activeStep].userId}
                 />
                 <MobileStepper

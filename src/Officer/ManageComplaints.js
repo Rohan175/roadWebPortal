@@ -1,22 +1,17 @@
-import React, { Component } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Slide from '@material-ui/core/Slide';
-
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-
-import SideFilter from "../Components/SideFilter";
-import ComplaintTable from "./ComplaintTable";
-import ComplaintReport from "./ComplaintReport";
-import ComplaintMap from "./ComplaintMap";
 import GeneralDialog from '../Components/GeneralDialog';
 import { griev_type,status_type,getCookie, url } from '../constants';
-// import Card from '@material-ui/core/Card';
 import Empty from '../res/empty.svg';
+import React, { Component } from 'react';
+
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import SideFilter from "../Components/SideFilter";
+import ComplaintTable from "./ComplaintTable";;
 
 const styles = theme => ({
     progressWrapper: {
@@ -25,9 +20,8 @@ const styles = theme => ({
     },
     progress: {
         margin: 'auto',
-        marginTop : '50px',
         textAlign: 'center',
-       
+        width: '100%',
     },
     wrapper: {
       //  paddingTop: '60px',
@@ -155,13 +149,12 @@ class ComplaintContainer extends Component {
 
     handleChange = name => e  => {
 
-        
         this.setState({
             lodding : true
         });
 
         const value = e.target.value;
-        console.log('handleChange : ',value,name);
+        console.log(value,name);
         this.setState( oldState  => {
             
             let checked,newMap;
@@ -265,7 +258,7 @@ class ComplaintContainer extends Component {
                         jsonName = "grievType"
                     }
 
-                    //console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
+//                    console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
 
                     newFilteredComplaints = oldState.filteredComplaints.filter(complaint => (
                         complaint[jsonName] && (complaint[jsonName].toUpperCase() !== value.toUpperCase())
@@ -310,8 +303,6 @@ class ComplaintContainer extends Component {
         console.log(Headers);
         //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType",
         // "description","complaint_status","time","estimated_completion"];
-            
-          
         
         var CsvString = "";
         this.state.filteredComplaints.forEach(function(RowItem, RowIndex) {
@@ -341,8 +332,18 @@ class ComplaintContainer extends Component {
         let headers = new Headers();
         headers.append('origin', '*');
         headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
-
-        let req = new Request(url  + "getComplaints?isPaginated=0", {
+        let query = 'getJrOfficerComplaints?officerIds=';
+        console.log(this.props.OfficerIdArray);
+        
+        for(let i = 0; i < this.props.OfficerIdArray.length; i++){
+            
+            query+= this.props.OfficerIdArray[i] + ';';
+            //console.log(i);
+        }
+        console.log(query);
+        
+        query = query.slice(0,query.length-1)
+        let req = new Request(url  + query,{
             method: "GET",
             headers: headers,
             mode: 'cors'
@@ -352,85 +353,48 @@ class ComplaintContainer extends Component {
             .then(res => res.json())
             .then(res => {
                
+                this.setState({
+                    lodding : false
+                });
+
                 if(res.success){
                     console.log("complaints ", res);
-                    
-                    
-                    console.log(res.complaints);
-                    
                     
                     res.complaints.map(complaint => {
                         complaint.time = new Date(complaint.time).setHours(0,0,0,0);
                     })
-                    
+
                     res.complaints = res.complaints.filter(c =>  {
-                            console.log(c.time, Number.isNaN(c.time));
-                            return !Number.isNaN(c.time)
+                        console.log(c.time, Number.isNaN(c.time));
+                        return !Number.isNaN(c.time)
                     });
 
                     this.allComplaints = res.complaints;
                     
                     console.log(this.allComplaints);
-                    
+                    let newFilteredComplaints = res.complaints;
+                    const newMap = new Map(this.state.status_type_map); 
+                 
                     if(this.props.dashboardButton){
-                        let value = this.props.dashboardButton;
 
-                        if(value.toUpperCase() === 'EMERGENCY'){
-                            
-                            let newFilteredComplaints = this.allComplaints.filter(complaint => {
-                                return complaint['isEmergency'] && (complaint['isEmergency'] == true)
-                            });
-                            
-                            
-
-                            this.setState({
-                                emergency_state : false,
-                                filteredComplaints : newFilteredComplaints,
-                            })
-
-                        }else{
-                            
-                            let newFilteredComplaints = res.complaints;
-                            const newMap = new Map(this.state.status_type_map); 
-                            for (var [key, value] of newMap) {
-                                newMap.set(key,!value);
-                            }
-
-                            newFilteredComplaints = newFilteredComplaints.filter(complaint => (
-                                complaint['complaint_status'] && (complaint['complaint_status'].toUpperCase() === this.props.dashboardButton.toUpperCase())
-                            ));
-                            
-                            const checked = !newMap.get(this.props.dashboardButton)
-                            newMap.set(this.props.dashboardButton.toUpperCase(),checked);
-                            console.log(newMap,this.props.dashboardButton);
-                            
-                            
-                            this.setState({
-                                
-                                status_type_map : newMap,
-                                filteredComplaints : newFilteredComplaints,
-                            })
-                        }
-                    
+                        newFilteredComplaints = newFilteredComplaints.filter(complaint => (
+                            complaint['complaint_status'] && (complaint['complaint_status'].toUpperCase() !== this.props.dashboardButton.toUpperCase())
+                        ));
                         
+                        const checked = !newMap.get(this.props.dashboardButton)
+                        newMap.set(this.props.dashboardButton.toUpperCase(),checked);
+                        console.log(newMap,this.props.dashboardButton);
 
-                        
-                    }else{
-                        
-                        this.setState({
-                            filteredComplaints : this.allComplaints
-                        })
                     }
 
-                    this.setState({
-                        lodding : false
-                    });
-
                     
+                    this.setState({
+                        status_type_map : newMap,
+                        filteredComplaints : newFilteredComplaints,
+                    })
                 }else{
                     this.handleDialogOpen(res.data, "Error");
                 }
-
             })
             .catch(err => {
                 console.log(err);      
@@ -455,9 +419,8 @@ class ComplaintContainer extends Component {
 
     render() {
         let { classes } = this.props;
-        console.log(this.props);
         
-        return (    
+        return (
           <div className={classes.wrapper}>
             <GeneralDialog 
                 openDialogState = {this.state.openDialog}
@@ -468,13 +431,19 @@ class ComplaintContainer extends Component {
             >
                 {/* <Button>Hello</Button> */}
             </GeneralDialog>
-            
 
-                {this.state.lodding &&  <LinearProgress  className={classes.progress} />}    
-                
-                {!this.state.lodding && this.allComplaints && this.allComplaints.length !== 0 &&
+
+            <IconButton color="inherit" style={{position: 'absolute', top: '10px', left: '10px'}} onClick={this.props.handleComplaintDialogClose} aria-label="Close">
+                <CloseIcon />
+            </IconButton>
+                    
+
+            {
+                this.allComplaints && this.allComplaints.length !== 0 
+                ?
                 <Grid container spacing={0} style={{margin:'auto'}}>
                     <Grid item md={3} xs={12} style={{height: '97vh', paddingTop: '56px', overflowY: 'scroll', overflowX: 'hidden'}}>
+
                         <SideFilter 
                             status_type_map={this.state.status_type_map} 
                             griev_type_map={this.state.griev_type_map} 
@@ -486,23 +455,21 @@ class ComplaintContainer extends Component {
                             handleEndingDateChange = {this.handleEndingDateChange}
                             handleStartingDateChange ={this.handleStartingDateChange}
                         />
+
+                        
                     </Grid>
                     <Grid item md={9} xs={12} >
-                        {   
-
-                            (this.state.filteredComplaints && this.state.filteredComplaints.length != 0) ?
-                            (<div style={{paddingTop: '50px'}}>
-                                <Switch >
-                                    <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route path="/Dashboard/Complaints/*">
-                                        <Redirect to="/Dashboard/" />
-                                    </Route>
-                                </Switch>
-                            </div>)
-
-                            : (
+                        {
+                            (this.state.filteredComplaints && this.state.filteredComplaints.length != 0)
+                            ?(
+                                this.state.lodding
+                                    ? (<CircularProgress className={classes.progress} />)
+                                    :
+                                    (<div style={{paddingTop: '0px'}}>
+                                            <ComplaintTable complaintsData={this.state.filteredComplaints} />
+                                    </div>)
+                            ) 
+                            :(
                                 <div className={classes.progressWrapper} style={{height: '100vh'}}>
                                     <div style={{margin: 'auto', textAlign: 'center'}}>
                                         <img src={Empty} style={{width: '100px'}} />
@@ -514,12 +481,11 @@ class ComplaintContainer extends Component {
                                     </div>
                                 </div>
                             )
+
                         } 
                     </Grid>
                 </Grid>
-                }
-                
-                {!this.state.lodding && this.allComplaints && this.allComplaints.length === 0 &&
+                :
                 <div className={classes.progressWrapper} style={{height: '100vh'}}>
                     <div style={{margin: 'auto', textAlign: 'center'}}>
                         <img src={Empty} style={{width: '100px'}} />
@@ -530,7 +496,7 @@ class ComplaintContainer extends Component {
                         <Typography variant="headline" style={{color: 'rgba(0,0,0,0.5)'}}>Complaints posted by citizen will be shown here</Typography>
                     </div>
                 </div>
-                }
+            }
           </div>  
         );
     }

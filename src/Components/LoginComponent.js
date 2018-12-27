@@ -55,7 +55,7 @@ let LoginComponent = (props) => {
                             id="phoneNo"
                             label="Phone Number"
                             fullWidth
-                            type="number"
+                            type="text"
                             min="1000000000"
                             max="9999999999"
                             className={classes.textField}
@@ -81,7 +81,7 @@ let LoginComponent = (props) => {
                         </Button>
                     </div>
                 </form>
-                <div>
+                {/* <div>
                     <Button 
                         variant="flat" 
                         className={classes.forgotPasswordBtn}
@@ -89,7 +89,7 @@ let LoginComponent = (props) => {
                     >
                         Forgot Password?
                     </Button>
-                </div>
+                </div> */}
             {/* </CardContent> */}
         </div>
     )

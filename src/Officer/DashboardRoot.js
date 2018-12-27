@@ -156,30 +156,6 @@ class DashboardRoot extends Component {
                     <div className={classes.card3}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[2].icon} CardName={this.state.cardData[2].name} CardValue={this.state.cardData[2].value} CardColor={this.state.cardData[2].color} /></div>
                     <div className={classes.card4}><CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[3].icon} CardName={this.state.cardData[3].name} CardValue={this.state.cardData[3].value} CardColor={this.state.cardData[3].color} /></div>
                 </div>
-                {/* <Grid container style={{margin:'auto'}}>
-                    <Grid item xs={12} md>
-                    </Grid>
-                    <Grid item xs={12} md>
-                        <Grid container direction="row" alignContent="stretch" alignItems="stretch">
-                            <Grid item xs={12}>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <Grid container>
-                                    <Grid item xs={6}>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </Grid> */}
-                    
-                    {
-                        // this.state.cardData.map((item, index) => (
-                        //     <Grid item xs={6} md  />
-                        // ))
-                    }
-                {/* </Grid> */}
             </div>
           </div>
         );

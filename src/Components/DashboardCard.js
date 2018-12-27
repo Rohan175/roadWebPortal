@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 // import { Route, Switch, Redirect } from 'react-router-dom';
-// import {NavLink} from 'react-router-dom';
+ import {NavLink} from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -91,7 +91,7 @@ const CardBox = props => {
 
     return (
         <Zoom in={props.startAnimation}>
-            <Paper className={classNames(classes.Card, getClassName(props.CardColor))}>
+            <Paper className={classNames(classes.Card, getClassName(props.CardColor))} component={NavLink} to={{ pathname: '/Dashboard/Complaints/Table', state: {dashboardButton : props.CardName} }}>
                 {/* <div className={classes.topLeft}></div> */}
                     <div style={{margin: 'auto'}} >
                         <CardContent>

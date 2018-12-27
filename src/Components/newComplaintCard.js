@@ -24,16 +24,18 @@ const styles = theme => ({
 
     },
     Card: { 
-        // minWidth: '150px',
+        minWidth: '250px',
         // display:'inline-block', 
         margin: '15px',
         height:'91%',
         position: 'relative',
         color: 'white',
+        //  display: 'flex',
+        display: 'inline-block',
         backgroundColor: 'black',
         [theme.breakpoints.down('sm')]: {
-            // marginTop: '-66px',
-            display: 'flex',
+            // // marginTop: '-66px',
+             display: 'inline-block',
             minWidth: '150px'
         },
     },
@@ -126,9 +128,9 @@ const CardBox = props => {
                         </div>
                     </div>
                     <div className={classes.lowerDiv}>
-                        <Typography variant="h5" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
+                        <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
                         <br />
-                        <Typography variant="caption">Unseen <br />compaints</Typography>
+                        <Typography variant="Subheading" style={{color: 'rgba(0,0,0,0.54)'}}>Unseen <br />compaints</Typography>
                     </div>
                     <div style={{margin: 'auto'}} className={classes.mobileCard} >
                         <CardContent>

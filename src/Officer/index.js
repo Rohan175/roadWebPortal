@@ -24,7 +24,7 @@ const styles = theme => ({
     wrapper: {
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'top'
+        backgroundPosition: 'bottom'
     },
     backgr: {
         position: 'absolute',
