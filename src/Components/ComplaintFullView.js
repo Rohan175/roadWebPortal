@@ -99,7 +99,8 @@ class ComplaintFullView extends Component {
         new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
         new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false,
 
-        srOfficerArray: []
+        srOfficerArray: [],
+        rejection_resons: []
     }
 
     handleIsEmergency = () => {        
@@ -124,6 +125,18 @@ class ComplaintFullView extends Component {
 
     handleSave = () => {        
         // updateComplaint
+        
+        if(this.state.new_complaint_status == "Rejected" && ( this.state.Comment == "" || this.state.Comment == null ) ) {
+            this.setState({
+                openSnackbarState: true,
+                snackbarMessage: 'Please select a rejection reason',
+                snackbarStyle: {
+                    backgroundColor: green[600],
+                    display: 'flex',
+                },
+            }) 
+            return;
+        }
 
         Date.prototype.withoutTime = function () {
             var d = new Date(this);
@@ -236,6 +249,30 @@ class ComplaintFullView extends Component {
         })
     }
 
+    read() {
+        fetch(url + "manage/rejections/", {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "GET",
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success){
+                this.setState({
+                    rejection_resons: res.data
+                })
+            }else {
+                console.log("Err", res.data);
+                alert(res.data);                
+            }
+        })
+        .catch(err => {
+            console.log("new errre",err);
+        });
+    }
+
     componentWillMount() {
         fetch(url + "getSrIdsForeword/", {
             headers: {
@@ -262,6 +299,11 @@ class ComplaintFullView extends Component {
             })
         });
     }
+
+    componentDidMount() {
+        this.read();
+    }
+
 
     componentWillReceiveProps(nextProps) {
        let ComplaintDialogData = nextProps.ComplaintDialogData;
@@ -386,53 +428,100 @@ class ComplaintFullView extends Component {
                                     </Grid>
                                 </Grid>
                                 <Grid item xs={12} md className={classes.textWrapper}>
-                                    <TextField
-                                        id="Comment"
-                                        label="Comment"
-                                        multiline
-                                        value={this.state.Comment}
-                                        error={this.state.comment_error}
-                                        helperText={this.state.comment_helper_text}
-                                        rows="5"
-                                        onChange={this.handleComment}
-                                        // defaultValue="Enter Your Coment Here.."
-                                        className={classes.textField}
-                                        // InputLabelProps={{
-                                        //     shrink: false,
-                                        // }}
-                                        style={{margin: '10px'}}
-                                        margin="normal" />
+                                {
+                                    this.state.new_complaint_status == "Rejected"
+                                    ?
+                                        <FormControl className={classes.formControl}>
+                                            <InputLabel htmlFor="Comment">Rejection Reason</InputLabel>
+                                            <Select
+                                                label="Rejection Reason"
+                                                // multiline
+                                                value={this.state.Comment}
+                                                error={this.state.comment_error}
+                                                helperText={this.state.comment_helper_text}
+                                                onChange={this.handleChange}
+                                                inputProps={{
+                                                    name: 'Comment',
+                                                    id: 'Comment',
+                                                }}
+                                                fullWidth >
+                                                {
+                                                    this.state.rejection_resons.map((item, index) => {
+                                                        return (
+                                                            <MenuItem key={index} value={item.name}>{item.name}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                        // <TextField
+                                        //     id="Comment"
+                                        //     label="Comment"
+                                        //     multiline
+                                        //     value={this.state.Comment}
+                                        //     error={this.state.comment_error}
+                                        //     helperText={this.state.comment_helper_text}
+                                        //     rows="5"
+                                        //     onChange={this.handleComment}
+                                        //     // defaultValue="Enter Your Coment Here.."
+                                        //     className={classes.textField}
+                                        //     // InputLabelProps={{
+                                        //     //     shrink: false,
+                                        //     // }}
+                                        //     style={{margin: '10px'}}
+                                        //     margin="normal" />
+                                    :
+                                        <TextField
+                                            id="Comment"
+                                            label="Comment"
+                                            multiline
+                                            value={this.state.Comment}
+                                            error={this.state.comment_error}
+                                            helperText={this.state.comment_helper_text}
+                                            rows="5"
+                                            onChange={this.handleComment}
+                                            // defaultValue="Enter Your Coment Here.."
+                                            className={classes.textField}
+                                            // InputLabelProps={{
+                                            //     shrink: false,
+                                            // }}
+                                            style={{margin: '10px'}}
+                                            margin="normal" />
+                                }
                                         <br />
                                         <br />
                                     <Button variant="raised" onClick={this.handleSave} style={{width: '100%'}} color="secondary">Save</Button>
                                 </Grid>
                             </Grid>
                             <Divider />
+                            {
+                            (getCookie("roadGPortalRole") !== hierarchy[hierarchy.length - 1]) &&
                             <Grid container>
                                 <Grid item xs={12} md className={classes.textWrapper}>
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel htmlFor="new_forword_complaint">Forword Complaint To</InputLabel>
-                                        <Select
-                                            value={this.state.new_forword_complaint}
-                                            onChange={this.handleChange}
-                                            inputProps={{
-                                                name: 'new_forword_complaint',
-                                                id: 'new_forword_complaint',
-                                            }} >
-                                            {
-                                                this.state.srOfficerArray.map(item => (
-                                                    <MenuItem value={item.id}>{item.role}</MenuItem>
-                                                ))
-                                            }
-
-                                        </Select>
-                                    </FormControl>
+                                        <FormControl className={classes.formControl}>
+                                            <InputLabel htmlFor="new_forword_complaint">Forword Complaint To</InputLabel>
+                                            <Select
+                                                value={this.state.new_forword_complaint}
+                                                onChange={this.handleChange}
+                                                inputProps={{
+                                                    name: 'new_forword_complaint',
+                                                    id: 'new_forword_complaint',
+                                                }} >
+                                                {
+                                                    this.state.srOfficerArray.map(item => (
+                                                        <MenuItem value={item.id}>{item.role}</MenuItem>
+                                                    ))
+                                                }
+                                        
+                                            </Select>
+                                        </FormControl>
                                 </Grid>
                                 <Grid xs={12} md className={classes.textWrapper}>
                                     <br />
                                     <Button variant="raised" style={{width: '100%'}} onClick={this.handleForeword} color="secondary">foreword</Button>
                                 </Grid>
                             </Grid>
+                            }
                             {/* <Typography variant="title">Comments : </Typography> */}
                             {
                                 // this.state.comments.map((comment, index) => (

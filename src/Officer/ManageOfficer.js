@@ -13,6 +13,7 @@ import classnames from 'classnames';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Avatar from '@material-ui/core/Avatar';
 import Collapse from '@material-ui/core/Collapse';
 import SideFilter from "../Components/SideFilter";
 import Dialog from '@material-ui/core/Dialog';
@@ -33,13 +34,15 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ComplaintContainer from './ComplaintContainer';
 import GeneralDialog from '../Components/GeneralDialog';
+import ComplaintCount from '../Components/complaintCount';
+import ComplaintChipCount from '../Components/complaintChipCount';
 import ComplaintFullView from "../Components/ComplaintFullView";
 import { griev_type,status_type,getCookie, url ,hierarchy} from '../constants';
 import ManageComplaints from './ManageComplaints';
 
 const styles = theme => ({
     wrapper: {
-        marginTop: '56px',
+        marginTop: '50px',
         // width: '100vw',
         height: '100vh',
         // display: 'flex',
@@ -70,14 +73,22 @@ class ManageOfficer extends Component {
 
     state = {
         page: 0,
-        rowsPerPage: 25,
+        rowsPerPage: 10,
 
         openOfficerDialogState: false,
         openComplaintDialogState : false,
         expandOfficerFilters : true,
         openErrorDialog : false,
 
-        OfficerData: [],
+        OfficerData: [{
+            name : "Rohan",
+            role:"S.O.",
+            phoneNo : "9427173216",
+            E : 10,
+            P : 10,
+            C : 10,
+            T : 30,
+        }],
         OfficerMap: null,
 
         OfficerDialogData : null,
@@ -312,7 +323,7 @@ class ManageOfficer extends Component {
 
                 <Paper style={{margin: 'auto'}}>
 
-                    { this.state.Loading ? <LinearProgress /> :  
+                    { this.state.Loading ? <LinearProgress  className={classes.progress} /> :  
 
 
                     <div style={{overflowX: 'auto',}}>
@@ -321,7 +332,6 @@ class ManageOfficer extends Component {
                     <Grid item sm={3} xs={12} style={{height: '90vh', overflowY:'scroll'}}>
                         <Slide direction="right" in={true}>
                             <div>
-
                                 <div className={classes.wrapperItem}>
                                     <div className={classes.alignLeft}>
                                         <Typography variant="subheading">Officer Role</Typography>
@@ -391,6 +401,7 @@ class ManageOfficer extends Component {
                                     {/* <TableCell> <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
                                     <TableCell>Officer Name</TableCell>
                                     <TableCell>Officer Role</TableCell>
+                                    <TableCell>Mobile</TableCell>
                                     <TableCell>Profile</TableCell>
                                     <TableCell>Complaints</TableCell>
                                 </TableRow>
@@ -399,12 +410,15 @@ class ManageOfficer extends Component {
                                 {
                                     this.state.OfficerData
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((item, index) => (
+                                    .map((item, index) => ([
+                                        
+                                        
                                         <TableRow key={index}>
-
+                                            
                                             {/* <TableCell><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
-                                            <TableCell>{item.name}</TableCell>
-                                            <TableCell>{item.role}</TableCell>
+                                            <TableCell >{item.name} </TableCell>
+                                            <TableCell >{item.role} </TableCell>
+                                            <TableCell >{item.phoneNo} </TableCell>
                                             
                                             <TableCell>
                                                 <Button 
@@ -414,10 +428,11 @@ class ManageOfficer extends Component {
                                                         }
                                                     }
                                                     color="secondary"
-                                                    variant="outlined"
+                                                    variant="text"
                                                     >
                                                 Update
                                                 </Button>
+                                                
                                             </TableCell>
                                             <TableCell>
                                                 <Button 
@@ -426,16 +441,36 @@ class ManageOfficer extends Component {
                                                             this.handleComplaintDialogOpen(item);
                                                         }
                                                     }
+                                                    
                                                     color="secondary"
-                                                    variant="outlined"
+                                                    variant="text"
                                                     >
                                                 View
                                                 </Button>
+                                                
                                             </TableCell>
-                                        </TableRow>
-                                    ))
+                                            
+                                        </TableRow>,
+
+                                    <TableRow>
+                                            <TableCell colSpan={5} >
+                                                <div style={{display : "flex",justifyContent:"space-around"}}>
+                                                    <ComplaintChipCount type="Total Complaints" data={item.total} />                                            
+                                                    <ComplaintChipCount type="Pending" data={item.pending} />
+                                                    <ComplaintChipCount type="Emergency" data={item.emergency} />
+                                                    <ComplaintChipCount type="Completed" data={item.completed} />
+                                                </div>
+                                            </TableCell>                                            
+                                    </TableRow>,
+
+                                    <TableRow style={{height:"2px"}}>
+                                        <TableCell colSpan={5}></TableCell>
+                                    </TableRow>
+                                    ]))
                                 }
+
                             </TableBody>
+
                             {emptyRows > 0 && (
                                     <TableRow style={{ height: 49 * emptyRows }}>
                                     <TableCell colSpan={6} />

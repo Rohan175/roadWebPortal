@@ -1,6 +1,7 @@
 {
   "name": "road_grievance_portal",
   "version": "0.1.0",
+  "homepage": "https://Rohan175.github.io/roadWebPortal",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^3.1.2",
@@ -8,6 +9,7 @@
     "ajv": "^6.5.4",
     "classnames": "^2.2.6",
     "date-fns": "^2.0.0-alpha.16",
+    "gh-pages": "^2.0.1",
     "material-ui-pickers": "^1.0.0-rc.17",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
@@ -21,7 +23,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy":"gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"

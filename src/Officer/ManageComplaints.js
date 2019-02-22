@@ -21,6 +21,7 @@ const styles = theme => ({
     progress: {
         margin: 'auto',
         textAlign: 'center',
+        marginTop : '50px',
         width: '100%',
     },
     wrapper: {

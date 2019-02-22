@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import LinearProgress from '@material-ui/core/LinearProgress';
-
+import {openLocationInGoogleMaps} from '../constants';
 function loadMaps(src) {
   return new Promise(function (resolve, reject) {
     var script = document.createElement('script');
@@ -47,7 +47,12 @@ export default class ComplaintMap extends Component {
     //console.log(data);
     
     data.forEach(d => {
-      pushpinInfos.push({ 'lat': d.location[1] + Math.random(), 'lng': d.location[0] + Math.random(), 'title': d.name, 'description': 'Status : ' + d.complaint_status + ' \n' + d.grievType })
+      pushpinInfos.push({ 'lat': d.location[1] , 
+                          'lng': d.location[0] , 
+                          'title': d.name, 
+                          'description': 'Status : ' + d.complaint_status +
+                           '<div>' + d.grievType + '</div>'+
+                           '<div>' + d.location[1] + ' , ' + d.location[0]+'</div>'})
     });
 
     let apiKey = "<api key>";
@@ -57,6 +62,7 @@ export default class ComplaintMap extends Component {
     let pinLayer = new window.Microsoft.Maps.EntityCollection();  
 
     // Create the info box for the pushpin
+    
     pinInfobox = new window.Microsoft.Maps.Infobox(new window.Microsoft.Maps.Location(0, 0), { visible: false });
     infoboxLayer.push(pinInfobox);
 

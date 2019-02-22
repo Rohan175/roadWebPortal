@@ -11,7 +11,7 @@ import Timer from '@material-ui/icons/Timer';
 import Check from '@material-ui/icons/Check';
 
 import CardBox from '../Components/DashboardCard';
-
+    
 const styles = theme => ({
     wrapper: {
         // marginTop: '-56px',
@@ -32,29 +32,29 @@ class AdminRoot extends Component {
         startAnimation: false,
         cardData: [
             {
-                name: "Total",
-                value: 10,
+                name: "Add Officer",
+                //value: 10,
                 icon: AllInbox,
                 color: "primary"
             },
             {
-                name: "Emergency",
-                value: 10,
+                name: "Admin Profile",
+                //value: 10,
                 icon: AddAlert,
-                color: "danger"
-            },
-            {
-                name: "Pending",
-                value: 10,
-                icon: Timer,
                 color: "alert"
-            },
-            {
-                name: "Completed",
-                value: 10,
-                icon: Check,
-                color: "success"
             }
+            // {
+            //     name: "Pending",
+            //     value: 10,
+            //     icon: Timer,
+            //     color: "alert"
+            // },
+            // {
+            //     name: "Completed",
+            //     value: 10,
+            //     icon: Check,
+            //     color: "success"
+            // }
         ]
     }
 
@@ -74,14 +74,14 @@ class AdminRoot extends Component {
                     <Grid item xs={12} md>
                         <Grid container>
                             <Grid item xs={6}>
-                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.cardData[0].value} CardColor={this.state.cardData[0].color} />
+                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.cardData[0].value} CardColor={this.state.cardData[0].color} fromAdmin={true} link={"/Admin/AddOfficer"}/>
                             </Grid>
                             <Grid item xs={6}>
-                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[1].icon} CardName={this.state.cardData[1].name} CardValue={this.state.cardData[1].value} CardColor={this.state.cardData[1].color} />
+                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[1].icon} CardName={this.state.cardData[1].name} CardValue={this.state.cardData[1].value} CardColor={this.state.cardData[1].color} fromAdmin={true} link={'/Admin/Profile'}/>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} md>
+                    {/* <Grid item xs={12} md>
                         <Grid container>
                             <Grid item xs={6}>
                                 <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[2].icon} CardName={this.state.cardData[2].name} CardValue={this.state.cardData[2].value} CardColor={this.state.cardData[2].color} />
@@ -90,7 +90,7 @@ class AdminRoot extends Component {
                                 <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[3].icon} CardName={this.state.cardData[3].name} CardValue={this.state.cardData[3].value} CardColor={this.state.cardData[3].color} />
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </Grid> */}
                     
                     {
                         // this.state.cardData.map((item, index) => (

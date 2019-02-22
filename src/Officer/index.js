@@ -51,26 +51,26 @@ class Dashboard extends Component {
 
     state = {
         navBarItems: [
-            {
-                name: 'Complaints',
-                path: '/Dashboard/Complaints/Table',
-                icon: TableChart
-            },
-            {
-                name: 'Maps',
-                path: '/Dashboard/Complaints/Maps',
-                icon: Place
-            },
-            ... getCookie('roadGPortalRole') !== hierarchy[0] ? [{
-                name: 'Manage Officer',
-                path: '/Dashboard/ManageOfficer',
-                icon: PieChart
-            }] : [],
-            ... getCookie('roadGPortalRole') === hierarchy[hierarchy.length - 1] ? [{
-                name: 'Add Officer',
-                path: '/Dashboard/AddOfficer',
-                icon: PieChart
-            }] : [],
+            // {
+            //     name: 'Complaints',
+            //     path: '/Dashboard/Complaints/Table',
+            //     icon: TableChart
+            // },
+            // {
+            //     name: 'Maps',
+            //     path: '/Dashboard/Complaints/Maps',
+            //     icon: Place
+            // },
+            // ... getCookie('roadGPortalRole') !== hierarchy[0] ? [{
+            //     name: 'Manage Officer',
+            //     path: '/Dashboard/ManageOfficer',
+            //     icon: PieChart
+            // }] : [],
+            // ... getCookie('roadGPortalRole') === hierarchy[hierarchy.length - 1] ? [{
+            //     name: 'Add Officer',
+            //     path: '/Dashboard/AddOfficer',
+            //     icon: PieChart
+            // }] : [],
             {
                 name: 'Profile',
                 path: '/Dashboard/Profile',
@@ -89,13 +89,13 @@ class Dashboard extends Component {
             {/* Insert Navbar here */}
             <NavBar navBarItems={this.state.navBarItems} />
             <Switch>
-                <Route exact path="/Dashboard/" render={() => (<DashboardRoot />)} />
-                <Route exact path="/Dashboard/Complaints/*" render={(locationProps) => (<ComplaintContainer {...locationProps.location.state}/>)} />
+                <Route exact path="/Dashboard/" render={() => (<Profile />)} />
+                {/* <Route exact path="/Dashboard/Complaints/*" render={(locationProps) => (<ComplaintContainer {...locationProps.location.state}/>)} />
                 <Route exact path="/Dashboard/ManageOfficer" render={() => (<ManageOfficer />)} />
-                <Route exact path="/Dashboard/AddOfficer" render={() => (<AddOfficer />)} />
+                <Route exact path="/Dashboard/AddOfficer" render={() => (<AddOfficer />)} /> */}
                 <Route exact path="/Dashboard/Profile" render={() => (<Profile />)} />
                 <Route path="/Dashboard/*">
-                    <Redirect to="/Dashboard" />
+                    <Redirect to="/Dashboard/" />
                 </Route>
             </Switch>
           </div>  

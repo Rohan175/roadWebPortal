@@ -5,6 +5,14 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
+
+import Dialog from '@material-ui/core/Dialog';
+import MuiDialogTitle from '@material-ui/core/DialogTitle';
+import MuiDialogContent from '@material-ui/core/DialogContent';
+import MuiDialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -13,6 +21,49 @@ import Paper from '@material-ui/core/Paper';
 
 import GeneralDialog from '../Components/GeneralDialog';
 import { url, setCookie, getCookie } from "../constants";
+
+
+
+const DialogTitle = withStyles(theme => ({
+    root: {
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        margin: 0,
+        padding: theme.spacing.unit * 2,
+    },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing.unit,
+        top: theme.spacing.unit,
+        color: theme.palette.grey[500],
+    },
+}))(props => {
+    const { children, classes, onClose } = props;
+    return (
+        <MuiDialogTitle disableTypography className={classes.root}>
+            <Typography variant="h6">{children}</Typography>
+            {onClose ? (
+                <IconButton aria-label="Close" className={classes.closeButton} onClick={onClose}>
+                    <CloseIcon />
+                </IconButton>
+            ) : null}
+        </MuiDialogTitle>
+    );
+});
+
+const DialogContent = withStyles(theme => ({
+    root: {
+        margin: 0,
+        padding: theme.spacing.unit * 2,
+    },
+}))(MuiDialogContent);
+
+const DialogActions = withStyles(theme => ({
+    root: {
+        borderTop: `1px solid ${theme.palette.divider}`,
+        margin: 0,
+        padding: theme.spacing.unit,
+    },
+}))(MuiDialogActions);
 
 
 
@@ -46,6 +97,7 @@ class Profile extends Component {
 
     state = {
         startAnimation: false,
+        openUpdateDialog: true,
         id: "",
         name: "",
         email: "",
@@ -138,6 +190,7 @@ class Profile extends Component {
                 // this.setState({
                 //     data: res.data
                 // })
+                setCookie("isUpdated","false","1");
                 this.setState({...res.data});
             }else{
                 console.error(res);               
@@ -156,11 +209,48 @@ class Profile extends Component {
         })
     }
 
+    
+    handleClose = () => {
+        this.setState({ openUpdateDialog: false });
+    };
+
     render() {
         let { classes } = this.props;
 
         return (
           <div className={classes.wrapper}>
+
+            
+                <Dialog
+                    onClose={this.handleClose}
+                    aria-labelledby="customized-dialog-title"
+                    open={this.state.openUpdateDialog}
+                >
+                    <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
+                        Verification Process
+            </DialogTitle>
+                    <DialogContent>
+
+                        <Typography gutterBottom>
+                            Please check your details.
+                </Typography>
+                        <Typography gutterBottom>
+                            If found incorrect, please modify your details, change your password and click on "SAVE" button.
+                </Typography>
+
+                
+                <Typography gutterBottom>
+                            If your details are proper, please change your password and click on "SAVE" button.
+                </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleClose} color="primary">
+                            Ok
+                </Button>
+                    </DialogActions>
+                </Dialog>
+
+
             <GeneralDialog
                 openDialogState = {this.state.openDialog}
                 dialogTitle = {this.state.dialogTitle}

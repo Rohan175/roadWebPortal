@@ -312,14 +312,32 @@ class ComplaintContainer extends Component {
         // "description","complaint_status","time","estimated_completion"];
             
           
-        
+        let mHeaders = ["longitude","latitude", "complaint_status", "isEmergency", "_id", "road_code", "name", "grievType", "description", "time", "estimated_completion"];
         var CsvString = "";
+
+        mHeaders.forEach(function(ColItem, ColIndex) {
+            CsvString += ColItem + ',';
+        });
+        CsvString += "\r\n";
         this.state.filteredComplaints.forEach(function(RowItem, RowIndex) {
-          Headers.forEach(function(ColItem, ColIndex) {
-            CsvString += RowItem[ColItem] + ',';
+            Headers.forEach(function(ColItem, ColIndex) {
+                
+                if(ColItem === 'time' || ColItem ==='estimated_completion'){
+
+                    let mDate = new Date(RowItem[ColItem]);
+                    RowItem[ColItem] = mDate.getDate() + "-" + mDate.getMonth() + "-" + mDate.getFullYear();
+
+                    console.log(RowItem[ColItem]);
+                }
+            if(ColItem!=='comments' && ColItem!== 'postedUsers'){
+                console.log(ColItem, "  ", RowItem[ColItem]);
+                CsvString += RowItem[ColItem] + ',';
+            }
           });
           CsvString += "\r\n";
+          console.log("\n");
         });
+        console.log(CsvString);
         
         let link = document.createElement('a');
         link.setAttribute('href','data:application/vnd.ms-excel;charset=utf-8,'+encodeURIComponent(CsvString));
@@ -328,7 +346,7 @@ class ComplaintContainer extends Component {
 
         //e.downlaod = "R&BPortal_Data.xls"
         //window.open("data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet," + encodeURIComponent(CsvString));
-        console.log("Exprot excel ",e);
+        console.log("Exprot excel ");
         //window.open('data:application/vnd.ms-excel,' + encodeURIComponent(CsvString));
         
     }

@@ -24,14 +24,14 @@ const styles = theme => ({
 
     },
     Card: { 
-        minWidth: '250px',
+        //minWidth: '350px',
         // display:'inline-block', 
         margin: '15px',
         height:'91%',
         position: 'relative',
         color: 'white',
         //  display: 'flex',
-        display: 'inline-block',
+        //display: 'inline-block',
         backgroundColor: 'black',
         [theme.breakpoints.down('sm')]: {
             // // marginTop: '-66px',
@@ -124,8 +124,7 @@ const CardBox = props => {
                             <Typography variant="display2" style={{margin: 'auto auto 0px 0px', padding: '20px', color: 'white', textDecoration: ''}}>{props.CardValue}</Typography>
                         </div>
                         <div className={classes.iconWrapper} >
-                            <Typography variant="display1" style={{margin: '0px 0px auto auto', padding: '20px', color: 'white'}}>{<CardIcon fontSize="large" />}</Typography>
-                        </div>
+                            <Typography variant="display1" style={{margin: '0px 0px auto auto', padding: '20px', color: 'white'}}>{<CardIcon fontSize="large" />}</Typography>                        </div>
                     </div>
                     <div className={classes.lowerDiv}>
                         <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
@@ -137,7 +136,7 @@ const CardBox = props => {
                             <Typography variant="display1">{<props.CardIcon fontSize="large" />}</Typography>
                             <Typography variant="caption">{props.CardName}</Typography>
                             <Typography variant="caption">Complaints</Typography>
-                            {/* <Typography variant="display2">{props.CardValue}</Typography> */}
+                             <Typography variant="display2">{props.CardValue}</Typography> 
                         </CardContent>
                         <CardActions>
                             {/* <Button className={classes.CardButton} size="small" component={NavLink} to={{ pathname: '/Dashboard/Complaints/Table', state: {dashboardButton : props.CardName} }}>view</Button> */}

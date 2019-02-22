@@ -1,4 +1,4 @@
-//const host = "http://192.168.2.12:3003";
+//const host = "http://192.168.2.8:3003";
 //const host = "http://localhost:3003";
 //const host = "http://192.168.43.149:3003";
 const host = "https://roadgrievance.herokuapp.com"
@@ -67,6 +67,11 @@ const hierarchy = [
     'Chief Engineer'
 ]
 
+const openLocationInGoogleMaps =  (lon,lat)=>{
+    window.open('https://www.google.com/maps/search/?api=1&query='+lon+','+lat, '_blank');
+}
+
+
 export {
     host,
     url,
@@ -75,5 +80,6 @@ export {
     getFormatedDate,
     griev_type,
     status_type,
-    hierarchy
+    hierarchy,
+    openLocationInGoogleMaps
 }
