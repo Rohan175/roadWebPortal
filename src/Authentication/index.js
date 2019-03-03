@@ -28,7 +28,9 @@ class Login extends Component {
     //state of login component
     state = {
         loginTab: true,
-        openDialog : false
+        openDialog : false,
+        loginText : "Login",
+        disableLogin : false
     }
 
     toLoginTab = () => {
@@ -63,6 +65,12 @@ class Login extends Component {
     };
 
     handleLogin = (phoneNo, password) => {
+
+        this.setState({
+            loginText : "Logging In ...",
+            disableLogin : true
+        })
+
         if(phoneNo && password && password.length >= 6 && password.length < 12) {
             fetch(url + "login/", {
                     headers: {
@@ -84,15 +92,27 @@ class Login extends Component {
                     this.props.setLogin(res.loginType);
                 }else{
                     this.handleDialogOpen(res.data, "Error");
+                    this.setState({
+                        loginText:"Login",
+                        disableLogin:false
+                    })
                 }
             })
             .catch(err => {
                 console.log(err);                
                 this.handleDialogOpen(err+"", "Error")
+                this.setState({
+                    loginText:"Login",
+                    disableLogin:false
+                })
             });
             
         } else {
             this.handleDialogOpen("Password is required and it must be between 6 to 12 character", "Error")
+            this.setState({
+                loginText:"Login",
+                disableLogin:false
+            })
         }
     }
 
@@ -106,7 +126,7 @@ class Login extends Component {
                 ? 
                 <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} /> 
                 : <ForgotPasswordComponent toLoginTab={this.toLoginTab} /> } */}
-                <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} /> 
+                <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} loginText={this.state.loginText} disableLogin={this.state.disableLogin}/> 
             </Paper>
             <GeneralDialog 
                 openDialogState = {this.state.openDialog}

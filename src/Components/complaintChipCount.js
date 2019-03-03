@@ -43,7 +43,7 @@ const complaintChipCount = props => {
       <Chip
         className={getClassName(props.type)}
         avatar={<Avatar className={getClassName(props.type)}>{props.data ? props.data : 0}</Avatar>}
-        label={props.type}
+        // label={props.type}
         variant="outlined"
       />
       

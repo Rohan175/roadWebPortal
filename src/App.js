@@ -62,7 +62,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/Login" render={this.checkLoginStatus} />
             <Route exact path="/Dashboard*" render={this.redirectIfNotLoggedInOfficer} />
-            {/* <Route path="/Admin" render={this.redirectIfNotLoggedInAdmin} /> */}
+            <Route path="/Admin" render={this.redirectIfNotLoggedInAdmin} />
             <Route exact path="/">
               <Redirect to="/Dashboard/" />
             </Route>

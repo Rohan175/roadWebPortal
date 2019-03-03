@@ -21,6 +21,7 @@ import Paper from '@material-ui/core/Paper';
 
 import GeneralDialog from '../Components/GeneralDialog';
 import { url, setCookie, getCookie } from "../constants";
+import { tr } from 'date-fns/esm/locale';
 
 
 
@@ -105,6 +106,7 @@ class Profile extends Component {
         password: "",
         newPassword: "",
         confirmNewPassword: "",
+        validPhoneNo: true,
         changed: false,
         openDialog : false
     }
@@ -127,6 +129,17 @@ class Profile extends Component {
     }
 
     handleSave = () => {
+
+        this.setState({
+            changed: false
+        })
+
+        //phone No error
+        if(!this.state.validPhoneNo) {
+            this.handleDialogOpen("Please check your phone number", "Error");
+            return;
+        }
+
         if(this.handlePasswordErrors()) {
             this.handleDialogOpen("Please check your password", "Error");
             return;
@@ -154,11 +167,17 @@ class Profile extends Component {
                 this.componentWillMount();
             }else{
                 this.handleDialogOpen(res.data, "Error");
+                this.setState({
+                    changed: true
+                })
             }
         })
         .catch(err => {
             console.log(err);                
             this.handleDialogOpen(err+"", "Error")
+            this.setState({
+                changed: true
+            })
         });
     }
 
@@ -289,9 +308,22 @@ class Profile extends Component {
                         <TextField
                             id="phoneNo"
                             label="Phone Number"
+                            type="number"
                             className={classes.textField}
                             value={this.state.phoneNo}
-                            onChange={this.handleChange}
+                            onChange={(e) => { 
+                                this.handleChange(e);
+                                if(e.target.value.length != 10) {
+                                    this.setState({
+                                        validPhoneNo: false
+                                    })
+                                } else {
+                                    this.setState({
+                                        validPhoneNo: true
+                                    })
+                                }
+                            }}
+                            helperText={ !this.state.validPhoneNo ? "Please enter valid phone no" : ""}
                             margin="none"
                         />
                     </Grid>

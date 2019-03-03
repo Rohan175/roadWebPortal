@@ -36,7 +36,8 @@ const styles = theme => ({
 
 let LoginComponent = (props) => {
     let { classes } = props;
-
+    
+    
     return (
         <div className={classes.Card}>
             {/* <CardContent> */}
@@ -75,9 +76,10 @@ let LoginComponent = (props) => {
                         <Button
                         type="submit"
                         variant="contained" 
+                        disabled={props.disableLogin}
                         className={classes.loginBtn}
                         >
-                        Login
+                        {props.loginText}
                         </Button>
                     </div>
                 </form>

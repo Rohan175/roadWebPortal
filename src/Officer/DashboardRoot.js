@@ -211,34 +211,7 @@ class DashboardRoot extends Component {
 
         return (
             <div className={classes.wrapper} style={{ textAlign: 'center' }}>
-
-                <Dialog
-                    onClose={this.handleClose}
-                    aria-labelledby="customized-dialog-title"
-                    open={this.state.openUpdateDialog}
-                >
-                    <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
-                        Verification Process
-            </DialogTitle>
-                    <DialogContent>
-
-                        <img src={require('./../Capture.PNG')} alt={"Helper Image"} />
-
-                        <Typography gutterBottom>
-                            Please check your details in "Profile" tab.
-                </Typography>
-                        <Typography gutterBottom>
-                            If found incorrect, please modify your details and click on "SAVE" button.
-                </Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            Ok
-                </Button>
-                    </DialogActions>
-                </Dialog>
-
-
+            
                 <div className={classes.dashboardwrapper}>
                     <div className={classes.cardRoot}>
                         <div className={classes.card1}><NewComplaintCardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.newComplaints} CardColor={this.state.cardData[0].color} /></div>

@@ -60,7 +60,18 @@ const styles = theme => ({
         },
         wrapperItem: {
         marginLeft: '10px', marginRight:'10px',paddingLeft: '10px',paddingRight: '10px',paddingTop:'10px',paddingBottom:'10px', textAlign: 'left'
-        }
+    },
+    avatar:{
+        // padding: '10px',
+        margin : "2px",
+        // marginBottom: "1px",
+        width: 40,
+        height: 40
+        // minWidth: "15px",
+        // borderRadius: "50%",
+        // display: 'inline-block',
+        // textAlign: 'center'
+    }
 })
 
 
@@ -247,7 +258,7 @@ class ManageOfficer extends Component {
           .then(res => res.json())
           .then(res => {
             
-              console.log("officerData",res);
+              console.table(res.data);
 
               this.allOfficersData = res.data;
               if(res.success){
@@ -399,9 +410,11 @@ class ManageOfficer extends Component {
                             <TableHead>
                                 <TableRow>
                                     {/* <TableCell> <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
-                                    <TableCell>Officer Name</TableCell>
+                                    <TableCell >Officer Name</TableCell>
                                     <TableCell>Officer Role</TableCell>
-                                    <TableCell>Mobile</TableCell>
+                                    <TableCell >Mobile</TableCell>
+                                    <TableCell >Analysis</TableCell>
+                                    {/* <TableCell style={{ visibility: 'hidden' }}>Analysis</TableCell> */}
                                     <TableCell>Profile</TableCell>
                                     <TableCell>Complaints</TableCell>
                                 </TableRow>
@@ -419,7 +432,12 @@ class ManageOfficer extends Component {
                                             <TableCell >{item.name} </TableCell>
                                             <TableCell >{item.role} </TableCell>
                                             <TableCell >{item.phoneNo} </TableCell>
-                                            
+                                            <TableCell style={{ display: 'flex' }} >  
+                                                <Avatar className={classes.avatar} style={{ background: 'rgba(0, 0, 255, 0.1)' ,color :"black"}} >{item.total}</Avatar> 
+                                                <Avatar className={classes.avatar} style={{ background: 'rgba(255, 0, 0, 0.1)' , color :"black"}} >{item.pending }</Avatar> 
+                                                <Avatar className={classes.avatar} style={{ background: 'rgba(155, 100, 0, 0.1)'}} >{item.emergency }</Avatar> 
+                                                <Avatar className={classes.avatar} style={{ background: 'rgba(0, 255, 0, 0.1)' }} >{item.completed }</Avatar>
+                                            </TableCell>
                                             <TableCell>
                                                 <Button 
                                                     onClick={
@@ -452,20 +470,20 @@ class ManageOfficer extends Component {
                                             
                                         </TableRow>,
 
-                                    <TableRow>
-                                            <TableCell colSpan={5} >
-                                                <div style={{display : "flex",justifyContent:"space-around"}}>
-                                                    <ComplaintChipCount type="Total Complaints" data={item.total} />                                            
-                                                    <ComplaintChipCount type="Pending" data={item.pending} />
-                                                    <ComplaintChipCount type="Emergency" data={item.emergency} />
-                                                    <ComplaintChipCount type="Completed" data={item.completed} />
-                                                </div>
-                                            </TableCell>                                            
-                                    </TableRow>,
+                                    // <TableRow>
+                                    //         <TableCell colSpan={5} >
+                                    //             <div style={{display : "flex",justifyContent:"space-around"}}>
+                                    //                 <ComplaintChipCount type="" data={item.total} />                                            
+                                    //                 <ComplaintChipCount type="Pending" data={item.pending} />
+                                    //                 <ComplaintChipCount type="Emergency" data={item.emergency} />
+                                    //                 <ComplaintChipCount type="Completed" data={item.completed} />
+                                    //             </div>
+                                    //         </TableCell>                                            
+                                    // </TableRow>,
 
-                                    <TableRow style={{height:"2px"}}>
-                                        <TableCell colSpan={5}></TableCell>
-                                    </TableRow>
+                                    // <TableRow style={{height:"2px"}}>
+                                    //     <TableCell colSpan={5}></TableCell>
+                                    // </TableRow>
                                     ]))
                                 }
 

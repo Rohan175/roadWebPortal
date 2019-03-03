@@ -139,6 +139,9 @@ class RejectionReasons extends Component {
     }
 
     handleUpdate = (item) => {
+
+        console.log(item, Object.keys(item));
+        
         this.setState({
             update: true,
             _id: item._id,
@@ -188,7 +191,7 @@ class RejectionReasons extends Component {
     //----------------------------------------------
 
     render() {
-        const { rowsPerPage, page, notationsConvert } = this.state;
+        const { rowsPerPage, page } = this.state;
         const emptyRows = rowsPerPage - Math.min(rowsPerPage, 10 - page * rowsPerPage);
         let { classes } = this.props; 
 

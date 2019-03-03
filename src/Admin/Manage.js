@@ -22,7 +22,7 @@ import Tabbed from '@material-ui/core/Tabs';
 
 import Grievances from "../Components/grivancesTable";
 import RejectionReasons from "../Components/rejectionReasons";
-
+import Crud from "Components/crud";
 // import Card from '@material-ui/core/Card';
 
 const styles = theme => ({
@@ -33,7 +33,7 @@ const styles = theme => ({
         display: 'flex',
     },
     ManageWrapper: {
-        margin:'100px auto auto auto',
+        margin: '100px auto auto auto',
         textAlign: 'center',
         // padding: '20px',
         // borderRadius: '2px',
@@ -47,8 +47,8 @@ class Manage extends Component {
 
     state = {
         value: 0,
-      };
-    
+    };
+
     handleChange = (event, value) => {
         this.setState({ value });
     };
@@ -60,16 +60,22 @@ class Manage extends Component {
         return (
             <div className={classes.wrapper}>
                 <Paper className={classes.ManageWrapper}>
-                    <AppBar position="static"  textColor="primary" style={{ background: "white", color: 'black', }}>
+                    <AppBar position="static" textColor="primary" style={{ background: "white", color: 'black', }}>
                         <Tabbed value={value} onChange={this.handleChange} centered>
                             <Tab label="Manage Grievances" />
                             <Tab label="Manage Rejection Reasons" />
+                            <Tab label="CRUD" />
                         </Tabbed>
                     </AppBar>
                     {value === 0 && <Grievances />}
                     {value === 1 && <RejectionReasons />}
+                    {value === 2 && <Crud   tableName={"Road"}
+                                            crudUrl={'manage/rejections/'}
+                                            columns={[{ name: "Rejection Reason" , api: "name"}, 
+                                                      { name: "Road Name" }, 
+                                                      { name: "Road District" }]} />}
                 </Paper>
-            </div>  
+            </div>
         );
     }
 }
