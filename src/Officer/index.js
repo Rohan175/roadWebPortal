@@ -75,7 +75,7 @@ class Dashboard extends Component {
                 name: 'Profile',
                 path: '/Dashboard/Profile',
                 icon: AccountCircle
-            }
+            },
         ]
     }
 

@@ -3,7 +3,6 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Slide from '@material-ui/core/Slide';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Grid from '@material-ui/core/Grid';
@@ -91,8 +90,8 @@ class ComplaintContainer extends Component {
                                 
                     return complaint.complaint_status
                         && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
-                        && complaint.grievType
-                        && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        && complaint.griev_type
+                        && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                         && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                         && (complaint.time >= date && complaint.time <= oldState.EndingDate)
                 });
@@ -134,8 +133,8 @@ class ComplaintContainer extends Component {
                                 
                     return complaint.complaint_status
                         && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
-                        && complaint.grievType
-                        && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        && complaint.griev_type
+                        && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                         && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                         && (complaint.time >= oldState.StartingDate && complaint.time <= date)
                         
@@ -182,8 +181,8 @@ class ComplaintContainer extends Component {
                 
                 if(name === "status_type_map"){
 
-                    console.log("here2",oldState.emergency_state,this.allComplaints[0].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[0].isEmergency));
-                    console.log("here3",oldState.emergency_state,this.allComplaints[1].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[1].isEmergency));
+                    // console.log("here2",oldState.emergency_state,this.allComplaints[0].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[0].isEmergency));
+                    // console.log("here3",oldState.emergency_state,this.allComplaints[1].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[1].isEmergency));
                     // console.log("adding status : " + value ) 
                     // console.log(this.allComplaints);
                     // console.log(oldState.griev_type_map);
@@ -192,8 +191,8 @@ class ComplaintContainer extends Component {
                             
                             return complaint.complaint_status
                                 && complaint.complaint_status.toUpperCase() == value.toUpperCase() 
-                                && complaint.grievType
-                                && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                                && complaint.griev_type
+                                && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                                 && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                                 && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
                         });
@@ -209,8 +208,8 @@ class ComplaintContainer extends Component {
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
                             
-                            return complaint.grievType
-                                && complaint.grievType.toUpperCase() == value.toUpperCase() 
+                            return complaint.griev_type
+                                && complaint.griev_type.toUpperCase() == value.toUpperCase() 
                                 && complaint.complaint_status
                                 && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
                                 && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
@@ -226,8 +225,8 @@ class ComplaintContainer extends Component {
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
                         
-                        return complaint.grievType
-                            && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        return complaint.griev_type
+                            && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                             && complaint.complaint_status
                             && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
                             && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
@@ -262,7 +261,7 @@ class ComplaintContainer extends Component {
                     if(name === "status_type_map"){
                         jsonName = "complaint_status";
                     }else if(name === "griev_type_map"){
-                        jsonName = "grievType"
+                        jsonName = "griev_type"
                     }
 
                     //console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
@@ -308,11 +307,11 @@ class ComplaintContainer extends Component {
         console.log(this.state.filteredComplaints);
         var Headers = Object.keys(this.state.filteredComplaints[0]);
         console.log(Headers);
-        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType",
+        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","griev_type",
         // "description","complaint_status","time","estimated_completion"];
             
           
-        let mHeaders = ["longitude","latitude", "complaint_status", "isEmergency", "_id", "road_code", "name", "grievType", "description", "time", "estimated_completion"];
+        let mHeaders = ["longitude","latitude", "complaint_status", "isEmergency", "_id", "road_code", "name", "griev_type", "description", "time", "estimated_completion"];
         var CsvString = "";
 
         mHeaders.forEach(function(ColItem, ColIndex) {

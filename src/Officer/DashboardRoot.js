@@ -93,9 +93,9 @@ const styles = theme => ({
     },
     cardRoot: {
         [theme.breakpoints.down('sm')]: {
-            // marginTop: '-66px',
             display: 'inline-block',
         },
+        marginTop: '-30px',
         display: 'grid',
         margin: 'auto',
         'grid-template-columns': '2fr 1fr 1fr',

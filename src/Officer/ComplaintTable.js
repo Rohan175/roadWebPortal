@@ -123,7 +123,7 @@ class ComplaintTable extends Component {
                                 .map((item, index) => (
                                     <TableRow key={index}>
                                         <TableCell component="th" >{page * rowsPerPage + index+1}</TableCell>
-                                        <TableCell>{item.grievType}</TableCell>
+                                        <TableCell>{item.griev_type}</TableCell>
                                         <TableCell>{item.complaint_status}</TableCell>
                                         <TableCell>{item.isEmergency?"YES":"NO"}</TableCell>
                                         <TableCell><Button 

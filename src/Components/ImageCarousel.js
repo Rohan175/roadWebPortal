@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import MobileStepper from '@material-ui/core/MobileStepper';
-// import Paper from '@material-ui/core/Paper';
-// import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
@@ -19,10 +19,10 @@ const styles = theme => ({
   header: {
     display: 'flex',
     alignItems: 'center',
-    // height: 50,
+    minHeight: 50,
     paddingLeft: theme.spacing.unit * 4,
     backgroundColor: theme.palette.background.default,
-    textAlign: 'center'
+    textAlign: 'left'
   },
   img: {
     height: 'auto',
@@ -60,32 +60,36 @@ class ImageCarousel extends React.Component {
 
         return (
             <div className={classes.root}>
-                {/* <Paper square elevation={0} className={classes.header}>
-                    <Typography style={{textAlign: 'center'}}>{this.props.postedUsers[activeStep].time.slice(0, 10)}</Typography>
-                </Paper> */}
                 <img
                     className={classes.img}
-                     src={this.props.postedUsers[activeStep].url}
+                    src={this.props.postedUsers[activeStep].url}
                     //src={"http://picsum.photos/300/300"}
                     alt={this.props.postedUsers[activeStep].userId}
                 />
-                <MobileStepper
-                    steps={maxSteps}
-                    position="static"
-                    activeStep={activeStep}
-                    className={classes.mobileStepper}
-                    nextButton={
-                        <Button size="small" onClick={this.handleNext} disabled={activeStep === maxSteps - 1}>
-                        Next
-                        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                        </Button>
-                    }
-                    backButton={
-                        <Button size="small" onClick={this.handleBack} disabled={activeStep === 0}>
-                        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                        Back
-                        </Button> 
-                    } />
+                <Paper square elevation={0} className={classes.header}>
+                    <Typography style={{textAlign: 'left'}}>Description : {this.props.postedUsers[activeStep].description}</Typography>
+                </Paper>
+                {
+                    (maxSteps > 1) && (
+                        <MobileStepper
+                            steps={maxSteps}
+                            position="static"
+                            activeStep={activeStep}
+                            className={classes.mobileStepper}
+                            nextButton={
+                                <Button size="small" onClick={this.handleNext} disabled={activeStep === maxSteps - 1}>
+                                Next
+                                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                                </Button>
+                            }
+                            backButton={
+                                <Button size="small" onClick={this.handleBack} disabled={activeStep === 0}>
+                                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                                Back
+                                </Button> 
+                            } />
+                    )
+                }
             </div>
         );
     }

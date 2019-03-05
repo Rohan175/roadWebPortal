@@ -86,8 +86,8 @@ class ComplaintContainer extends Component {
                                 
                     return complaint.complaint_status
                         && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
-                        && complaint.grievType
-                        && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        && complaint.griev_type
+                        && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                         && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                         && (complaint.time >= date && complaint.time <= oldState.EndingDate)
                 });
@@ -129,8 +129,8 @@ class ComplaintContainer extends Component {
                                 
                     return complaint.complaint_status
                         && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
-                        && complaint.grievType
-                        && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        && complaint.griev_type
+                        && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                         && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                         && (complaint.time >= oldState.StartingDate && complaint.time <= date)
                         
@@ -186,8 +186,8 @@ class ComplaintContainer extends Component {
                             
                             return complaint.complaint_status
                                 && complaint.complaint_status.toUpperCase() == value.toUpperCase() 
-                                && complaint.grievType
-                                && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                                && complaint.griev_type
+                                && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                                 && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                                 && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
                         });
@@ -203,8 +203,8 @@ class ComplaintContainer extends Component {
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
                             
-                            return complaint.grievType
-                                && complaint.grievType.toUpperCase() == value.toUpperCase() 
+                            return complaint.griev_type
+                                && complaint.griev_type.toUpperCase() == value.toUpperCase() 
                                 && complaint.complaint_status
                                 && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
                                 && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
@@ -220,8 +220,8 @@ class ComplaintContainer extends Component {
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
                         
-                        return complaint.grievType
-                            && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        return complaint.griev_type
+                            && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                             && complaint.complaint_status
                             && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
                             && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
@@ -256,7 +256,7 @@ class ComplaintContainer extends Component {
                     if(name === "status_type_map"){
                         jsonName = "complaint_status";
                     }else if(name === "griev_type_map"){
-                        jsonName = "grievType"
+                        jsonName = "griev_type"
                     }
 
 //                    console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
@@ -302,7 +302,7 @@ class ComplaintContainer extends Component {
         console.log(this.state.filteredComplaints);
         var Headers = Object.keys(this.state.filteredComplaints[0]);
         console.log(Headers);
-        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType",
+        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","griev_type",
         // "description","complaint_status","time","estimated_completion"];
         
         var CsvString = "";

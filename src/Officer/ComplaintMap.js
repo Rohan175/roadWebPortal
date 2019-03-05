@@ -47,12 +47,12 @@ export default class ComplaintMap extends Component {
     //console.log(data);
     
     data.forEach(d => {
-      pushpinInfos.push({ 'lat': d.location[1] , 
-                          'lng': d.location[0] , 
+      pushpinInfos.push({ 'lat': d.location[0] , 
+                          'lng': d.location[1] , 
                           'title': d.name, 
                           'description': 'Status : ' + d.complaint_status +
-                           '<div>' + d.grievType + '</div>'+
-                           '<div>' + d.location[1] + ' , ' + d.location[0]+'</div>'})
+                           '<div>' + d.griev_type + '</div>'+
+                           '<div>' + d.location[0] + ' , ' + d.location[1]+'</div>'})
     });
 
     let apiKey = "<api key>";

@@ -1,6 +1,7 @@
 //const host = "http://192.168.2.8:3003";
-const host = "http://localhost:3003";
-//const host = "http://192.168.43.165:3003";
+// const host = "https://roadgriev.herokuapp.com";
+const host = "http://192.168.43.165:3003";
+//const host = "http://192.168.2.11:3003";
 //const host = "https://roadgrievance.herokuapp.com"
 const url = host + "/api/portal/";
 
@@ -60,12 +61,20 @@ const griev_type = [
 ]
 
 const hierarchy = [
-    'Section Officer',
-    'Deputy Executive Engineer',
-    'Executive Engineer',
-    'Superintending Engineer',
-    'Chief Engineer'
-]
+    "Section Officer",
+    "Deputy Executive Engineer", 
+    "Executive Engineer",
+    "Superintending Engineer",
+    "Chief Engineer"
+];
+
+const hierarchy1 = [
+    ["Section Officer", "SO"],
+    ["Deputy Executive Engineer", "DEE"],
+    ["Executive Engineer", "EE"],
+    ["Superintending Engineer", "SE"],
+    ["Chief Engineer", "CE"]
+];
 
 const openLocationInGoogleMaps =  (lon,lat)=>{
     window.open('https://www.google.com/maps/search/?api=1&query='+lon+','+lat, '_blank');
@@ -81,5 +90,6 @@ export {
     griev_type,
     status_type,
     hierarchy,
+    hierarchy1,
     openLocationInGoogleMaps
 }

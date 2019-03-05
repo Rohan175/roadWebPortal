@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 
 import LoginComponent from '../Components/LoginComponent';
-import ForgotPasswordComponent from '../Components/ForgotPasswordComponent';
+// import ForgotPasswordComponent from '../Components/ForgotPasswordComponent';
 
 import { url } from "../constants";
 import GeneralDialog from '../Components/GeneralDialog';
@@ -88,8 +88,11 @@ class Login extends Component {
                     this.setCookie("roadGPortalAuth", res.data, 1);
                     this.setCookie("roadGPortalUserType", res.loginType, 1);
                     this.setCookie("roadGPortalRole", res.role, 1);
+                    this.setCookie("roadGPortalPosts", JSON.stringify(res.posts), 1);
+                    this.setCookie("roadGPortalCurrentPosts", JSON.stringify(res.posts[0]), 1);
                     this.setCookie("isUpdated", res.isUpdated, 1);
                     this.props.setLogin(res.loginType);
+                    console.log("posts available",res.posts);
                 }else{
                     this.handleDialogOpen(res.data, "Error");
                     this.setState({
