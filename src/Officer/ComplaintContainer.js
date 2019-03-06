@@ -65,6 +65,29 @@ class ComplaintContainer extends Component {
         emptyList: true,
         filteredComplaints: []
     }
+    
+    handleIndividualComplaintChange = (complaintData,isComplainForwarded) => {
+
+        console.log(complaintData,isComplainForwarded);
+        
+        if(isComplainForwarded){
+
+            this.allComplaints.splice(this.allComplaints.findIndex(c => c._id === complaintData._id),1);
+            this.setState(oldState =>{
+                oldState.filteredComplaints.splice(oldState.filteredComplaints.findIndex(c => c._id === complaintData._id),1);
+
+                return {
+                    filteredComplaints : oldState.filteredComplaints,
+                }
+            })
+            
+
+        }else{
+            let c = this.allComplaints.find(c => c._id === complaintData.complaint_id)
+            c.complaint_status = complaintData.complaint_status;
+            c.isEmergency = complaintData.isEmergency
+        }
+    }
 
     handleStartingDateChange = (date) => {
         
@@ -310,8 +333,7 @@ class ComplaintContainer extends Component {
         //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","griev_type",
         // "description","complaint_status","time","estimated_completion"];
             
-          
-        let mHeaders = ["longitude","latitude", "complaint_status", "isEmergency", "_id", "road_code", "name", "griev_type", "description", "time", "estimated_completion"];
+        let mHeaders = ["longitude","latitude", "complaint_status", "isEmergency", "_id", "road_code", "name", "griev_type", "time", "estimated_completion"];
         var CsvString = "";
 
         mHeaders.forEach(function(ColItem, ColIndex) {
@@ -328,9 +350,12 @@ class ComplaintContainer extends Component {
 
                     console.log(RowItem[ColItem]);
                 }
-            if(ColItem!=='comments' && ColItem!== 'postedUsers'){
+            if(ColItem!=='comments' && ColItem!== 'posted_users'){
                 console.log(ColItem, "  ", RowItem[ColItem]);
                 CsvString += RowItem[ColItem] + ',';
+            }else{
+                console.log("Skiiping commenst & posted Uswers");
+                
             }
           });
           CsvString += "\r\n";
@@ -375,9 +400,10 @@ class ComplaintContainer extends Component {
                     
                     console.log(res.complaints);
                     
-                    
+                    let new_griv_type = new Map();
                     res.complaints.map(complaint => {
                         complaint.time = new Date(complaint.time).setHours(0,0,0,0);
+                        new_griv_type.set(complaint.griev_type,true);
                     })
                     
                     res.complaints = res.complaints.filter(c =>  {
@@ -440,7 +466,8 @@ class ComplaintContainer extends Component {
                     }
 
                     this.setState({
-                        lodding : false
+                        lodding : false,
+                        griev_type_map : new_griv_type
                     });
 
                     
@@ -472,7 +499,7 @@ class ComplaintContainer extends Component {
 
     render() {
         let { classes } = this.props;
-        console.log(this.props);
+        //console.log(this.props);
         
         return (    
           <div className={classes.wrapper}>
@@ -510,7 +537,7 @@ class ComplaintContainer extends Component {
                             (this.state.filteredComplaints && this.state.filteredComplaints.length != 0) ?
                             (<div style={{paddingTop: '50px'}}>
                                 <Switch >
-                                    <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} />)} />
+                                    <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} handleIndividualComplaintChange={this.handleIndividualComplaintChange}/>)} />
                                     <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
                                     <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints} />)} />
                                     <Route path="/Dashboard/Complaints/*">

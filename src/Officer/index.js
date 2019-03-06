@@ -66,11 +66,11 @@ class Dashboard extends Component {
                 path: '/Dashboard/ManageOfficer',
                 icon: PieChart
             }] : [],
-            ... getCookie('roadGPortalRole') === hierarchy[hierarchy.length - 1] ? [{
-                name: 'Add Officer',
-                path: '/Dashboard/AddOfficer',
-                icon: PieChart
-            }] : [],
+            // ... getCookie('roadGPortalRole') === hierarchy[hierarchy.length - 1] ? [{
+            //     name: 'Add Officer',
+            //     path: '/Dashboard/AddOfficer',
+            //     icon: PieChart
+            // }] : [],
             {
                 name: 'Profile',
                 path: '/Dashboard/Profile',

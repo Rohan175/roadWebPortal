@@ -70,7 +70,7 @@ class ComplaintTable extends Component {
 
         return (
             <Paper style={{'padding' : '5px'}}>
-                <ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  />
+                <ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  handleIndividualComplaintChange={this.props.handleIndividualComplaintChange}/>
                 <Toolbar>
                     <Grid container>
                         <Grid item xs style={{display : 'flex',overflow:'auto'}}>

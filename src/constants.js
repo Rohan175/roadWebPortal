@@ -47,9 +47,9 @@ const status_type = [
 ]
 
 const griev_type = [
-    ['DAMAGED BRIDGE',true],
-    ['DAMAGED BRIDGE PARAPET',true],
-    ['BREACH ON A ROAD',true],
+    ['DAMAGED BRIDGE( ક્ષતિગ્રસ્ત બ્રિજ)',true],
+    ['DAMAGED BRIDGE PARAPET(ક્ષતિગ્રસ્ત બ્રિજ પેપેટ )',true],
+    ['BREACH ON A ROAD(રોડ પર ભીડ)',true],
     ['DAMAGED RAILING',true],
     ['SHARP CURVE',true],
     ['ACCIDENT PRONE ZONE',true],
@@ -77,7 +77,7 @@ const hierarchy1 = [
 ];
 
 const openLocationInGoogleMaps =  (lon,lat)=>{
-    window.open('https://www.google.com/maps/search/?api=1&query='+lon+','+lat, '_blank');
+    window.open('https://www.google.com/maps/dir/'+lon+','+lat, '_blank');
 }
 
 

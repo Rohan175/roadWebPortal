@@ -231,10 +231,14 @@ class ManageCharge extends React.Component {
     fetch(url + "chargeTransfer/", {
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'auth': 'token ' + getCookie("roadGPortalAuth")
         },
         method: "POST",
-        body: JSON.stringify({transferedPostId:this.props.postId,transferedOfficerId:this.props.officerId,selectedOfficerId:this.state.officerName.value[0],selectedOfficerType:this.state.officerName.value[1]})
+        body: JSON.stringify({selectedFromListPostId:this.props.postId,
+                              selectedFromListOfficerId:this.props.officerId,
+                              selectedFromUIOfficerId:this.state.officerName.value[0],
+                              selectedFromListOfficeType:this.props.officetype})
     }
 )
 .then(res => res.json())
@@ -344,7 +348,7 @@ class ManageCharge extends React.Component {
                   return officer.officer_type == this.state.filterPost;
                 })
                 .map(officer => ({
-                  value: [officer._id,officer.officer_type],
+                  value: [officer.officer_id._id,officer.officer_type],
                   label:
                     officer.officer_id.name +
                     "   No. - " +

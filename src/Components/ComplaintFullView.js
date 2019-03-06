@@ -144,6 +144,10 @@ class ComplaintFullView extends Component {
         comments : [],
         Comment: null,
         new_forword_complaint: "",
+        
+        show_new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
+        show_new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false,
+
         new_complaint_status: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "Pending",
         new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
         new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false,
@@ -255,7 +259,11 @@ class ComplaintFullView extends Component {
                     this.setState({
                         openSnackbarState: true,
                         snackbarMessage: 'Complaint has been updated',
+                        show_new_complaint_status :reqBody.complaint_status,
+                        show_new_isEmergency: reqBody.isEmergency
                     })
+
+                    this.props.handleIndividualComplaintChange(reqBody,false);
                 }
             })
             .catch(err => {
@@ -297,13 +305,13 @@ class ComplaintFullView extends Component {
         .then(res => res.json())
         .then(res => {
             console.log("foreword complaint response", res);
-            
-            // if(res.success) {
-            //     this.setState({
-            //         openSnackbarState: true,
-            //         snackbarMessage: 'Complaint is now foreworded',
-            //     })
-            // }
+            this.props.handleIndividualComplaintChange(this.props.ComplaintDialogData,true);
+            if(res.success) {
+                this.setState({
+                    openSnackbarState: true,
+                    snackbarMessage: 'Complaint is now foreworded',
+                })
+            }
         })
         .catch(err => {
             console.log(err);
@@ -443,7 +451,7 @@ class ComplaintFullView extends Component {
                                 <Grid item xs={12} md className={classes.textWrapper}>
                                 <Typography>{ "Grievance :   ".toUpperCase() + (complaintData? complaintData.griev_type : null)} <Button color="secondary" size="small" style={{float: 'right', display: 'none'}}>view on map</Button></Typography>
                                 <br />
-                                <Typography>{ "Status :   ".toUpperCase() + (complaintData? complaintData.complaint_status : null)}</Typography>
+                                <Typography>{ "Status :   ".toUpperCase() + (complaintData? this.state.show_new_complaint_status : null)}</Typography>
                                 <br />
                                 <Typography>{ "Date :   ".toUpperCase() + 
                                 (complaintData
@@ -466,7 +474,7 @@ class ComplaintFullView extends Component {
                                     <Typography style={{ display: 'inline', paddingRight:20}}>Location :{complaintData? complaintData.location.join(","):""}</Typography>
                                     <Button variant="outlined" size="small" onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button>
                                     <br/><br/>
-                                <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? (complaintData.isEmergency) ? "YES": "NO" : null)}</Typography>
+                                <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? this.state.show_new_isEmergency ? "YES": "NO" : null)}</Typography>
                                 
                                 </Grid>
                             </Grid>
@@ -482,7 +490,11 @@ class ComplaintFullView extends Component {
                             centered
                             >
                             <Tab label="UPDATE" />
+
+                            {
+                            (getCookie("roadGPortalRole") !== hierarchy[hierarchy.length - 1]) &&
                             <Tab label="FOREWORD COMPLAIN" />
+                            }
                             </Tabs>
                           </Paper>
                          <Divider />

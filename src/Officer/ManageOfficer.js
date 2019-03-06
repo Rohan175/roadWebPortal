@@ -257,7 +257,11 @@ class ManageOfficer extends Component {
   };
 
   handleChargeDialogOpen = (item) => {
+
+    console.log(item);
+    
     this.setState({
+    officetype: item.office_type,
     postId:item._id,
     officerId: item.officer_id._id,
       openChargeDialog: true
@@ -357,6 +361,9 @@ class ManageOfficer extends Component {
             Loading: false,
             OfficerData: res.data
           });
+
+          this.getTotalCountOfComplaintTypes(res.data);
+
         } else {
           this.handleDialogOpen(res.data, "Error");
         }
@@ -437,6 +444,8 @@ class ManageOfficer extends Component {
             </IconButton>
           </Toolbar>
           <ManageCharge
+
+            officetype= {this.state.officetype}
             officerId={this.state.officerId}
             postId={this.state.postId}
             OnSave={this.handleChargeDialogClose}
@@ -617,7 +626,7 @@ class ManageOfficer extends Component {
                         <TableRow key={index}>
                           {/* <TableCell><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
                           <TableCell>{item.officer_id.name} </TableCell>
-                          <TableCell>{item.officer_type} </TableCell>
+                          <TableCell>{item.office_type} </TableCell>
                           {/* <TableCell>{item.officer_id.phoneNo} </TableCell> */}
                           <TableCell style={{ display: "flex" }}>
                             <Avatar
@@ -669,16 +678,16 @@ class ManageOfficer extends Component {
                             </Avatar>
                           </TableCell>
                           <TableCell>
-                            <Button
-                              onClick={() => {
-                                this.handleOfficerDialogOpen(item);
-                              }}
-                              color="secondary"
-                              size="small"
-                              variant="text"
-                            >
-                              Update
-                            </Button>
+                              {/* <Button
+                                onClick={() => {
+                                  this.handleOfficerDialogOpen(item);
+                                }}
+                                color="secondary"
+                                size="small"
+                                variant="text"
+                              >
+                                Update
+                              </Button> */}
                             <Button
                               onClick={() => {
                                 this.handleComplaintDialogOpen(item);
