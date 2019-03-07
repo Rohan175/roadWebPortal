@@ -23,7 +23,7 @@ const styles = theme => ({
         justifyContent: "space-between"
     },
     appNavbar: {
-        [theme.breakpoints.up('sm')]: {
+        [theme.breakpoints.up('md')]: {
             display: 'none',
         },
     }
