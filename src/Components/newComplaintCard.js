@@ -17,7 +17,7 @@ import CardIcon from '@material-ui/icons/ArrowForward';
 import Typography from '@material-ui/core/Typography';
 
 // import bgImage from '../res/newComplaint.png';
-
+import { getCookie } from "../constants";
 
 const styles = theme => ({
     imageClass: {
@@ -125,12 +125,17 @@ const CardBox = props => {
                             <div className={classes.iconWrapper} >
                                 <Typography variant="display1" style={{margin: '0px 0px auto auto', padding: '20px', color: 'white'}}>{<CardIcon fontSize="large" />}</Typography>                        </div>
                         </div>
-                        <div className={classes.lowerDiv}>
-                            <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
-                            <br />
-                            <Typography variant="Subheading" style={{color: 'rgba(0,0,0,0.54)'}}>Unseen <br />compaints</Typography>
-                        </div>
-                    {/* </div> */}
+                        <div className={classes.iconWrapper} >
+                            <Typography variant="display1" style={{margin: '0px 0px auto auto', padding: '20px', color: 'white'}}>{<CardIcon fontSize="large" />}</Typography>                        </div>
+                    </div>
+                    <div className={classes.lowerDiv}>
+                        <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
+                        <br />
+                        <br/>
+                        <Typography variant="Subheading" style={{color: 'rgba(0,0,0,0.54)'}}>Logged in as :</Typography>
+                        <br/>
+                        <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{(JSON.parse(getCookie("roadGPortalCurrentPosts"))).post_id}</Typography>
+                    </div>
                     <div style={{margin: 'auto'}} className={classes.mobileCard} >
                         <CardContent>
                             <Typography variant="display1">{<props.CardIcon fontSize="large" />}</Typography>

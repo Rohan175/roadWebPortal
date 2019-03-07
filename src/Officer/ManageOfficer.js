@@ -28,6 +28,9 @@ import TableRow from "@material-ui/core/TableRow";
 // import Button from '@material-ui/core/Button';
 import Toolbar from "@material-ui/core/Toolbar";
 import Profile from "./Profile";
+import Tooltip from '@material-ui/core/Tooltip';
+
+
 import FilterIcon from '@material-ui/icons/FilterList';
 // import IconButton from '@material-ui/core/IconButton';
 import Typography from "@material-ui/core/Typography";
@@ -39,6 +42,10 @@ import ComplaintCount from "../Components/complaintCount";
 import ComplaintChipCount from "../Components/complaintChipCount";
 import ComplaintFullView from "../Components/ComplaintFullView";
 import ManageCharge from "./ManageCharge";
+
+import AccountCircle from '@material-ui/icons/AccountCircle';
+
+
 import {
   griev_type,
   status_type,
@@ -48,14 +55,19 @@ import {
   hierarchy1
 } from "../constants";
 import ManageComplaints from "./ManageComplaints";
+import { it } from "date-fns/esm/locale";
 
 const styles = theme => ({
   wrapper: {
     marginTop: "50px",
+    // paddingTop: "50px",
     // width: '100vw',
     height: "100vh",
     // display: 'flex',
     
+  },
+  centerStyle:{
+    textAlign:'center'
   },
   alignLeft: {
     display: "flex",
@@ -276,18 +288,27 @@ class ManageOfficer extends Component {
     });
   };
 
-  handleChargeDialogOpen = (item) => {
+  handleChargeDialogOpen = (item,index) => {
 
     console.log(item);
     
     this.setState({
+      row_index:index,
     officetype: item.office_type,
     postId:item._id,
     officerId: item.officer_id._id,
       openChargeDialog: true
     });
   };
+// saveChanges = (newOfficer) => {
 
+// console.log("data",this.state.OfficerData);
+//     let temp=this.state.OfficerData;
+//     temp[(this.state.index)]=newOfficer;
+//     this.setState({
+//       OfficerData:temp,
+//     });
+// }
   handleDialogOpen = (dialogMsg, dialogTitle) => {
     this.setState({
       openErrorDialog: true,
@@ -376,6 +397,9 @@ class ManageOfficer extends Component {
         console.table(res.data);
         //console.log(res.data);
         this.allOfficersData = res.data;
+        // this.setState({
+        //   allOfficersData:this.allOfficersData,
+        // });
         if (res.success) {
           this.setState({
             Loading: false,
@@ -540,7 +564,7 @@ class ManageOfficer extends Component {
             </IconButton>
           </Toolbar>
           <ManageCharge
-
+            //saveChanges={this.saveChanges} 
             officetype= {this.state.officetype}
             officerId={this.state.officerId}
             postId={this.state.postId}
@@ -578,63 +602,82 @@ class ManageOfficer extends Component {
                   item md={3} xs={12}
                   className={classes.sideFilter}
                 >
-                  {this.sideFilter(classes, officerRoleRender)}
-                </Grid>
-                <Grid item md={9} xs={12}>
-                  <Grid>
-                    <div
-                      className={classes.complaintChips}
-                    >
-                      <span style={{ margin: "10px" }}>
-                        <ComplaintChipCount
-                          type="Total Complaints"
-                          data={this.state.tTotal}
-                        />
-                      </span>
-                      <span style={{ margin: "10px" }}>
-                        <ComplaintChipCount
-                          type="Pending"
-                          data={this.state.tPending}
-                        />
-                      </span>
-                      <span style={{ margin: "10px" }}>
-                        <ComplaintChipCount
-                          type="Emergency"
-                          data={this.state.tEmergency}
-                        />
-                      </span>
-                      <span style={{ margin: "10px" }}>
-                        <ComplaintChipCount
-                          type="Approved"
-                          data={this.state.tApproved}
-                        />
-                      </span>
-                      <span style={{ margin: "10px" }}>
-                        <ComplaintChipCount
-                          type="Completed"
-                          data={this.state.tCompleted}
-                        />
-                      </span>
-                    </div>
-                  </Grid>
+                  <Table style={{textAlign:'center'}}>
+                    <TableHead>
+                      <TableRow>
+                        {/* <TableCell className={classes.centerStyle}> <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
+                        <TableCell className={classes.centerStyle}>Officer Name</TableCell>
+                        <TableCell className={classes.centerStyle}>Officer Role</TableCell>
+                        {/* <TableCell className={classes.centerStyle}>Mobile</TableCell> */}
+                        <TableCell className={classes.centerStyle}>Analysis</TableCell>
+                        {/* <TableCell style={{ visibility: 'hidden' }}>Analysis</TableCell> */}
+                        <TableCell className={classes.centerStyle}>Actions</TableCell>
+                        {/* <TableCell className={classes.centerStyle}>Complaints</TableCell>
+                        <TableCell className={classes.centerStyle}>Charge</TableCell> */}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {this.state.OfficerData.slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      ).map((item, index) => [
+                        <TableRow key={index}>   
+                        {console.log("item",item)}      
+                          {/* <TableCell className={classes.centerStyle}><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
+                          <Tooltip title={item.officer_id.phoneNo}><TableCell className={classes.centerStyle}>{item.officer_id.name} </TableCell></Tooltip>
+                          <Tooltip title={item.post_id}><TableCell className={classes.centerStyle}>{item.officer_type} </TableCell></Tooltip>
+                          {/* <TableCell className={classes.centerStyle}>{item.officer_id.phoneNo} </TableCell> */}
+                          <TableCell style={{ display: "flex" , justifyContent:"center", alignItems:"center"}}>
+                            <Tooltip title="Total Complaint"><Avatar
+                              className={classes.avatar}
+                              style={{
+                                background: "rgba(0, 0, 255, 0.1)",
+                                color: "black"
+                              }}
+                            >
+                              {item.complaint_data.total}
+                            </Avatar></Tooltip>
+                            <Tooltip title="Pending Complaint"><Avatar
+                              className={classes.avatar}
+                              style={{
+                                background: "rgba(155, 100, 0, 0.1)",
 
-                  <TablePagination
-                    style={{'padding' : 0,'flex' : 1}}
-                    component="div"
-                    count={this.state.OfficerData.length}
-                    rowsPerPageOptions={[15, 30, 45]}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    backIconButtonProps={{
-                      "aria-label": "Previous Page"
-                    }}
-                    nextIconButtonProps={{
-                      "aria-label": "Next Page"
-                    }}
-                    onChangePage={this.handleChangePage}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                  />
+                                color: "black"
+                              }}
+                            >
+                              {item.complaint_data.pending}
+                            </Avatar></Tooltip>
+                            <Tooltip title="Emergency Complaint"><Avatar
+                              className={classes.avatar}
+                              style={{
+                                background: "rgba(255, 0, 0, 0.1)",
+                                color: "black"
+                              }}
+                            >
+                              {item.complaint_data.emergency}
+                            </Avatar></Tooltip>
+                            <Tooltip title="Approved Complaint"><Avatar
+                              className={classes.avatar}
+                              style={{
+                                background: "rgba(128, 203, 196, 0.4)",
+                                color: "black"
+                              }}
+                            >
+                              {item.complaint_data.approved}
+                            </Avatar></Tooltip>
+                            <Tooltip title="Completed Complaint"><Avatar
+                              className={classes.avatar}
+                              style={{
+                                background: "rgba(0, 255, 0, 0.1)",
 
+                                color: "black"
+                              }}
+                            >
+                              {item.complaint_data.completed}
+                            </Avatar></Tooltip>
+                          </TableCell>
+                          <TableCell className={classes.centerStyle}>
+                              {/* <Button
                   <div style={{overflowX: 'auto',}}>
                     <Table>
                       <TableHead>
@@ -720,14 +763,30 @@ class ManageOfficer extends Component {
                                 >
                                   Update
                                 </Button> */}
-                              <Button
-                                onClick={() => {
-                                  this.handleComplaintDialogOpen(item);
-                                }}
-                                color="secondary"
-                                size="small"
-                                variant="text"
-                              >
+                                Update
+                              </Button> */}
+                            {/* edit here */}
+                            <Tooltip title="View All Complaint"><Button
+                              onClick={() => {
+                                this.handleComplaintDialogOpen(item);
+                              }}
+                              color="secondary"
+                              size="small"
+                              variant="text"
+                            >
+                              View
+                            </Button></Tooltip>
+                            <Tooltip title="Transfer Charge"><Button
+                              onClick={() => {
+                                this.handleChargeDialogOpen(item,index);
+                              }}
+                              color="secondary"
+                              variant="text"
+                              size="small"
+                            >
+                              Charge
+                            </Button></Tooltip>
+                          </TableCell>
                                 View
                               </Button>
                               <Button

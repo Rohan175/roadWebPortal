@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Tooltip from '@material-ui/core/Tooltip';
 import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import Button from '@material-ui/core/Button';
 // import { th } from 'date-fns/esm/locale';
 
@@ -33,7 +34,7 @@ const styles = theme => ({
 const DesktopMenu = props => {
     let { classes } = props;
     return (
-        <div className={classes.appDesktop}>
+        <div className={classes.appDesktop} style={{alignItems: 'center'}}>
             {
                 props.menuItems.map((item, index) => (
                     <div title={item.name} key={index} style={{marginRight: '4px'}}>
@@ -43,6 +44,9 @@ const DesktopMenu = props => {
                     </div>
                 ))
             }
+                <IconButton size="small" color="inherit" onClick={props.handleOpenPostDialog}>
+                    <AccountCircle /></IconButton>
+
         </div>
     )
 }
