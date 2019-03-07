@@ -16,6 +16,8 @@ import GeneralDialog from '../Components/GeneralDialog';
 import { griev_type,status_type,getCookie, url } from '../constants';
 // import Card from '@material-ui/core/Card';
 import Empty from '../res/empty.svg';
+import { Button } from '@material-ui/core';
+import FilterIcon from '@material-ui/icons/FilterList';
 
 const styles = theme => ({
     progressWrapper: {
@@ -48,6 +50,24 @@ const styles = theme => ({
     },
     padding10: {
         padding: '10px'
+    },
+    sideFilterGrid: {
+        height: '97vh',
+        paddingTop: '56px', 
+        overflowY: 'scroll', 
+        overflowX: 'hidden',
+        [theme.breakpoints.down('sm')]: {
+            display: 'none',
+        },
+    },
+    sideFilterButton: {
+        position: 'fixed', 
+        bottom: '20px', 
+        right: '20px',
+        display: 'none',
+        [theme.breakpoints.down('sm')]: {
+          display: 'flex',
+        },
     }
 })
 
@@ -63,7 +83,9 @@ class ComplaintContainer extends Component {
         lodding : true,
         SideFilter: true,
         emptyList: true,
-        filteredComplaints: []
+        filteredComplaints: [],
+
+        mobileFilterDialogOpen: false,
     }
     
     handleIndividualComplaintChange = (complaintData,isComplainForwarded) => {
@@ -321,9 +343,15 @@ class ComplaintContainer extends Component {
         });
     };
 
-    handleClose = () => {
-        this.setState({ openDialog: false });
+    handleClose = name => () => {
+        this.setState({ [name]: false });
     };
+
+    handleFilterOpen = () => {
+        this.setState({
+            mobileFilterDialogOpen: true
+        })
+    }
 
     exportExcel(e){
 
@@ -497,6 +525,20 @@ class ComplaintContainer extends Component {
         })
     }
 
+    sideFilter = () => (
+        <SideFilter 
+            status_type_map={this.state.status_type_map} 
+            griev_type_map={this.state.griev_type_map} 
+            StartingDate={this.state.StartingDate}
+            EndingDate={this.state.EndingDate}
+            exportExcel = {this.exportExcel.bind(this)}
+            emergency_state={this.state.emergency_state}
+            handleChange={this.handleChange}
+            handleEndingDateChange = {this.handleEndingDateChange}
+            handleStartingDateChange ={this.handleStartingDateChange}
+        />
+    )
+
     render() {
         let { classes } = this.props;
         //console.log(this.props);
@@ -507,10 +549,20 @@ class ComplaintContainer extends Component {
                 openDialogState = {this.state.openDialog}
                 dialogTitle = {this.state.dialogTitle}
                 dialogMsg = {this.state.dialogMsg}  
-                handleClose={this.handleClose}
+                handleClose={this.handleClose("openDialog")}
                 handleDialogOpen={this.handleDialogOpen}
             >
                 {/* <Button>Hello</Button> */}
+            </GeneralDialog>
+
+            <GeneralDialog 
+                openDialogState = {this.state.mobileFilterDialogOpen}
+                dialogTitle = {"Filters"}
+                dialogMsg = {""}  
+                handleClose={this.handleClose("mobileFilterDialogOpen")}
+                handleDialogOpen={this.handleFilterOpen}
+            >
+                {this.sideFilter()}
             </GeneralDialog>
             
 
@@ -518,18 +570,8 @@ class ComplaintContainer extends Component {
                 
                 {!this.state.lodding && this.allComplaints && this.allComplaints.length !== 0 &&
                 <Grid container spacing={0} style={{margin:'auto'}}>
-                    <Grid item md={3} xs={12} style={{height: '97vh', paddingTop: '56px', overflowY: 'scroll', overflowX: 'hidden'}}>
-                        <SideFilter 
-                            status_type_map={this.state.status_type_map} 
-                            griev_type_map={this.state.griev_type_map} 
-                            StartingDate={this.state.StartingDate}
-                            EndingDate={this.state.EndingDate}
-                            exportExcel = {this.exportExcel.bind(this)}
-                            emergency_state={this.state.emergency_state}
-                            handleChange={this.handleChange}
-                            handleEndingDateChange = {this.handleEndingDateChange}
-                            handleStartingDateChange ={this.handleStartingDateChange}
-                        />
+                    <Grid item md={3} xs={12} className={classes.sideFilterGrid}>
+                        {this.sideFilter()}
                     </Grid>
                     <Grid item md={9} xs={12} >
                         {   
@@ -544,6 +586,7 @@ class ComplaintContainer extends Component {
                                         <Redirect to="/Dashboard/" />
                                     </Route>
                                 </Switch>
+                                <Button variant="extendedFab" color="secondary" onClick={this.handleFilterOpen} className={classes.sideFilterButton}><FilterIcon />&nbsp;Filter</Button>
                             </div>)
 
                             : (

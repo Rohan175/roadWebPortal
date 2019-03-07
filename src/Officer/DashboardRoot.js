@@ -4,14 +4,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 // import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
 
 import AllInbox from '@material-ui/icons/AllInbox';
 import AddAlert from '@material-ui/icons/AddAlert';
@@ -27,73 +19,31 @@ import EmergencyCardBox from '../Components/EmergencyComplaintCard';
 
 import { getCookie, url } from '../constants';
 
-const DialogTitle = withStyles(theme => ({
-    root: {
-        borderBottom: `1px solid ${theme.palette.divider}`,
-        margin: 0,
-        padding: theme.spacing.unit * 2,
-    },
-    closeButton: {
-        position: 'absolute',
-        right: theme.spacing.unit,
-        top: theme.spacing.unit,
-        color: theme.palette.grey[500],
-    },
-}))(props => {
-    const { children, classes, onClose } = props;
-    return (
-        <MuiDialogTitle disableTypography className={classes.root}>
-            <Typography variant="h6">{children}</Typography>
-            {onClose ? (
-                <IconButton aria-label="Close" className={classes.closeButton} onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
-            ) : null}
-        </MuiDialogTitle>
-    );
-});
-
-const DialogContent = withStyles(theme => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing.unit * 2,
-    },
-}))(MuiDialogContent);
-
-const DialogActions = withStyles(theme => ({
-    root: {
-        borderTop: `1px solid ${theme.palette.divider}`,
-        margin: 0,
-        padding: theme.spacing.unit,
-    },
-}))(MuiDialogActions);
-
 const styles = theme => ({
     wrapper: {
         // width: '100vw',
+        // marginTop: '-30px',
         height: '100vh',
         display: 'flex',
         [theme.breakpoints.down('sm')]: {
             marginTop: '-66px',
-            // display: 'none',
         },
-        // background: 'white',
-        // backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${bgImage})`,
-        // backgroundSize: 'cover',
-        // backgroundPosition: 'center'
     },
     dashboardwrapper: {
+        marginTop: '120px',
         [theme.breakpoints.down('sm')]: {
             width: 'auto',
             margin: 'auto'
         },
-        margin: '100px auto auto auto',
-        // background: 'black',
-        width: '40%'
+        margin: 'auto',
     },
     cardRoot: {
         [theme.breakpoints.down('sm')]: {
-            display: 'inline-block',
+            // display: 'inline-block',
+            // marginTop: '0px'
+            'grid-template-columns': '1fr 1fr',
+            'grid-template-rows': '30vh 30vh',
+            margin: '0px'
         },
         marginTop: '-30px',
         display: 'grid',
@@ -105,26 +55,46 @@ const styles = theme => ({
         'grid-column': '1/2',
         display: 'inline-block',
         'grid-row': '1/3',
+        [theme.breakpoints.down('sm')]: {
+            'grid-column': '1/2',
+            display: 'inline-block',
+            'grid-row': '1/2',
+        },
     },
     card2: {
 
         'grid-column': '2/4',
         display: 'inline-block',
-        'grid-row': '1/2'
+        'grid-row': '1/2',
+        [theme.breakpoints.down('sm')]: {
+            'grid-column': '2/2',
+            display: 'inline-block',
+            'grid-row': '1/2',
+        },
     },
     card3: {
 
         'grid-column': '2/3',
         display: 'inline-block',
-        'grid-row': '2/3'
+        'grid-row': '2/3',
+        [theme.breakpoints.down('sm')]: {
+            'grid-column': '1/2',
+            display: 'inline-block',
+            'grid-row': '2/2',
+        },
     },
     card4: {
 
         'grid-column': '3/4',
         display: 'inline-block',
-        'grid-row': '2/3'
+        'grid-row': '2/3',
+        [theme.breakpoints.down('sm')]: {
+            'grid-column': '2/2',
+            display: 'inline-block',
+            'grid-row': '2/2',
+        },
     }
-})
+});
 
 
 class DashboardRoot extends Component {
