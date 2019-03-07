@@ -1,5 +1,10 @@
 import React, { Component } from 'react'
 import LinearProgress from '@material-ui/core/LinearProgress';
+
+import ComplaintFullView from "../Components/ComplaintFullView";
+
+import Button from '@material-ui/core/Button';
+
 import {openLocationInGoogleMaps} from '../constants';
 function loadMaps(src) {
   return new Promise(function (resolve, reject) {
@@ -34,10 +39,28 @@ export default class ComplaintMap extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      status: 'start'
+      status: 'start',
+      openIndividiualCompaintDialog : false,
+      ComplaintDialogData: null
     };
   }
 
+  openIndividiualCompaintDialog = (i) => {
+
+    console.log("--------> " ,  this.props.complaintsData[i], i);
+    
+
+    this.setState({
+      openIndividiualCompaintDialog : true,
+      ComplaintDialogData:this.props.complaintsData[i]
+    })
+  }
+
+  
+  handleClose = () => {
+    this.setState({ openIndividiualCompaintDialog: false, ComplaintDialogData: null });
+};
+  
 
   load_Data = (data) => {
     
@@ -46,13 +69,13 @@ export default class ComplaintMap extends Component {
     //pushpinInfos[1] = { 'lat': 41.799645, 'lng': 20.913514, 'title': 'Kipper Market', 'description': 'Kipper Gostilet' };
     //console.log(data);
     
-    data.forEach(d => {
+    data.forEach((d,i) => {
       pushpinInfos.push({ 'lat': d.location[0] , 
                           'lng': d.location[1] , 
-                          'title': d.name, 
-                          'description': 'Status : ' + d.complaint_status +
-                           '<div>' + d.griev_type + '</div>'+
-                           '<div>' + d.location[0] + ' , ' + d.location[1]+'</div>'})
+                          'title': d.name.slice(0,50) + "... ", 
+                          'description': '<div onclick = window.complaintMapThis.openIndividiualCompaintDialog('+i+') > <div>Status : ' + d.complaint_status +
+                           ' ( ' + d.griev_type + ' ) '+
+                           '<div><a style="color : blue;font-size: 15px" onclick = window.complaintMapThis.openIndividiualCompaintDialog()> View more</a></div></div>'})
     });
 
     let apiKey = "<api key>";
@@ -118,7 +141,12 @@ export default class ComplaintMap extends Component {
 
 
   componentWillMount() {
+    console.log(window);
+    
+    window.complaintMapThis = this;
 
+//    console.log(window);
+    
     if (this.state.status === 'start') {
       this.setState({ status: 'loading' });
       console.log('Maps loading');
@@ -156,6 +184,14 @@ export default class ComplaintMap extends Component {
     return (
 
       <div>
+
+
+        <ComplaintFullView 
+                ComplaintDialogData={this.state.ComplaintDialogData} 
+                handleComplaintDialogClose={this.handleClose} 
+                openComplaintDialogState={this.state.openIndividiualCompaintDialog}  
+                handleIndividualComplaintChange={this.props.handleIndividualComplaintChange}/>
+
         { LoadingState ? (<LinearProgress />) :
         (<div id="mMap" style={{ width: 'auto', height: '90vh' }}> mMap</div>)
         }
@@ -164,5 +200,3 @@ export default class ComplaintMap extends Component {
   }
 
 }
-
-

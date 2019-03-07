@@ -8,6 +8,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 import SideFilter from "../Components/SideFilter";
 import ComplaintTable from "./ComplaintTable";
 import ComplaintReport from "./ComplaintReport";
@@ -108,6 +110,12 @@ class ComplaintContainer extends Component {
             let c = this.allComplaints.find(c => c._id === complaintData.complaint_id)
             c.complaint_status = complaintData.complaint_status;
             c.isEmergency = complaintData.isEmergency
+
+            this.setState((oldState) => {
+                let cod = oldState.filteredComplaints.find(c => c._id === complaintData.complaint_id);
+                cod.complaint_status = complaintData.complaint_status;
+                cod.isEmergency = complaintData.isEmergency;
+            })
         }
     }
 
@@ -355,6 +363,9 @@ class ComplaintContainer extends Component {
 
     exportExcel(e){
 
+        console.log("Excel : ");        
+        console.log(this);
+        
         console.log(this.state.filteredComplaints);
         var Headers = Object.keys(this.state.filteredComplaints[0]);
         console.log(Headers);
@@ -392,8 +403,11 @@ class ComplaintContainer extends Component {
         console.log(CsvString);
         
         let link = document.createElement('a');
+        console.log("Excel ", document, link);
+        document.body.appendChild(link);
         link.setAttribute('href','data:application/vnd.ms-excel;charset=utf-8,'+encodeURIComponent(CsvString));
         link.setAttribute('download','R&BPortal_Data.csv');
+        link.setAttribute('target', '_self');
         link.click();
 
         //e.downlaod = "R&BPortal_Data.xls"
@@ -409,15 +423,40 @@ class ComplaintContainer extends Component {
         })
 
         let headers = new Headers();
+
         headers.append('origin', '*');
         headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
 
-        let req = new Request(url  + "getComplaints?isPaginated=0", {
-            method: "GET",
-            headers: headers,
-            mode: 'cors'
-        });
+        let req;
 
+        if(this.props.manageOfficer){
+            
+            let query = 'getJrOfficerComplaints?officerIds=';
+            console.log(this.props.OfficerIdArray);
+
+            for(let i = 0; i < this.props.OfficerIdArray.length; i++){
+                
+                query+= this.props.OfficerIdArray[i] + ';';
+                //console.log(i);
+            }
+            console.log(query);
+
+            query = query.slice(0,query.length-1)
+            req = new Request(url  + query,{
+                method: "GET",
+                headers: headers,
+                mode: 'cors'
+            });
+
+        }else{
+                
+            req = new Request(url  + "getComplaints?isPaginated=0", {
+                method: "GET",
+                headers: headers,
+                mode: 'cors'
+            });
+        }
+        
         fetch(req)
             .then(res => res.json())
             .then(res => {
@@ -525,19 +564,24 @@ class ComplaintContainer extends Component {
         })
     }
 
-    sideFilter = () => (
-        <SideFilter 
-            status_type_map={this.state.status_type_map} 
-            griev_type_map={this.state.griev_type_map} 
-            StartingDate={this.state.StartingDate}
-            EndingDate={this.state.EndingDate}
-            exportExcel = {this.exportExcel.bind(this)}
-            emergency_state={this.state.emergency_state}
-            handleChange={this.handleChange}
-            handleEndingDateChange = {this.handleEndingDateChange}
-            handleStartingDateChange ={this.handleStartingDateChange}
-        />
-    )
+    sideFilter = () => {
+        console.log("SideFilter : ");
+        console.log(this, this instanceof ComplaintContainer);
+
+        return (
+            <SideFilter 
+                status_type_map={this.state.status_type_map} 
+                griev_type_map={this.state.griev_type_map} 
+                StartingDate={this.state.StartingDate}
+                EndingDate={this.state.EndingDate}
+                exportExcel = {this.exportExcel.bind(this)}
+                emergency_state={this.state.emergency_state}
+                handleChange={this.handleChange}
+                handleEndingDateChange = {this.handleEndingDateChange}
+                handleStartingDateChange ={this.handleStartingDateChange}
+            />
+        )
+    }
 
     render() {
         let { classes } = this.props;
@@ -554,6 +598,11 @@ class ComplaintContainer extends Component {
             >
                 {/* <Button>Hello</Button> */}
             </GeneralDialog>
+
+            {this.props.manageOfficer && 
+            (<IconButton color="inherit" style={{position: 'absolute', top: '10px', left: '10px'}} onClick={this.props.handleComplaintDialogClose} aria-label="Close">
+                <CloseIcon />
+            </IconButton>)}
 
             <GeneralDialog 
                 openDialogState = {this.state.mobileFilterDialogOpen}
@@ -577,18 +626,22 @@ class ComplaintContainer extends Component {
                         {   
 
                             (this.state.filteredComplaints && this.state.filteredComplaints.length != 0) ?
-                            (<div style={{paddingTop: '50px'}}>
-                                <Switch >
-                                    <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} handleIndividualComplaintChange={this.handleIndividualComplaintChange}/>)} />
-                                    <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route path="/Dashboard/Complaints/*">
-                                        <Redirect to="/Dashboard/" />
-                                    </Route>
-                                </Switch>
-                                <Button variant="extendedFab" color="secondary" onClick={this.handleFilterOpen} className={classes.sideFilterButton}><FilterIcon />&nbsp;Filter</Button>
-                            </div>)
+                            (this.props.manageOfficer ? 
 
+                            (<div style={{paddingTop: '0px'}}>
+                                    <ComplaintTable complaintsData={this.state.filteredComplaints} />
+                            </div>)
+                            : (<div style={{paddingTop: '50px'}}>
+                                    <Switch >
+                                        <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} handleIndividualComplaintChange={this.handleIndividualComplaintChange}/>)} />
+                                        <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
+                                        <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints } handleIndividualComplaintChange={this.handleIndividualComplaintChange} />)} />
+                                        <Route path="/Dashboard/Complaints/*">
+                                            <Redirect to="/Dashboard/" />
+                                        </Route>
+                                    </Switch>
+                                </div>)
+                            )
                             : (
                                 <div className={classes.progressWrapper} style={{height: '100vh'}}>
                                     <div style={{margin: 'auto', textAlign: 'center'}}>
@@ -602,6 +655,7 @@ class ComplaintContainer extends Component {
                                 </div>
                             )
                         } 
+                                                        <Button variant="extendedFab" color="secondary" onClick={this.handleFilterOpen} className={classes.sideFilterButton}><FilterIcon />&nbsp;Filter</Button>
                     </Grid>
                 </Grid>
                 }

@@ -116,6 +116,7 @@ class CommentComponent extends Component{
             id="Comment"
             label="Comment"
             multiline
+            shrink
             value={props.comment}
             error={this.state.comment_error}
             helperText={this.state.comment_helper_text}
@@ -402,6 +403,9 @@ class ComplaintFullView extends Component {
             Comment: ComplaintDialogData ? ComplaintDialogData.comments[0] : null,
             comments: ComplaintDialogData ? ComplaintDialogData.comments : [],
             // new_forword_complaint: null,
+            show_new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
+            show_new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false,
+            
             new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
             new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
@@ -580,7 +584,7 @@ class ComplaintFullView extends Component {
                                     :""
                                     }
                                         
-                                    <Button variant="raised" onClick={this.handleSave} style={{width: '100%'}} color="secondary">Save</Button>
+                                    <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary">Save</Button>
                                     </Grid>
                              </Paper>
                             {
@@ -614,7 +618,7 @@ class ComplaintFullView extends Component {
                                     </Grid>
                                     </Grid>
                                     <br/>
-                                    <Button variant="raised" style={{width: '100%'}} onClick={this.handleForeword} color="secondary">foreword</Button>
+                                    <Button variant="raised" style={{width: '100%', color: 'white'}} onClick={this.handleForeword} color="secondary">foreword</Button>
                           </Paper>
                             }
                         </Grid>

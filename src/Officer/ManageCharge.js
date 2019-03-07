@@ -20,6 +20,7 @@ import Paper from "@material-ui/core/Paper";
 import Chip from "@material-ui/core/Chip";
 import MenuItem from "@material-ui/core/MenuItem";
 import CancelIcon from "@material-ui/icons/Cancel";
+import GeneralDialog from '../Components/GeneralDialog';
 import { emphasize } from "@material-ui/core/styles/colorManipulator";
 import {
   griev_type,
@@ -74,7 +75,7 @@ const styles = theme => ({
     right: 0
   },
   divider: {
-    height: theme.spacing.unit * 2
+    height: theme.spacing.unit * 3
   },
   ProfileWrapper: {
     margin: "auto",
@@ -213,17 +214,30 @@ class ManageCharge extends React.Component {
     filterPost: "",
     errorStatus:false,
     saveButtondisable:false,
-    officerName: ""
+    officerName: "",
+    openDialog : false,
   };
+
+  
+  handleDialogOpen = (dialogMsg, dialogTitle) => {        
+    this.setState({ 
+        openDialog: true,
+        dialogMsg: dialogMsg,
+        dialogTitle: dialogTitle
+    });
+};
 
   chargeTransfer = () =>{
     if(this.state.officerName.value==null || this.props.officerId==null || this.props.postId==null){
-        this.setState({
+      this.handleDialogOpen("Please select all data","Error");  
+      this.setState({
+        openDialog:true,
             errorStatus:true,
         })
         return;
     } 
     this.setState({
+      openDialog:false,
         errorStatus:false,
         saveButtondisable:true,
     })
@@ -243,14 +257,24 @@ class ManageCharge extends React.Component {
 )
 .then(res => res.json())
 .then(res => {
+ 
     if(res.success){
+      this.handleDialogOpen("Officer transfer successfully !!","");  
+      //this.props.saveChanges(this.state.officerName.value[2]);
     }else{
-    
+    //here
+    this.handleDialogOpen("Officer transfer successfully !!","");  
     }
+    this.setState({
+      openDialog:true,
+    })
 })
 .catch(err => {
-    console.log(err);                
+    console.log(err);   
+    //here       
+    this.handleDialogOpen(err,"Error Occur");        
     this.setState({
+      openDialog:true,
         saveButtondisable:false,
     })
 });
@@ -276,7 +300,7 @@ class ManageCharge extends React.Component {
   };
 
   handleOfficerChange = (value) => {
-    
+    console.log("check",value);
     if (value == null) {
       value = { value: "" };
     }
@@ -285,6 +309,13 @@ class ManageCharge extends React.Component {
       officerName: value
     });
   };
+
+
+handleClose = () => {
+    this.setState({ openDialog: false });
+};
+
+
   render() {
     const { classes, theme } = this.props;
     const officerPost = hierarchy1
@@ -314,7 +345,7 @@ class ManageCharge extends React.Component {
     };
 
     return (
-      <Paper className={classes.ProfileWrapper} style={{backgroundColor:this.state.errorStatus && "red"}}>
+      <Paper className={classes.ProfileWrapper} >
         <Toolbar>
           <Typography
             variant="headline"
@@ -323,7 +354,7 @@ class ManageCharge extends React.Component {
             Manage Officer Charge Here
           </Typography>
         </Toolbar>
-
+        <div className={classes.divider} />
         <NoSsr>
           <Select
             classes={classes}
@@ -339,7 +370,7 @@ class ManageCharge extends React.Component {
           <div className={classes.divider} />
           <Select
             classes={classes}
-            styles={selectStyles}
+            styles={selectStyles && {marginTop:"200dp"}}
             
             options={
               // officer
@@ -363,8 +394,9 @@ class ManageCharge extends React.Component {
             onChange={this.handleOfficerChange}
             placeholder="Select Officer"
           />
-          <div className={classes.divider} />
+          <div className={classes.divider} /><br/>
           <Button
+            style={{width:"100%"}}
             onClick={this.chargeTransfer}
             disabled={this.state.saveButtondisable}
             color="secondary"
@@ -373,6 +405,16 @@ class ManageCharge extends React.Component {
             Save
           </Button>
         </NoSsr>
+
+        <GeneralDialog 
+                openDialogState = {this.state.openDialog}
+                dialogTitle = {this.state.dialogTitle}
+                dialogMsg = {this.state.dialogMsg}  
+                handleClose={this.handleClose}
+                handleDialogOpen={this.handleDialogOpen}
+            >
+                <Button onClick={this.handleClose}>OK</Button>
+            </GeneralDialog>
       </Paper>
     );
   }

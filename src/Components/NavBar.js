@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu/';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 
 import ChangePostDialoge from './ChangePostDialoge';
 import MobileDrawer from './MobileDrawer';
@@ -144,7 +145,10 @@ class NavBar extends Component {
                     </Typography>
                     <div>
                         <DesktopMenu menuItems={navBarItems} handleOpenPostDialog={this.handleOpenPostDialog} />
-                        <Button variant="text" size="small" color="inherit" onClick={this.handleOpenPostDialog}>Change Post</Button>
+                        {/* <Button variant="text" size="small" color="inherit" onClick={this.handleOpenPostDialog}>Change Post</Button> */}
+                        <IconButton size="small" color="inherit" onClick={this.handleOpenPostDialog}>
+                            <AccountCircle />
+                        </IconButton>
                         <IconButton className={classes.appNavbar} color="inherit" onClick={this.handleMenuClick}><MenuIcon /></IconButton>
                     </div>
                 </Toolbar>
