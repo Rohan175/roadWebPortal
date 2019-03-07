@@ -46,7 +46,7 @@ import {
   hierarchy,
   hierarchy1
 } from "../constants";
-import ManageComplaints from "./ManageComplaints";
+import ManageComplaints from "./ComplaintContainer";
 
 const styles = theme => ({
   wrapper: {
@@ -423,6 +423,7 @@ class ManageOfficer extends Component {
           TransitionComponent={Transition}
         >
           <ManageComplaints
+            manageOfficer
             OfficerIdArray={this.state.OfficerIdArray}
             handleComplaintDialogClose={this.handleComplaintDialogClose}
           />

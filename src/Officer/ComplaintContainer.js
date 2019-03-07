@@ -8,6 +8,8 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
+import CloseIcon from "@material-ui/icons/Close";
+import IconButton from "@material-ui/core/IconButton";
 import SideFilter from "../Components/SideFilter";
 import ComplaintTable from "./ComplaintTable";
 import ComplaintReport from "./ComplaintReport";
@@ -86,6 +88,13 @@ class ComplaintContainer extends Component {
             let c = this.allComplaints.find(c => c._id === complaintData.complaint_id)
             c.complaint_status = complaintData.complaint_status;
             c.isEmergency = complaintData.isEmergency
+
+            this.setState(oldState => {
+                let cod = oldState.filteredComplaints.find(c => c._id === complaintData.complaint_id)
+                cod.complaint_status = complaintData.complaint_status;
+                cod.isEmergency = complaintData.isEmergency
+                
+            })
         }
     }
 
@@ -383,12 +392,36 @@ class ComplaintContainer extends Component {
         let headers = new Headers();
         headers.append('origin', '*');
         headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
+        let req;
 
-        let req = new Request(url  + "getComplaints?isPaginated=0", {
-            method: "GET",
-            headers: headers,
-            mode: 'cors'
-        });
+        if(this.props.manageOfficer){
+            
+            let query = 'getJrOfficerComplaints?officerIds=';
+            console.log(this.props.OfficerIdArray);
+
+            for(let i = 0; i < this.props.OfficerIdArray.length; i++){
+                
+                query+= this.props.OfficerIdArray[i] + ';';
+                //console.log(i);
+            }
+            console.log(query);
+
+            query = query.slice(0,query.length-1)
+            req = new Request(url  + query,{
+                method: "GET",
+                headers: headers,
+                mode: 'cors'
+            });
+
+        }else{
+                
+            req = new Request(url  + "getComplaints?isPaginated=0", {
+                method: "GET",
+                headers: headers,
+                mode: 'cors'
+            });
+        }
+
 
         fetch(req)
             .then(res => res.json())
@@ -512,7 +545,11 @@ class ComplaintContainer extends Component {
             >
                 {/* <Button>Hello</Button> */}
             </GeneralDialog>
-            
+
+            {this.props.manageOfficer && 
+            (<IconButton color="inherit" style={{position: 'absolute', top: '10px', left: '10px'}} onClick={this.props.handleComplaintDialogClose} aria-label="Close">
+                <CloseIcon />
+            </IconButton>)}
 
                 {this.state.lodding &&  <LinearProgress  className={classes.progress} />}    
                 
@@ -535,16 +572,22 @@ class ComplaintContainer extends Component {
                         {   
 
                             (this.state.filteredComplaints && this.state.filteredComplaints.length != 0) ?
-                            (<div style={{paddingTop: '50px'}}>
-                                <Switch >
-                                    <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} handleIndividualComplaintChange={this.handleIndividualComplaintChange}/>)} />
-                                    <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route path="/Dashboard/Complaints/*">
-                                        <Redirect to="/Dashboard/" />
-                                    </Route>
-                                </Switch>
-                            </div>)
+                            (this.props.manageOfficer ? 
+                            
+                                (<div style={{paddingTop: '0px'}}>
+                                     <ComplaintTable complaintsData={this.state.filteredComplaints} />
+                                </div>)
+                                : (<div style={{paddingTop: '50px'}}>
+                                    <Switch >
+                                        <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} handleIndividualComplaintChange={this.handleIndividualComplaintChange}/>)} />
+                                        <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
+                                        <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints } handleIndividualComplaintChange={this.handleIndividualComplaintChange} />)} />
+                                        <Route path="/Dashboard/Complaints/*">
+                                            <Redirect to="/Dashboard/" />
+                                        </Route>
+                                    </Switch>
+                                </div>)
+                            )
 
                             : (
                                 <div className={classes.progressWrapper} style={{height: '100vh'}}>

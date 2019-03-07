@@ -240,7 +240,7 @@ class Profile extends Component {
           <div className={classes.wrapper}>
 
             
-                <Dialog
+                {/* <Dialog
                     onClose={this.handleClose}
                     aria-labelledby="customized-dialog-title"
                     open={this.state.openUpdateDialog}
@@ -267,7 +267,7 @@ class Profile extends Component {
                             Ok
                 </Button>
                     </DialogActions>
-                </Dialog>
+                </Dialog> */}
 
 
             <GeneralDialog

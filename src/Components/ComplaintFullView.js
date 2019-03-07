@@ -395,13 +395,17 @@ class ComplaintFullView extends Component {
     componentWillReceiveProps(nextProps) {
        let ComplaintDialogData = nextProps.ComplaintDialogData;
        
-       console.log("-----");
+       console.log("----- PRops --------");
        console.log(ComplaintDialogData);
 
         this.setState({
             Comment: ComplaintDialogData ? ComplaintDialogData.comments[0] : null,
             comments: ComplaintDialogData ? ComplaintDialogData.comments : [],
             // new_forword_complaint: null,
+            show_new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
+            show_new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false,
+
+            
             new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
             new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
@@ -412,7 +416,8 @@ class ComplaintFullView extends Component {
         let props = this.props;
         const { classes } = props;
         const complaintData = props.ComplaintDialogData;
-
+        console.log(complaintData);
+        
         return (
             <div>
                 <Dialog
