@@ -28,6 +28,10 @@ import TableRow from "@material-ui/core/TableRow";
 // import Button from '@material-ui/core/Button';
 import Toolbar from "@material-ui/core/Toolbar";
 import Profile from "./Profile";
+import Tooltip from '@material-ui/core/Tooltip';
+
+
+import FilterIcon from '@material-ui/icons/FilterList';
 // import IconButton from '@material-ui/core/IconButton';
 import Typography from "@material-ui/core/Typography";
 import LinearProgress from "@material-ui/core/LinearProgress";
@@ -38,6 +42,10 @@ import ComplaintCount from "../Components/complaintCount";
 import ComplaintChipCount from "../Components/complaintChipCount";
 import ComplaintFullView from "../Components/ComplaintFullView";
 import ManageCharge from "./ManageCharge";
+
+import AccountCircle from '@material-ui/icons/AccountCircle';
+
+
 import {
   griev_type,
   status_type,
@@ -47,21 +55,20 @@ import {
   hierarchy1
 } from "../constants";
 import ManageComplaints from "./ComplaintContainer";
+import { it } from "date-fns/esm/locale";
+
 
 const styles = theme => ({
   wrapper: {
     marginTop: "50px",
+    // paddingTop: "50px",
     // width: '100vw',
     height: "100vh",
     // display: 'flex',
-    [theme.breakpoints.down("sm")]: {
-      // marginTop: '-66px',
-      // display: 'none',
-    }
-    // background: 'white',
-    // backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url(${bgImage})`,
-    // backgroundSize: 'cover',
-    // backgroundPosition: 'center'
+    
+  },
+  centerStyle:{
+    textAlign:'center'
   },
   alignLeft: {
     display: "flex",
@@ -90,6 +97,30 @@ const styles = theme => ({
   },
   textField: {
     width: "100%"
+  },
+  sideFilter: {
+    height: "90vh", 
+    overflowY: "scroll",
+    display: 'block',
+    [theme.breakpoints.down('sm')]: {
+      display: 'none',
+    },
+  },
+  complaintChips: {
+    display: "flex",
+    justifyContent: "space-around",
+    [theme.breakpoints.down('sm')]: {
+      display: 'block',
+    },
+  },
+  sideFilterButton: {
+    position: 'fixed', 
+    bottom: '20px', 
+    right: '20px',
+    display: 'none',
+    [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+    },
   }
 });
 
@@ -115,7 +146,9 @@ class ManageOfficer extends Component {
     OfficerDialogData: null,
     ComplaintDialogData: null,
 
-    Loading: true
+    Loading: true,
+
+    sideFilterDialogOpen: false
   };
 
   officerMap = null;
@@ -256,18 +289,27 @@ class ManageOfficer extends Component {
     });
   };
 
-  handleChargeDialogOpen = (item) => {
+  handleChargeDialogOpen = (item,index) => {
 
     console.log(item);
     
     this.setState({
+      row_index:index,
     officetype: item.office_type,
     postId:item._id,
     officerId: item.officer_id._id,
       openChargeDialog: true
     });
   };
+// saveChanges = (newOfficer) => {
 
+// console.log("data",this.state.OfficerData);
+//     let temp=this.state.OfficerData;
+//     temp[(this.state.index)]=newOfficer;
+//     this.setState({
+//       OfficerData:temp,
+//     });
+// }
   handleDialogOpen = (dialogMsg, dialogTitle) => {
     this.setState({
       openErrorDialog: true,
@@ -356,6 +398,9 @@ class ManageOfficer extends Component {
         console.table(res.data);
         //console.log(res.data);
         this.allOfficersData = res.data;
+        // this.setState({
+        //   allOfficersData:this.allOfficersData,
+        // });
         if (res.success) {
           this.setState({
             Loading: false,
@@ -376,6 +421,72 @@ class ManageOfficer extends Component {
         this.handleDialogOpen(err.message, "Error");
       });
   }
+
+  sideFilterHandleOpen = () => {
+    this.setState({
+      sideFilterDialogOpen: true
+    })
+  }
+
+  sideFilterHandleClose = () => {
+    this.setState({
+      sideFilterDialogOpen: false
+    })
+  }
+
+  sideFilter = (classes, officerRoleRender) => (
+    <Slide direction="right" in={true}>
+      <div>
+        <div className={classes.wrapperItem}>
+          <div className={classes.alignLeft}>
+            <Typography variant="subheading">
+              Officer Role
+            </Typography>
+
+            <IconButton
+              style={{ padding: "0px" }}
+              className={classnames(classes.expand, {
+                [classes.expandOpen]: this.state
+                  .expandOfficerFilters
+              })}
+              onClick={() =>
+                this.handleExpandClick("expandOfficerFilters")
+              }
+              aria-expanded={this.state.expandOfficerFilters}
+              aria-label="Show more"
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+          </div>
+          <br />
+          <Divider />
+
+          <Collapse
+            in={this.state.expandOfficerFilters}
+            timeout="auto"
+          >
+            <FormGroup>{officerRoleRender}</FormGroup>
+          </Collapse>
+          <br />
+          <Divider />
+          <br />
+
+          <br />
+          <Button
+            onClick={() => {
+              this.handleComplaintDialogOpen(
+                this.allOfficersData
+              );
+            }}
+            color="secondary"
+            variant="outlined"
+          >
+            View All
+          </Button>
+        </div>
+      </div>
+    </Slide>
+  )
 
   render() {
     let { classes } = this.props;
@@ -416,6 +527,16 @@ class ManageOfficer extends Component {
           {/* <Button>Hello</Button> */}
         </GeneralDialog>
 
+        <GeneralDialog
+          openDialogState={this.state.sideFilterDialogOpen}
+          dialogTitle={"Filter"}
+          dialogMsg={""}
+          handleClose={this.sideFilterHandleClose}
+          handleDialogOpen={this.sideFilterHandleOpen}
+        >
+          {this.sideFilter(classes, officerRoleRender)}
+        </GeneralDialog>
+
         <Dialog
           fullScreen
           open={this.state.openComplaintDialogState}
@@ -445,7 +566,7 @@ class ManageOfficer extends Component {
             </IconButton>
           </Toolbar>
           <ManageCharge
-
+            //saveChanges={this.saveChanges} 
             officetype= {this.state.officetype}
             officerId={this.state.officerId}
             postId={this.state.postId}
@@ -480,143 +601,21 @@ class ManageOfficer extends Component {
             <div style={{ overflowX: "auto" }}>
               <Grid container spacing={8} style={{ margin: "auto" }}>
                 <Grid
-                  item
-                  sm={3}
-                  xs={12}
-                  style={{ height: "90vh", overflowY: "scroll" }}
+                  item md={3} xs={12}
+                  className={classes.sideFilter}
                 >
-                  <Slide direction="right" in={true}>
-                    <div>
-                      <div className={classes.wrapperItem}>
-                        {/* <TextField
-                          id="searchFieldValue"
-                          label="Search"
-                          // value={this.state.searchFieldValue}
-                          className={classes.textField}
-                          // onChange={this.handleSearchFielde}
-                          margin="none"
-                          // onChange={e =>
-                          //   this.setState({ searchFieldValue: e.target.value })
-                          // }
-                        /> */}
-                        <div className={classes.alignLeft}>
-                          <Typography variant="subheading">
-                            Officer Role
-                          </Typography>
-
-                          <IconButton
-                            style={{ padding: "0px" }}
-                            className={classnames(classes.expand, {
-                              [classes.expandOpen]: this.state
-                                .expandOfficerFilters
-                            })}
-                            onClick={() =>
-                              this.handleExpandClick("expandOfficerFilters")
-                            }
-                            aria-expanded={this.state.expandOfficerFilters}
-                            aria-label="Show more"
-                          >
-                            <ExpandMoreIcon />
-                          </IconButton>
-                        </div>
-                        <br />
-                        <Divider />
-
-                        <Collapse
-                          in={this.state.expandOfficerFilters}
-                          timeout="auto"
-                        >
-                          <FormGroup>{officerRoleRender}</FormGroup>
-                        </Collapse>
-                        <br />
-                        <Divider />
-                        <br />
-
-                        <br />
-                        <Button
-                          onClick={() => {
-                            this.handleComplaintDialogOpen(
-                              this.allOfficersData
-                            );
-                          }}
-                          color="secondary"
-                          variant="outlined"
-                        >
-                          View All
-                        </Button>
-                      </div>
-                    </div>
-                  </Slide>
-                </Grid>
-                <Grid item sm={9} xs={12}>
-                  <Grid>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-around"
-                      }}
-                    >
-                      <span>
-                        <ComplaintChipCount
-                          type="Total Complaints"
-                          data={this.state.tTotal}
-                        />
-                      </span>
-                      <span style={{ marginLeft: "10px" }}>
-                        <ComplaintChipCount
-                          type="Pending"
-                          data={this.state.tPending}
-                        />
-                      </span>
-                      <span style={{ marginLeft: "10px" }}>
-                        <ComplaintChipCount
-                          type="Emergency"
-                          data={this.state.tEmergency}
-                        />
-                      </span>
-                      <span style={{ marginLeft: "10px" }}>
-                        <ComplaintChipCount
-                          type="Approved"
-                          data={this.state.tApproved}
-                        />
-                      </span>
-                      <span style={{ marginLeft: "10px" }}>
-                        <ComplaintChipCount
-                          type="Completed"
-                          data={this.state.tCompleted}
-                        />
-                      </span>
-                    </div>
-                  </Grid>
-
-                  <TablePagination
-                    component="div"
-                    count={this.state.OfficerData.length}
-                    rowsPerPageOptions={[15, 30, 45]}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    backIconButtonProps={{
-                      "aria-label": "Previous Page"
-                    }}
-                    nextIconButtonProps={{
-                      "aria-label": "Next Page"
-                    }}
-                    onChangePage={this.handleChangePage}
-                    onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                  />
-
-                  <Table>
+                  <Table style={{textAlign:'center'}}>
                     <TableHead>
                       <TableRow>
-                        {/* <TableCell> <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
-                        <TableCell>Officer Name</TableCell>
-                        <TableCell>Officer Role</TableCell>
-                        {/* <TableCell>Mobile</TableCell> */}
-                        <TableCell>Analysis</TableCell>
+                        {/* <TableCell className={classes.centerStyle}> <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
+                        <TableCell className={classes.centerStyle}>Officer Name</TableCell>
+                        <TableCell className={classes.centerStyle}>Officer Role</TableCell>
+                        {/* <TableCell className={classes.centerStyle}>Mobile</TableCell> */}
+                        <TableCell className={classes.centerStyle}>Analysis</TableCell>
                         {/* <TableCell style={{ visibility: 'hidden' }}>Analysis</TableCell> */}
-                        <TableCell>Actions</TableCell>
-                        {/* <TableCell>Complaints</TableCell>
-                        <TableCell>Charge</TableCell> */}
+                        <TableCell className={classes.centerStyle}>Actions</TableCell>
+                        {/* <TableCell className={classes.centerStyle}>Complaints</TableCell>
+                        <TableCell className={classes.centerStyle}>Charge</TableCell> */}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -624,13 +623,14 @@ class ManageOfficer extends Component {
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
                       ).map((item, index) => [
-                        <TableRow key={index}>
-                          {/* <TableCell><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
-                          <TableCell>{item.officer_id.name} </TableCell>
-                          <TableCell>{item.office_type} </TableCell>
-                          {/* <TableCell>{item.officer_id.phoneNo} </TableCell> */}
-                          <TableCell style={{ display: "flex" }}>
-                            <Avatar
+                        <TableRow key={index}>   
+                        {console.log("item",item)}      
+                          {/* <TableCell className={classes.centerStyle}><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
+                          <Tooltip title={item.officer_id.phoneNo}><TableCell className={classes.centerStyle}>{item.officer_id.name} </TableCell></Tooltip>
+                          <Tooltip title={item.post_id}><TableCell className={classes.centerStyle}>{item.officer_type} </TableCell></Tooltip>
+                          {/* <TableCell className={classes.centerStyle}>{item.officer_id.phoneNo} </TableCell> */}
+                          <TableCell style={{ display: "flex" , justifyContent:"center", alignItems:"center"}}>
+                            <Tooltip title="Total Complaint"><Avatar
                               className={classes.avatar}
                               style={{
                                 background: "rgba(0, 0, 255, 0.1)",
@@ -638,8 +638,8 @@ class ManageOfficer extends Component {
                               }}
                             >
                               {item.complaint_data.total}
-                            </Avatar>
-                            <Avatar
+                            </Avatar></Tooltip>
+                            <Tooltip title="Pending Complaint"><Avatar
                               className={classes.avatar}
                               style={{
                                 background: "rgba(155, 100, 0, 0.1)",
@@ -648,8 +648,8 @@ class ManageOfficer extends Component {
                               }}
                             >
                               {item.complaint_data.pending}
-                            </Avatar>
-                            <Avatar
+                            </Avatar></Tooltip>
+                            <Tooltip title="Emergency Complaint"><Avatar
                               className={classes.avatar}
                               style={{
                                 background: "rgba(255, 0, 0, 0.1)",
@@ -657,8 +657,8 @@ class ManageOfficer extends Component {
                               }}
                             >
                               {item.complaint_data.emergency}
-                            </Avatar>
-                            <Avatar
+                            </Avatar></Tooltip>
+                            <Tooltip title="Approved Complaint"><Avatar
                               className={classes.avatar}
                               style={{
                                 background: "rgba(128, 203, 196, 0.4)",
@@ -666,8 +666,8 @@ class ManageOfficer extends Component {
                               }}
                             >
                               {item.complaint_data.approved}
-                            </Avatar>
-                            <Avatar
+                            </Avatar></Tooltip>
+                            <Tooltip title="Completed Complaint"><Avatar
                               className={classes.avatar}
                               style={{
                                 background: "rgba(0, 255, 0, 0.1)",
@@ -676,20 +676,99 @@ class ManageOfficer extends Component {
                               }}
                             >
                               {item.complaint_data.completed}
-                            </Avatar>
+                            </Avatar></Tooltip>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className={classes.centerStyle}>
                               {/* <Button
-                                onClick={() => {
-                                  this.handleOfficerDialogOpen(item);
+                  <div style={{overflowX: 'auto',}}>
+                    <Table>
+                      <TableHead>
+                        <TableRow>
+                          {/* <TableCell> <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
+                          <TableCell>Officer Name</TableCell>
+                          <TableCell>Officer Role</TableCell>
+                          {/* <TableCell>Mobile</TableCell> */}
+                          <TableCell>Analysis</TableCell>
+                          {/* <TableCell style={{ visibility: 'hidden' }}>Analysis</TableCell> */}
+                          <TableCell>Actions</TableCell>
+                          {/* <TableCell>Complaints</TableCell>
+                          <TableCell>Charge</TableCell> */}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {this.state.OfficerData.slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        ).map((item, index) => [
+                          <TableRow key={index}>
+                            {/* <TableCell><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
+                            <TableCell>{item.officer_id.name} </TableCell>
+                            <TableCell>{item.office_type} </TableCell>
+                            {/* <TableCell>{item.officer_id.phoneNo} </TableCell> */}
+                            <TableCell style={{ display: "flex" }}>
+                              <Avatar
+                                className={classes.avatar}
+                                style={{
+                                  background: "rgba(0, 0, 255, 0.1)",
+                                  color: "black"
                                 }}
-                                color="secondary"
-                                size="small"
-                                variant="text"
                               >
+                                {item.complaint_data.total}
+                              </Avatar>
+                              <Avatar
+                                className={classes.avatar}
+                                style={{
+                                  background: "rgba(155, 100, 0, 0.1)",
+
+                                  color: "black"
+                                }}
+                              >
+                                {item.complaint_data.pending}
+                              </Avatar>
+                              <Avatar
+                                className={classes.avatar}
+                                style={{
+                                  background: "rgba(255, 0, 0, 0.1)",
+                                  color: "black"
+                                }}
+                              >
+                                {item.complaint_data.emergency}
+                              </Avatar>
+                              <Avatar
+                                className={classes.avatar}
+                                style={{
+                                  background: "rgba(128, 203, 196, 0.4)",
+                                  color: "black"
+                                }}
+                              >
+                                {item.complaint_data.approved}
+                              </Avatar>
+                              <Avatar
+                                className={classes.avatar}
+                                style={{
+                                  background: "rgba(0, 255, 0, 0.1)",
+
+                                  color: "black"
+                                }}
+                              >
+                                {item.complaint_data.completed}
+                              </Avatar>
+                            </TableCell>
+                            <TableCell>
+                                {/* <Button
+                                  onClick={() => {
+                                    this.handleOfficerDialogOpen(item);
+                                  }}
+                                  color="secondary"
+                                  size="small"
+                                  variant="text"
+                                >
+                                  Update
+                                </Button> */}
                                 Update
                               </Button> */}
-                            <Button
+                            {/* edit here */}
+                            <Tooltip title="View All Complaint"><Button
                               onClick={() => {
                                 this.handleComplaintDialogOpen(item);
                               }}
@@ -698,45 +777,60 @@ class ManageOfficer extends Component {
                               variant="text"
                             >
                               View
-                            </Button>
-                            <Button
+                            </Button></Tooltip>
+                            <Tooltip title="Transfer Charge"><Button
                               onClick={() => {
-                                this.handleChargeDialogOpen(item);
+                                this.handleChargeDialogOpen(item,index);
                               }}
                               color="secondary"
                               variant="text"
                               size="small"
                             >
                               Charge
-                            </Button>
+                            </Button></Tooltip>
                           </TableCell>
+                                View
+                              </Button>
+                              <Button
+                                onClick={() => {
+                                  this.handleChargeDialogOpen(item);
+                                }}
+                                color="secondary"
+                                variant="text"
+                                size="small"
+                              >
+                                Charge
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+
+                          // <TableRow>
+                          //         <TableCell colSpan={5} >
+                          //             <div style={{display : "flex",justifyContent:"space-around"}}>
+                          //                 <ComplaintChipCount type="" data={item.total} />
+                          //                 <ComplaintChipCount type="Pending" data={item.pending} />
+                          //                 <ComplaintChipCount type="Emergency" data={item.emergency} />
+                          //                 <ComplaintChipCount type="Completed" data={item.completed} />
+                          //             </div>
+                          //         </TableCell>
+                          // </TableRow>,
+
+                          // <TableRow style={{height:"2px"}}>
+                          //     <TableCell colSpan={5}></TableCell>
+                          // </TableRow>
+                        ])}
+                      </TableBody>
+
+                      {emptyRows > 0 && (
+                        <TableRow style={{ height: 49 * emptyRows }}>
+                          <TableCell colSpan={6} />
                         </TableRow>
-
-                        // <TableRow>
-                        //         <TableCell colSpan={5} >
-                        //             <div style={{display : "flex",justifyContent:"space-around"}}>
-                        //                 <ComplaintChipCount type="" data={item.total} />
-                        //                 <ComplaintChipCount type="Pending" data={item.pending} />
-                        //                 <ComplaintChipCount type="Emergency" data={item.emergency} />
-                        //                 <ComplaintChipCount type="Completed" data={item.completed} />
-                        //             </div>
-                        //         </TableCell>
-                        // </TableRow>,
-
-                        // <TableRow style={{height:"2px"}}>
-                        //     <TableCell colSpan={5}></TableCell>
-                        // </TableRow>
-                      ])}
-                    </TableBody>
-
-                    {emptyRows > 0 && (
-                      <TableRow style={{ height: 49 * emptyRows }}>
-                        <TableCell colSpan={6} />
-                      </TableRow>
-                    )}
-                  </Table>
+                      )}
+                    </Table>
+                  </div>
                 </Grid>
               </Grid>
+              <Button variant="extendedFab" color="secondary" onClick={this.sideFilterHandleOpen} className={classes.sideFilterButton}><FilterIcon />&nbsp;Filter</Button>
             </div>
           )}
         </Paper>
