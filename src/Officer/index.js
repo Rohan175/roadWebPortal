@@ -24,7 +24,12 @@ const styles = theme => ({
     wrapper: {
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'bottom'
+        backgroundPosition: 'bottom',
+        [theme.breakpoints.down('sm')]: {
+            backgroundImage: `url(${bgImage})`,
+            backgroundPosition: '-250px 20px'
+            // background: 'white'
+        },
     },
     backgr: {
         position: 'absolute',

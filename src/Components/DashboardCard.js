@@ -28,9 +28,10 @@ const styles = theme => ({
         backgroundColor: 'black',
         textDecoration : 'none',
         [theme.breakpoints.down('sm')]: {
-            // marginTop: '-66px',
             // display: 'flex',
-            minWidth: '150px'
+            margin: '5px',
+            minWidth: '150px',
+            height: 'auto'
         },
     },
     CardButton: {
@@ -44,24 +45,6 @@ const styles = theme => ({
     media: {
         // ⚠️ object-fit is not supported by IE 11.
         objectFit: 'cover',
-    },
-    topLeft: {
-        position: 'absolute',
-        top: '-5px',
-        left: '-5px',
-        borderLeft: '1px solid black',
-        borderTop: '1px solid black',
-        height: '30px',
-        width: '30px'
-    },
-    bottomRight: {
-        position: 'absolute',
-        bottom: '-5px',
-        right: '-5px',
-        borderBottom: '1px solid black',
-        borderRight: '1px solid black',
-        height: '30px',
-        width: '30px'
     },
     primary: {
         backgroundColor: 'rgba(0, 0, 255, 0.1)',
@@ -93,24 +76,20 @@ const CardBox = props => {
     return (
         <Zoom in={props.startAnimation}>
             <Paper className={classNames(classes.Card, getClassName(props.CardColor))} component={NavLink} to={{ pathname: props.link, state: {dashboardButton : props.CardName} }}>
-                {/* <div className={classes.topLeft}></div> */}
-                    <div style={{margin: 'auto'}} >
-                        <CardContent>
-                            <Typography variant="display1">{<props.CardIcon fontSize="large" />}</Typography>
-                            <Typography variant="caption">{props.CardName}</Typography>
-                             
-                            {(!props.fromAdmin) &&
-                            <Typography variant="caption">Complaints</Typography>}
+                <div style={{margin: 'auto'}} >
+                    <CardContent>
+                        <Typography variant="display1">{<props.CardIcon fontSize="large" />}</Typography>
+                        <Typography variant="caption">{props.CardName}</Typography>
+                            
+                        {(!props.fromAdmin) &&
+                        <Typography variant="caption">Complaints</Typography>}
 
-                            <Typography variant="display2">{props.CardValue}</Typography>
-                        </CardContent>
-                        <CardActions>
-                            {/* <Button className={classes.CardButton} size="small" component={NavLink} to={{ pathname: '/Dashboard/Complaints/Table', state: {dashboardButton : props.CardName} }}>view</Button> */}
-                        </CardActions>
-                    </div>
-                    {/* </Grid> */}
-                {/* </Grid> */}
-                {/* <div className={classes.bottomRight}></div> */}
+                        <Typography variant="display2">{props.CardValue}</Typography>
+                    </CardContent>
+                    <CardActions>
+                        {/* <Button className={classes.CardButton} size="small" component={NavLink} to={{ pathname: '/Dashboard/Complaints/Table', state: {dashboardButton : props.CardName} }}>view</Button> */}
+                    </CardActions>
+                </div>
             </Paper>
         </Zoom>
     )

@@ -14,12 +14,11 @@ import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
     appDesktop: {
-    
         [theme.breakpoints.down('md')]: {
             display: 'none',
         },
         [theme.breakpoints.up('md')]: {
-            display: 'flex',
+            display: 'inline-flex',
         },
     },
     activeLink: {
@@ -45,9 +44,9 @@ const DesktopMenu = props => {
                     </div>
                 ))
             }
-                
                 <IconButton size="small" color="inherit" onClick={props.handleOpenPostDialog}>
                     <AccountCircle /></IconButton>
+
         </div>
     )
 }

@@ -35,6 +35,7 @@ const styles = theme => ({
         backgroundColor: 'black',
         [theme.breakpoints.down('sm')]: {
             // // marginTop: '-66px',
+            margin: '5px',
              display: 'inline-block',
             minWidth: '150px'
         },

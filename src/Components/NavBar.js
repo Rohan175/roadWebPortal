@@ -144,6 +144,7 @@ class NavBar extends Component {
                     </Typography>
                     <div>
                         <DesktopMenu menuItems={navBarItems} handleOpenPostDialog={this.handleOpenPostDialog} />
+                        <Button variant="text" size="small" color="inherit" onClick={this.handleOpenPostDialog}>Change Post</Button>
                         <IconButton className={classes.appNavbar} color="inherit" onClick={this.handleMenuClick}><MenuIcon /></IconButton>
                     </div>
                 </Toolbar>
