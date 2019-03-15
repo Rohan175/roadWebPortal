@@ -57,7 +57,7 @@ class Dashboard extends Component {
     state = {
         navBarItems: [
             {
-                name: 'Complaints',
+                name: 'My Complaints',
                 path: '/Dashboard/Complaints/Table',
                 icon: TableChart
             },
@@ -67,7 +67,7 @@ class Dashboard extends Component {
                 icon: Place
             },
             ... getCookie('roadGPortalRole') !== hierarchy[0] ? [{
-                name: 'Manage Officer',
+                name: 'All Complaints & Manage Officer',
                 path: '/Dashboard/ManageOfficer',
                 icon: PieChart
             }] : [],

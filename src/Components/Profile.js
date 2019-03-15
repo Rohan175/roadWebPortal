@@ -340,6 +340,7 @@ class Profile extends Component {
                         <Button color="primary" disabled={!this.state.changed} onClick={this.handleSave}>Save</Button>&nbsp;
                         <Button color="secondary" onClick={ () => {
                             setCookie("roadGPortalAuth", {}, -1);
+                            setCookie("firstTimeLogin", false, -1);
                             window.location.reload();
                         } }>Logout</Button>
                     </Grid>

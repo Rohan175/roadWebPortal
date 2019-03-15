@@ -65,13 +65,16 @@ export default class ComplaintMap extends Component {
   load_Data = (data) => {
     
     let pushpinInfos = [];
-    //pushpinInfos[0] = { 'lat': 23.456574, 'lng': 72.234324, 'title': 'Kipper Market', 'description': 'Braka Miladinovi 178, 1200 Tetovë, Tetovo, Macedonia' };
-    //pushpinInfos[1] = { 'lat': 41.799645, 'lng': 20.913514, 'title': 'Kipper Market', 'description': 'Kipper Gostilet' };
+    // pushpinInfos[0] = { 'lat': 23.456574, 'lng': 72.234324, 'title': 'Kipper Market', 'description': 'Braka Miladinovi 178, 1200 Tetovë, Tetovo, Macedonia' };
+    // pushpinInfos[1] = { 'lat': 41.799645, 'lng': 20.913514, 'title': 'Kipper Market', 'description': 'Kipper Gostilet' };
     //console.log(data);
     
     data.forEach((d,i) => {
-      pushpinInfos.push({ 'lat': d.location[0] , 
-                          'lng': d.location[1] , 
+
+      console.log("Location ===> ", d.location[0], d.location[1]);
+      if(d.location[0] !== undefined && d.location[1] !== undefined)
+      pushpinInfos.push({ 'lat': d.location[0], 
+                          'lng': d.location[1], 
                           'title': d.name.slice(0,50) + "... ", 
                           'description': '<div onclick = window.complaintMapThis.openIndividiualCompaintDialog('+i+') > <div>Status : ' + d.complaint_status +
                            ' ( ' + d.griev_type + ' ) '+
@@ -193,7 +196,7 @@ export default class ComplaintMap extends Component {
                 handleIndividualComplaintChange={this.props.handleIndividualComplaintChange}/>
 
         { LoadingState ? (<LinearProgress />) :
-        (<div id="mMap" style={{ width: 'auto', height: '90vh' }}> mMap</div>)
+        (<div id="mMap" style={{ width: 'auto', height: '90vh' }}>  Loading...</div>)
         }
       </div>
     )

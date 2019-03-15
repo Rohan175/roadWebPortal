@@ -71,6 +71,16 @@ class Login extends Component {
             disableLogin : true
         })
 
+        if(!phoneNo){
+            this.handleDialogOpen("Please enter phone number.", "Error")
+            this.setState({
+                loginText:"Login",
+                disableLogin:false
+            })
+
+            return;
+        }
+
         if(phoneNo && password && password.length >= 6 && password.length < 12) {
             fetch(url + "login/", {
                     headers: {
@@ -90,6 +100,7 @@ class Login extends Component {
                     this.setCookie("roadGPortalRole", res.role, 1);
                     this.setCookie("roadGPortalPosts", JSON.stringify(res.posts), 1);
                     this.setCookie("roadGPortalCurrentPosts", JSON.stringify(res.posts[0]), 1);
+                    this.setCookie("firstTimeLogin", true, 1);
                     this.setCookie("isUpdated", res.isUpdated, 1);
                     this.props.setLogin(res.loginType);
                     console.log("posts available",res.posts);

@@ -16,7 +16,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import MO_ComplaintFullView from "../Components/MO_ComplaintFullView"
 import ComplaintFullView from "../Components/ComplaintFullView";
 
 // import Card from '@material-ui/core/Card';
@@ -70,7 +70,12 @@ class ComplaintTable extends Component {
 
         return (
             <Paper style={{'padding' : '5px'}}>
-                <ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  handleIndividualComplaintChange={this.props.handleIndividualComplaintChange}/>
+                {this.props.manageOfficer
+                
+                ?(<MO_ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  handleIndividualComplaintChange={this.props.handleIndividualComplaintChange}/>)
+                :(<ComplaintFullView ComplaintDialogData={this.state.ComplaintDialogData} handleComplaintDialogClose={this.handleComplaintDialogClose} openComplaintDialogState={this.state.openComplaintDialogState}  handleIndividualComplaintChange={this.props.handleIndividualComplaintChange}/>)
+                }
+                
                 <Toolbar>
                     <Grid container>
                         <Grid item xs style={{display : 'flex',overflow:'auto'}}>

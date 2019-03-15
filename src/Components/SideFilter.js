@@ -73,7 +73,7 @@ class SideFilter extends Component {
             <div>
                 <div className={classes.wrapperItem} style={{paddingRight:'0px'}}>
                     <div className={classes.alignLeft}>
-                        <Typography variant="subheading">Emergency Complaints</Typography>
+                        <Typography variant="subheading">Only Emergency Complaints</Typography>
                         
                         <Checkbox
                             style={{padding:'0px'}}

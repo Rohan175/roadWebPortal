@@ -18,6 +18,7 @@ import Typography from '@material-ui/core/Typography';
 
 // import bgImage from '../res/newComplaint.png';
 import { getCookie} from '../constants';
+import { Tooltip } from '@material-ui/core';
 
 
 const styles = theme => ({
@@ -114,6 +115,8 @@ const CardBox = props => {
         }
     }
 
+    let postId =(JSON.parse(getCookie("roadGPortalCurrentPosts"))).post_id;
+
     return (
         <Zoom in={props.startAnimation}>
             <Paper className={classNames(classes.Card, getClassName(props.CardColor))} >
@@ -132,7 +135,7 @@ const CardBox = props => {
                             <br/>
                             <Typography variant="Subheading" style={{color: 'rgba(0,0,0,0.54)'}}>Logged in as :</Typography>
                             <br/>
-                            <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{(JSON.parse(getCookie("roadGPortalCurrentPosts"))).post_id}</Typography>
+                            <Tooltip title ={postId}><Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{postId.length > 15 ? (postId).slice(0,15)+"..." : postId}</Typography></Tooltip>
                         </div>
                     {/* </div> */}
                     <div style={{margin: 'auto'}} className={classes.mobileCard} >

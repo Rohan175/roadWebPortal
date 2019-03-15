@@ -42,10 +42,11 @@ class ChangePostDialoge extends React.Component {
   };
 
   render() {
-    const { classes, onClose, selectedValue, ...other } = this.props;
-
+    const { classes, onClose, selectedValue, open, ...other } = this.props;
+    console.log("changePost", open);
+    
     return (
-      <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other} >
+      <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" open={open} {...other} >
         <DialogTitle id="simple-dialog-title">Change Post</DialogTitle>
         <div className={classes.Wrap} >
           <List>
@@ -63,6 +64,7 @@ class ChangePostDialoge extends React.Component {
           <br/>
           <Button onClick={ () => {
                             setCookie("roadGPortalAuth", {}, -1);
+                            setCookie("firstTimeLogin", false, -1);
                             window.location.reload();
                         } } variant="contained" color="secondary" style={{ minWidth: '100%', color: 'white' }}>LOGOUT</Button>
         </div>

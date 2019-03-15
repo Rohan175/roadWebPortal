@@ -98,11 +98,12 @@ const styles = theme => ({
     },
   },
   complaintChips: {
+    overflow : "auto",
     display: "flex",
     justifyContent: "space-around",
     paddingTop: '20px',
     [theme.breakpoints.down('sm')]: {
-      display: 'block',
+      display: 'flex',
     },
   },
   sideFilterButton: {
@@ -380,6 +381,7 @@ class ManageOfficer extends Component {
       .then(res => {
         console.table(res.data);
         //console.log(res.data);
+
         this.allOfficersData = res.data;
         if (res.success) {
           this.setState({
@@ -461,7 +463,7 @@ class ManageOfficer extends Component {
             color="secondary"
             variant="outlined"
           >
-            View All
+            View All COMPLAINTS
           </Button>
         </div>
       </div>
@@ -646,7 +648,7 @@ class ManageOfficer extends Component {
                         <TableRow>
                           {/* <TableCell className={classes.centerStyle} > <Checkbox checked={this.state.checkBoxSelectAll} onChange={this.handleCheckBoxChange('all')} /> </TableCell> */}
                           <TableCell className={classes.centerStyle} >Officer Name</TableCell>
-                          <TableCell className={classes.centerStyle} >Officer Role</TableCell>
+                          <TableCell className={classes.centerStyle} >Officer Post</TableCell>
                           {/* <TableCell className={classes.centerStyle} >Mobile</TableCell> */}
                           <TableCell className={classes.centerStyle} >Analysis</TableCell>
                           {/* <TableCell style={{ visibility: 'hidden' }}>Analysis</TableCell> */}
@@ -664,9 +666,10 @@ class ManageOfficer extends Component {
                         {console.log("item",item)}      
                           {/* <TableCell className={classes.centerStyle}><Checkbox checked={this.state.checkBoxes[index]} onChange={this.handleCheckBoxChange(item._id)} /> </TableCell> */}
                           <Tooltip title={item.officer_id.phoneNo}><TableCell className={classes.centerStyle}>{item.officer_id.name} </TableCell></Tooltip>
-                          <Tooltip title={item.post_id}><TableCell className={classes.centerStyle}>{item.officer_type} </TableCell></Tooltip>
+                          <Tooltip title={item.post_id}><TableCell className={classes.centerStyle}>{item.office_type} </TableCell></Tooltip>
                           {/* <TableCell className={classes.centerStyle}>{item.officer_id.phoneNo} </TableCell> */}
-                          <TableCell style={{ display: "flex" , justifyContent:"center", alignItems:"center"}}>
+                          <TableCell >
+                          <div style={{ display: "flex" , justifyContent:"center", alignItems:"center"}}>
                             <Tooltip title="Total Complaint"><Avatar
                               className={classes.avatar}
                               style={{
@@ -714,6 +717,7 @@ class ManageOfficer extends Component {
                             >
                               {item.complaint_data.completed}
                             </Avatar></Tooltip>
+                            </div>
                           </TableCell>
                           <TableCell className={classes.centerStyle}>
                               {/* <Button
@@ -727,7 +731,7 @@ class ManageOfficer extends Component {
                                 Update
                               </Button> */}
                             {/* edit here */}
-                            <Tooltip title="View All Complaint"><Button
+                            <Tooltip title="Shows complaints of selected officer"><Button
                               onClick={() => {
                                 this.handleComplaintDialogOpen(item);
                               }}
@@ -735,9 +739,9 @@ class ManageOfficer extends Component {
                               size="small"
                               variant="text"
                             >
-                              View
+                              View Complaints
                             </Button></Tooltip>
-                            <Tooltip title="Transfer Charge"><Button
+                            <Tooltip title="Transfers Charge of selected officer"><Button
                               onClick={() => {
                                 this.handleChargeDialogOpen(item,index);
                               }}
@@ -745,7 +749,7 @@ class ManageOfficer extends Component {
                               variant="text"
                               size="small"
                             >
-                              Charge
+                              Transfer Charge
                             </Button></Tooltip>
                           </TableCell>
                         </TableRow>

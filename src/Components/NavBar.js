@@ -34,18 +34,13 @@ class NavBar extends Component {
     state = {
         openDrawer: false,
         selectedPost: "",
-        openPostDialog: false,
+        openPostDialog: getCookie("firstTimeLogin") == "true" ? true : false,   
         Redirect: false,
+        postList: JSON.parse(getCookie("roadGPortalPosts")),
+        selectedPost: JSON.parse(getCookie("roadGPortalCurrentPosts")),
         openDialog : false,
     }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            postList: JSON.parse(getCookie("roadGPortalPosts")),
-            selectedPost: JSON.parse(getCookie("roadGPortalCurrentPosts")),
-        }
-    }
 
     handleMenuClick = () => {
         this.setState({
@@ -105,6 +100,7 @@ class NavBar extends Component {
                     setCookie("roadGPortalRole", res.role, 1);
                     setCookie("roadGPortalPosts", JSON.stringify(res.posts), 1);
                     setCookie("roadGPortalCurrentPosts",JSON.stringify(postValue),1);
+                    setCookie("firstTimeLogin",false, 1);
                     this.setState({
                         selectedPost: JSON.parse(getCookie("roadGPortalCurrentPosts")),
                     })
@@ -137,6 +133,9 @@ class NavBar extends Component {
     render() {
         let { classes } = this.props;
         let { navBarItems } = this.props;
+        
+        console.log("Fuck off : ",getCookie("firstTimeLogin"), getCookie("firstTimeLogin") == "true" ? true : false);
+        
         return (
             <AppBar position="fixed" color="inherit">
                 <Toolbar variant="dense" className={classes.Toolbar}>
@@ -146,17 +145,19 @@ class NavBar extends Component {
                     <div>
                         <DesktopMenu menuItems={navBarItems} handleOpenPostDialog={this.handleOpenPostDialog} />
                         {/* <Button variant="text" size="small" color="inherit" onClick={this.handleOpenPostDialog}>Change Post</Button> */}
+                        {this.state.postList.length > 1 && ( 
                         <IconButton size="small" color="inherit" onClick={this.handleOpenPostDialog}>
                             <AccountCircle />
-                        </IconButton>
+                        </IconButton>)}
                         <IconButton className={classes.appNavbar} color="inherit" onClick={this.handleMenuClick}><MenuIcon /></IconButton>
                     </div>
                 </Toolbar>
                 <MobileDrawer menuItems={navBarItems} openDrawer={this.state.openDrawer} handleClickAway={this.handleClickAway} />
+
                 <ChangePostDialoge
                     postLists={this.state.postList}//{['username@gmail.com', 'user02@gmail.com']}
                     selectedPost={this.state.selectedPost}
-                    open={this.state.openPostDialog}
+                    open={this.state.postList.length > 1 ? this.state.openPostDialog : false}
                     onClose={this.handleClosePostDialog}
                 />
                 <GeneralDialog 

@@ -33,6 +33,7 @@ import green from '@material-ui/core/colors/green';
 import amber from '@material-ui/core/colors/amber';
 
 import CloseIcon from '@material-ui/icons/Close';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import ImageCarousel from "./ImageCarousel";
 import { getFormatedDate,openLocationInGoogleMaps, getCookie, url, hierarchy } from "../constants";
@@ -98,7 +99,7 @@ class CommentComponent extends Component{
     state={
         comment:"",
         comment_error:null,
-        comment_helper_text:""
+        comment_helper_text:"",
     }
 
     handleComment = e => {
@@ -114,9 +115,9 @@ class CommentComponent extends Component{
         return(
             <TextField
             id="Comment"
-            label="Comment"
+            label="Remark"
             multiline
-            shrink
+            shrink="true"
             value={props.comment}
             error={this.state.comment_error}
             helperText={this.state.comment_helper_text}
@@ -154,7 +155,12 @@ class ComplaintFullView extends Component {
         new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false,
 
         srOfficerArray: [],
-        rejection_resons: []
+        rejection_resons: [],
+        fileUploadBtn: 'Upload Image',
+        fileUploadBtnColor: '',
+        fileUploadName: '',
+        uploadFile:"",
+        isRetry:false,
     }
 
     handleIsEmergency = () => {        
@@ -194,7 +200,7 @@ class ComplaintFullView extends Component {
         if(this.state.Comment == "" || this.state.Comment == null  ) {
             this.setState({
                 openSnackbarState: true,
-                snackbarMessage: 'Please Enter comment',
+                snackbarMessage: 'Please Enter Remark',
                 snackbarStyle: {
                     backgroundColor: green[600],
                     display: 'flex',
@@ -213,7 +219,7 @@ class ComplaintFullView extends Component {
         
         this.setState({
             new_estimated_time: new Date(this.state.new_estimated_time)
-        },() => {
+        },async () => {
 
             console.log(this.state.new_estimated_time);
             
@@ -237,43 +243,57 @@ class ComplaintFullView extends Component {
             // })
 
             // return;
-            let reqBody = {
-                complaint_id: this.props.ComplaintDialogData._id, 
-                complaint_status: this.state.new_complaint_status,
-                isEmergency: this.state.new_isEmergency,
-                comment: this.state.Comment
-            }        
 
-            fetch(url + "updateComplaint/", {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'auth': 'token ' + getCookie("roadGPortalAuth")
-                    },
-                    method: "POST",
-                    body: JSON.stringify(reqBody)
-                }
-            )
-            .then(res => res.json())
-            .then(res => {
-                if(res.success) {
+
+
+            let res = await this.handleFileFetch(this.state.uploadFile)
+            
+            if(res.success){
+
+                let reqBody = {
+                    complaint_id: this.props.ComplaintDialogData._id, 
+                    complaint_status: this.state.new_complaint_status,
+                    isEmergency: this.state.new_isEmergency,
+                    comment: this.state.Comment,
+                    complaint_completion_url: ""
+                }    
+    
+                fetch(url + "updateComplaint/", {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'auth': 'token ' + getCookie("roadGPortalAuth")
+                        },
+                        method: "POST",
+                        body: JSON.stringify(reqBody)
+                    }
+                )
+                .then(res => res.json())
+                .then(res => {
+                    if(res.success) {
+                        this.setState({
+                            openSnackbarState: true,
+                            snackbarMessage: 'Complaint has been updated',
+                            show_new_complaint_status :reqBody.complaint_status,
+                            show_new_isEmergency: reqBody.isEmergency
+                        })
+    
+                        this.props.handleIndividualComplaintChange(reqBody,false);
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
                     this.setState({
                         openSnackbarState: true,
-                        snackbarMessage: 'Complaint has been updated',
-                        show_new_complaint_status :reqBody.complaint_status,
-                        show_new_isEmergency: reqBody.isEmergency
+                        snackbarMessage: err.message,
                     })
+                });
 
-                    this.props.handleIndividualComplaintChange(reqBody,false);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                this.setState({
-                    openSnackbarState: true,
-                    snackbarMessage: err.message,
-                })
-            });
+            }else{
+                throw new Error();
+            }
+
+            
         });
     }
 
@@ -399,8 +419,13 @@ class ComplaintFullView extends Component {
        console.log("-----");
        console.log(ComplaintDialogData);
 
-        this.setState({
-            Comment: ComplaintDialogData ? ComplaintDialogData.comments[0] : null,
+        this.setState({        
+            fileUploadBtn: 'Upload Image',
+            fileUploadBtnColor: '',
+            fileUploadName: '',
+            uploadFile:"",
+            isRetry:false,
+            Comment: "",
             comments: ComplaintDialogData ? ComplaintDialogData.comments : [],
             // new_forword_complaint: null,
             show_new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
@@ -410,6 +435,54 @@ class ComplaintFullView extends Component {
             new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
         })
+    }
+
+    handleFileFetch = async (file) => {
+        let formData = new FormData();
+        formData.append('file', file);
+        
+        return await fetch("https://imagescdn.herokuapp.com/", {
+            headers: {
+                'Accept': 'application/json',
+            },
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json());
+    }
+
+    handleFileUpload = async () => {
+        var input = document.createElement('input');
+        input.onchange = (event) => {
+            let fileName = input.value.split('\\')
+            fileName = fileName.pop();
+
+            console.log("file : ", input.files[0].size);
+
+            if((input.files[0].size) > 300000){
+                this.setState({
+                    openSnackbarState:true,
+                    snackbarMessage: 'File Size must not exceed 300kb',
+                })
+                return;
+            }
+            
+
+            this.setState({
+                isRetry:true,
+                fileUploadBtn: 'File Selected',
+                fileUploadBtnColor: 'green'
+            })
+
+            this.setState({
+                uploadFile:input.files[0],
+            })
+            
+
+        }
+        input.accept = 'image/*'
+        input.type = 'file';
+        input.click();
     }
 
     render() {
@@ -524,11 +597,26 @@ class ComplaintFullView extends Component {
                                                         name: 'new_complaint_status',
                                                         id: 'new_complaint_status',
                                                     }} >
-                                                    <MenuItem value="Pending" disabled>Pending</MenuItem>
-                                                    <MenuItem value="Approved">Approved</MenuItem>
-                                                    <MenuItem value="Rejected">Rejected</MenuItem>
-                                                    <MenuItem value="In Progress">In Progress</MenuItem>
-                                                    <MenuItem value="Completed">Completed</MenuItem>
+
+                                                {this.props.ComplaintDialogData && this.props.ComplaintDialogData.complaint_status === "Pending" &&
+                                                    ([<MenuItem value="Pending" disabled>Pending</MenuItem>,
+                                                     <MenuItem value="Approved">Approve</MenuItem>,
+                                                     <MenuItem value="Rejected">Reject</MenuItem>])
+                                                }
+
+                                                {this.props.ComplaintDialogData && this.props.ComplaintDialogData.complaint_status === "Approved" &&
+                                                    ([<MenuItem value="Approved" disabled>Approved</MenuItem>,
+                                                    <MenuItem value="Rejected">Reject</MenuItem>,
+                                                    <MenuItem value="In Progress">In Progress</MenuItem>])}
+                                                    
+                                                {this.props.ComplaintDialogData && this.props.ComplaintDialogData.complaint_status === "Rejected" &&
+                                                    ([<MenuItem value="Rejected">Rejected</MenuItem>,
+                                                    <MenuItem value="Approved">Approve</MenuItem>])}
+                                                
+                                                {this.props.ComplaintDialogData && this.props.ComplaintDialogData.complaint_status === "In Progress" &&
+                                                    ([<MenuItem value="In Progress">In Progress</MenuItem>,
+                                                    <MenuItem value="Completed">Complete</MenuItem>])}
+                                                
                                                 </Select>
                                             </FormControl>
                                         </Grid>
@@ -555,35 +643,48 @@ class ComplaintFullView extends Component {
 
                             </Grid>
                             <Grid item xs={12} md className={classes.textWrapper} >
-                            {
-                                    this.state.new_complaint_status == "Rejected"
-                                    ?
-                                    <div>
-                                        <FormControl style={{marginLeft:'10px',width: '70%'}} className={classes.formControl} >
-                                            <InputLabel htmlFor="Rejection_Reason" shrink >Rejection Reason</InputLabel>
-                                            <Select
-                                                // multiline
-                                                value={this.state.Rejection_Reason}
-                                                onChange={this.handleChange}
-                                                inputProps={{
-                                                    name: 'Rejection_Reason',
-                                                    id: 'Rejection_Reason',
-                                                }}
-                                                fullWidth >
-                                                {
-                                                    this.state.rejection_resons.map((item, index) => {
-                                                        return (
-                                                            <MenuItem key={index} value={item.name}>{item.name}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                        <br/><br/>
-                                    </div>
-                                    :""
+                                {
+                                    this.state.new_complaint_status == "Completed" &&
+                                        <Button onClick={this.handleFileUpload} variant="contained" color="primary" style={{marginRight:"10px", marginBottom: '20px', backgroundColor: this.state.fileUploadBtnColor, color: 'white' }} >
+                                            {this.state.fileUploadBtn}
+                                            <CloudUploadIcon style={{marginLeft:"10"}}/>
+                                        </Button>
+                                }
+                                {
+                                    this.state.new_complaint_status == "Completed" &&
+                                    this.state.isRetry &&
+                                        <Button onClick={this.handleFileUpload} variant="contained" color="primary" style={{ backgroundColor:"red", marginBottom: '20px', color: 'white' }} >
+                                            Retry
+                                        </Button>
+                                }
+                                {
+                                        this.state.new_complaint_status == "Rejected"
+                                        &&
+                                        <div>
+                                            <FormControl style={{marginLeft:'10px',width: '70%'}} className={classes.formControl} >
+                                                <InputLabel htmlFor="Rejection_Reason" shrink >Rejection Reason</InputLabel>
+                                                <Select
+                                                    // multiline
+                                                    value={this.state.Rejection_Reason}
+                                                    onChange={this.handleChange}
+                                                    inputProps={{
+                                                        name: 'Rejection_Reason',
+                                                        id: 'Rejection_Reason',
+                                                    }}
+                                                    fullWidth >
+                                                    {
+                                                        this.state.rejection_resons.map((item, index) => {
+                                                            return (
+                                                                <MenuItem key={index} value={item.name}>{item.name}</MenuItem>
+                                                            )
+                                                        })
+                                                    }
+                                                </Select>
+                                            </FormControl>
+                                            <br/><br/>
+                                        </div>
                                     }
-                                        
+                                            
                                     <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary">Save</Button>
                                     </Grid>
                              </Paper>
@@ -595,22 +696,22 @@ class ComplaintFullView extends Component {
                                <Grid item xs={12} md className={classes.textWrapper}> 
                                <br/>
                                <FormControl style={{width: '100%'}} className={classes.formControl} >
-                                            <InputLabel htmlFor="new_forword_complaint">Forword Complaint To</InputLabel>
-                                            <Select
-                                                value={this.state.new_forword_complaint}
-                                                onChange={this.handleChange}
-                                                inputProps={{
-                                                    name: 'new_forword_complaint',
-                                                    id: 'new_forword_complaint',
-                                                }} >
-                                                {
-                                                    this.state.srOfficerArray.map(item => (
-                                                        <MenuItem value={item._id}>{item.officer_id.name} ({item.officer_type})</MenuItem>
-                                                    ))
-                                                }
-                                        
-                                            </Select>
-                                        </FormControl>
+                                    <InputLabel htmlFor="new_forword_complaint">Forword Complaint To</InputLabel>
+                                    <Select
+                                        value={this.state.new_forword_complaint}
+                                        onChange={this.handleChange}
+                                        inputProps={{
+                                            name: 'new_forword_complaint',
+                                            id: 'new_forword_complaint',
+                                        }} >
+                                        {
+                                            this.state.srOfficerArray.map(item => (
+                                                <MenuItem value={item._id}>{item.officer_id.name} ({item.officer_type})</MenuItem>
+                                            ))
+                                        }
+                                
+                                    </Select>
+                                </FormControl>
                                         
                                     </Grid>
                                     <Grid item xs={12} md className={classes.textWrapper}>

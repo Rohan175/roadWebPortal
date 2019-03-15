@@ -629,7 +629,7 @@ class ComplaintContainer extends Component {
                             (this.props.manageOfficer ? 
 
                             (<div style={{paddingTop: '0px'}}>
-                                    <ComplaintTable complaintsData={this.state.filteredComplaints} />
+                                    <ComplaintTable manageOfficer complaintsData={this.state.filteredComplaints} />
                             </div>)
                             : (<div style={{paddingTop: '50px'}}>
                                     <Switch >
