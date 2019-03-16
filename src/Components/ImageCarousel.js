@@ -62,15 +62,18 @@ class ImageCarousel extends React.Component {
             <div className={classes.root}>
                 <img
                     className={classes.img}
-                    src={this.props.postedUsers[activeStep].url}
+                    src={this.props.isCompleted ? this.props.image : this.props.postedUsers[activeStep].url}
                     //src={"http://picsum.photos/300/300"}
                     alt={this.props.postedUsers[activeStep].userId}
                 />
                 <Paper square elevation={0} className={classes.header}>
-                    <Typography style={{textAlign: 'left'}}>Description : {this.props.postedUsers[activeStep].description}</Typography>
+                    <Typography style={{textAlign: 'left'}}>
+                        { this.props.isCompleted ? "After Completion" : 
+                        "Description : " + this.props.postedUsers[activeStep].description}
+                    </Typography>
                 </Paper>
                 {
-                    (maxSteps > 1) && (
+                    !this.props.isCompleted && (maxSteps > 1) && (
                         <MobileStepper
                             steps={maxSteps}
                             position="static"

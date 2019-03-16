@@ -34,7 +34,7 @@ class NavBar extends Component {
     state = {
         openDrawer: false,
         selectedPost: "",
-        openPostDialog: getCookie("firstTimeLogin") == "true" ? true : false,   
+        openPostDialog: getCookie("firstTimeLogin") == "true"? true : false,   
         Redirect: false,
         postList: JSON.parse(getCookie("roadGPortalPosts")),
         selectedPost: JSON.parse(getCookie("roadGPortalCurrentPosts")),
@@ -72,6 +72,7 @@ class NavBar extends Component {
         this.setState({
             openPostDialog: false
         })
+        setCookie("firstTimeLogin",false, 1);
 
         console.log("Post value",postValue);
 
@@ -130,11 +131,18 @@ class NavBar extends Component {
         })
     }
 
+    // componentWillMount = () => {
+    //     this.setState({
+    //         openDialogState: getCookie("firstTimeLogin") == "true"? true : false
+    //     })
+    // }
+
+    
     render() {
         let { classes } = this.props;
         let { navBarItems } = this.props;
-        
-        console.log("Fuck off : ",getCookie("firstTimeLogin"), getCookie("firstTimeLogin") == "true" ? true : false);
+
+        console.log("Fuck off : ",typeof getCookie("firstTimeLogin"), getCookie("firstTimeLogin") == "true" ? true : false);
         
         return (
             <AppBar position="fixed" color="inherit">

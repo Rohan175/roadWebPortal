@@ -30,6 +30,7 @@ import Slide from '@material-ui/core/Slide';
 import Snackbar from '@material-ui/core/Snackbar';
 // import SnackbarContent from '@material-ui/core/SnackbarContent';
 import green from '@material-ui/core/colors/green';
+import Tooltip from '@material-ui/core/Tooltip';
 import amber from '@material-ui/core/colors/amber';
 
 import CloseIcon from '@material-ui/icons/Close';
@@ -37,6 +38,7 @@ import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import ImageCarousel from "./ImageCarousel";
 import { getFormatedDate,openLocationInGoogleMaps, getCookie, url, hierarchy } from "../constants";
+import { tr } from 'date-fns/esm/locale';
 // import { tr } from 'date-fns/esm/locale';
 
 
@@ -59,7 +61,7 @@ const styles = theme => ({
         margin: 'auto'
     },
     paddingClass: {
-        margin: '20px'
+        marginTop: '20px'
     },
     snackbar: {
         background: theme.palette.primary.light,
@@ -142,6 +144,7 @@ class ComplaintFullView extends Component {
         openSnackbarState: false,
         snackbarMessage: '',
         snackbarVarient: '',
+        
 
         comments : [],
         Comment: null,
@@ -154,6 +157,8 @@ class ComplaintFullView extends Component {
         new_estimated_time: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.estimated_time : new Date(),
         new_isEmergency: this.props.ComplaintDialogData ? this.props.ComplaintDialogData.isEmergency : false,
 
+        isComplted:this.props.ComplaintDialogData ? (this.props.ComplaintDialogData.complaint_status=="Completed" ?true:false) : false,      
+
         srOfficerArray: [],
         rejection_resons: [],
         fileUploadBtn: 'Upload Image',
@@ -161,6 +166,7 @@ class ComplaintFullView extends Component {
         fileUploadName: '',
         uploadFile:"",
         isRetry:false,
+        isSaving: false
     }
 
     handleIsEmergency = () => {        
@@ -245,54 +251,69 @@ class ComplaintFullView extends Component {
             // return;
 
 
+            let extraChange =  async () => {
+                let finalObj = {};
 
-            let res = await this.handleFileFetch(this.state.uploadFile)
+                if(this.state.new_complaint_status=="Completed") {
+                    let res = await this.handleFileFetch(this.state.uploadFile)
+                    if(res.success){
+                        finalObj['completed_complaint_url'] = res.data;
+                    }    
             
-            if(res.success){
+                }
 
-                let reqBody = {
-                    complaint_id: this.props.ComplaintDialogData._id, 
-                    complaint_status: this.state.new_complaint_status,
-                    isEmergency: this.state.new_isEmergency,
-                    comment: this.state.Comment,
-                    complaint_completion_url: ""
-                }    
-    
-                fetch(url + "updateComplaint/", {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'auth': 'token ' + getCookie("roadGPortalAuth")
-                        },
-                        method: "POST",
-                        body: JSON.stringify(reqBody)
-                    }
-                )
-                .then(res => res.json())
-                .then(res => {
-                    if(res.success) {
-                        this.setState({
-                            openSnackbarState: true,
-                            snackbarMessage: 'Complaint has been updated',
-                            show_new_complaint_status :reqBody.complaint_status,
-                            show_new_isEmergency: reqBody.isEmergency
-                        })
-    
-                        this.props.handleIndividualComplaintChange(reqBody,false);
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                    this.setState({
-                        openSnackbarState: true,
-                        snackbarMessage: err.message,
-                    })
-                });
-
-            }else{
-                throw new Error();
+                return finalObj;
             }
 
+            this.setState({
+                isSaving: true
+            })
+
+            let reqBody = {
+                complaint_id: this.props.ComplaintDialogData._id, 
+                complaint_status: this.state.new_complaint_status,
+                isEmergency: this.state.new_isEmergency,
+                comment: this.state.Comment,
+                complaint_completion_url: "",
+                ... (await extraChange())
+            }    
+
+            fetch(url + "updateComplaint/", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'auth': 'token ' + getCookie("roadGPortalAuth")
+                    },
+                    method: "POST",
+                    body: JSON.stringify(reqBody)
+                }
+            )
+            .then(res => res.json())
+            .then(res => {
+                if(res.success) {
+                    this.setState({
+                        openSnackbarState: true,
+                        snackbarMessage: 'Complaint has been updated',
+                        show_new_complaint_status :reqBody.complaint_status,
+                        show_new_isEmergency: reqBody.isEmergency,
+                        isSaving: false,
+                        Comment:"",
+                    })
+
+                    this.props.handleIndividualComplaintChange(reqBody,false);
+                    if(this.state.new_complaint_status == "Completed")
+                        this.props.handleComplaintDialogClose();
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                this.setState({
+                    openSnackbarState: true,
+                    snackbarMessage: err.message,
+                    isSaving: false,
+                    Comment:"",
+                })
+            });
             
         });
     }
@@ -310,6 +331,10 @@ class ComplaintFullView extends Component {
             }) 
             return;
         }
+
+        this.setState({
+            isSaving: true
+        })
         
         fetch(url + "forewordComplaint/", {
             headers: {
@@ -331,7 +356,9 @@ class ComplaintFullView extends Component {
                 this.setState({
                     openSnackbarState: true,
                     snackbarMessage: 'Complaint is now foreworded',
+                    isSaving: false
                 })
+                this.props.handleComplaintDialogClose();
             }
         })
         .catch(err => {
@@ -339,6 +366,7 @@ class ComplaintFullView extends Component {
             this.setState({
                 openSnackbarState: true,
                 snackbarMessage: err.message,
+                isSaving: false
             })
         });
     }
@@ -417,6 +445,8 @@ class ComplaintFullView extends Component {
        let ComplaintDialogData = nextProps.ComplaintDialogData;
        
        console.log("-----");
+       console.log(">>>>>" ,this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "");
+       
        console.log(ComplaintDialogData);
 
         this.setState({        
@@ -430,7 +460,7 @@ class ComplaintFullView extends Component {
             // new_forword_complaint: null,
             show_new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
             show_new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false,
-            
+            isComplted:ComplaintDialogData ? (ComplaintDialogData.complaint_status == "Completed" ? true : false ) : false,      
             new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
             new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
@@ -458,7 +488,6 @@ class ComplaintFullView extends Component {
             fileName = fileName.pop();
 
             console.log("file : ", input.files[0].size);
-
             if((input.files[0].size) > 300000){
                 this.setState({
                     openSnackbarState:true,
@@ -466,8 +495,16 @@ class ComplaintFullView extends Component {
                 })
                 return;
             }
-            
 
+            let genName = (date) => {
+                let d = new Date(date);
+                let name = "IMG_" + d.getDate() + (d.getMonth() + 1) + d.getFullYear() + "_" + d.getHours() + d.getMinutes() + d.getSeconds() + ".jpg";
+                return name;
+            }
+            
+            let blob = input.files[0].slice(0, input.files[0].size, 'image/jpg'); 
+            let newFile = new File([blob], genName(new Date()), {type: 'image/jpg'});
+            
             this.setState({
                 isRetry:true,
                 fileUploadBtn: 'File Selected',
@@ -475,7 +512,7 @@ class ComplaintFullView extends Component {
             })
 
             this.setState({
-                uploadFile:input.files[0],
+                uploadFile:newFile,
             })
             
 
@@ -486,9 +523,24 @@ class ComplaintFullView extends Component {
     }
 
     render() {
+
+        console.log(this.state);
+        
         let props = this.props;
         const { classes } = props;
         const complaintData = props.ComplaintDialogData;
+
+        let lastGrid = (complaintData) => {
+            return (
+                <div>
+                    <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? this.state.show_new_isEmergency ? "YES": "NO" : null)}</Typography>
+                    <br/>
+                    <Tooltip title={complaintData? "Location : "+complaintData.location.join(","):""}>
+                    <Button variant="outlined" size="small" style={{ width: '70%' }} onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button>
+                    </Tooltip>
+                </div>
+            )
+        }
 
         return (
             <div>
@@ -509,7 +561,7 @@ class ComplaintFullView extends Component {
                         </Toolbar>
                     </AppBar>
                 {/* complaint content here */}
-                    <Grid container>
+                    <Grid container style={{ paddingRight: '10px' }}>
                         <Grid item xs={12} md={4} className={classes.paddingClass}>
                             <Grid container>
                                 <Grid item xs={12}>
@@ -521,11 +573,21 @@ class ComplaintFullView extends Component {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} md={7} className={classes.paddingClass}>
+                        <Grid item xs={12} md={8} className={classes.paddingClass} >
                            
                             
                             <Grid container>
-                                <Grid item xs={12} md className={classes.textWrapper}>
+
+                                {
+                                    this.state.isComplted
+                                    &&
+                                    (
+                                        <Grid xs={12} md >
+                                            <ImageCarousel isCompleted={true} image={complaintData ? complaintData.completed_complaint_url : ""} postedUsers={complaintData? complaintData.posted_users : null} />
+                                        </Grid>
+                                    )
+                                }
+                                <Grid item xs={12} md>
                                 <Typography>{ "Grievance :   ".toUpperCase() + (complaintData? complaintData.griev_type : null)} <Button color="secondary" size="small" style={{float: 'right', display: 'none'}}>view on map</Button></Typography>
                                 <br />
                                 <Typography>{ "Status :   ".toUpperCase() + (complaintData? this.state.show_new_complaint_status : null)}</Typography>
@@ -545,20 +607,28 @@ class ComplaintFullView extends Component {
                                 { this.state.new_estimated_time ? 
                                 
                                 <Typography><br />{ "Estimated Date :   ".toUpperCase() + getFormatedDate(this.state.new_estimated_time)}</Typography> : null }
-                               
+                                <br />
+                                {
+                                    this.state.isComplted 
+                                    &&
+                                    lastGrid(complaintData)
+                                }
                                 </Grid>
-                                <Grid xs={12} md className={classes.textWrapper}>
-                                    <Typography style={{ display: 'inline', paddingRight:20}}>Location :{complaintData? complaintData.location.join(","):""}</Typography>
-                                    <Button variant="outlined" size="small" onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button>
-                                    <br/><br/>
-                                <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? this.state.show_new_isEmergency ? "YES": "NO" : null)}</Typography>
-                                
-                                </Grid>
+
+                                {
+                                    !this.state.isComplted
+                                    &&
+                                    (
+                                        <Grid xs={12} md >
+                                            {lastGrid(complaintData)}
+                                        </Grid>
+                                    )
+                                }
                             </Grid>
 
 
                             <br /> 
-                                <Paper className={classes.root}>
+                                <Paper className={classes.root} style={{ display: this.state.isComplted == true  ? "none" :"block" }}>
                             <Tabs
                             value={this.state.value}
                             onChange={this.handleTabChange}
@@ -574,8 +644,10 @@ class ComplaintFullView extends Component {
                             }
                             </Tabs>
                           </Paper>
-                         <Divider />
-                            <Paper style={{display:this.state.value==0?"":"none"}}>
+                         <Divider style={{ display: this.state.isComplted == true  ? "none" :"block" }}/>
+                            {
+                            this.state.value==0 &&
+                            <Paper style={{ display: this.state.isComplted == true  ? "none" :"block" }} >
                             <Grid container >
                                 <Grid item xs={12} md className={classes.textWrapper}>
                                     <Grid container>
@@ -685,11 +757,13 @@ class ComplaintFullView extends Component {
                                         </div>
                                     }
                                             
-                                    <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary">Save</Button>
+                                <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary" disabled={this.state.isSaving}>{!this.state.isSaving ? "Save" : "Saving"}</Button>
                                     </Grid>
                              </Paper>
+                            }
                             {
-                            (getCookie("roadGPortalRole") !== hierarchy[hierarchy.length - 1]) &&
+                            (getCookie("roadGPortalRole") !== hierarchy[hierarchy.length - 1])
+                            && this.state.value==1 &&
                             <Paper style={{padding:'10px',textAlign: "center",display:this.state.value==1?"":"none"}}>
         
                                <Grid container>
@@ -719,7 +793,7 @@ class ComplaintFullView extends Component {
                                     </Grid>
                                     </Grid>
                                     <br/>
-                                    <Button variant="raised" style={{width: '100%', color: 'white'}} onClick={this.handleForeword} color="secondary">foreword</Button>
+                                    <Button variant="raised" style={{width: '100%', color: 'white'}} onClick={this.handleForeword} color="secondary" disabled={this.state.isSaving} >{this.state.isSaving ? "Forwording" : "Forword"}</Button>
                           </Paper>
                             }
                         </Grid>
