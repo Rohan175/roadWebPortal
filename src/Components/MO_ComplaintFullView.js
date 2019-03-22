@@ -146,6 +146,7 @@ class ComplaintFullView extends Component {
             Comment: ComplaintDialogData ? ComplaintDialogData.comments[0] : null,
             comments: ComplaintDialogData ? ComplaintDialogData.comments : [],
             // new_forword_complaint: null,
+            isCompleted:ComplaintDialogData ? (ComplaintDialogData.complaint_status == "Completed" ? true : false ) : false,
             new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
             new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
@@ -165,42 +166,62 @@ class ComplaintFullView extends Component {
                 onClose={props.handleComplaintDialogClose}
                 TransitionComponent={Transition}
                 className={classes.ComplaintFullView} >
-                    <Typography variant="subhading" style={{marginLeft:'10px',marginRight:'10px',marginTop:'10px' ,textAlign: 'left'}}>{(complaintData? complaintData.name : null)}</Typography>
+                    <Typography variant="subhading" style={{marginLeft:'20px',marginRight:'10px', marginTop:'10px', padding:'10px', textAlign: 'left'}}>{(complaintData? complaintData.name : null)}</Typography>
                     <Grid container  style={{ padding: '10px'}}>
                         <Grid item xs={12} md={6} className={classes.paddingClass}>
-                                <Grid item xs={12}>
-                                    <ImageCarousel postedUsers={complaintData? complaintData.posted_users : null} />
-                                </Grid>
+                            <ImageCarousel postedUsers={complaintData? complaintData.posted_users : null} />
                         </Grid>
-                     <Grid item xs={12} md={6} className={classes.paddingClass}>
-                                <br/>
-                                <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? this.state.show_new_isEmergency ? "YES": "NO" : null)}</Typography>
-                                <br/> 
-                                <Typography>{ "Grievance :   ".toUpperCase() + (complaintData? complaintData.griev_type : null)} <Button color="secondary" size="small" style={{float: 'right', display: 'none'}}>view on map</Button></Typography>
-                                <br />
-                                <Typography>{ "Status :   ".toUpperCase() + (complaintData? this.state.show_new_complaint_status : null)}</Typography>
-                                <br />
-                                <Typography>{ "Date :   ".toUpperCase() + 
-                                (complaintData
-                                            ? new Date(complaintData.time)
-                                                .toLocaleDateString("en-US",{
-                                                    weekday: 'long', 
-                                                    year: 'numeric', 
-                                                    month: 'long', 
-                                                    day: 'numeric' 
-                                                }) 
-                                            : null)}
-                                </Typography>
-                               
-                                { this.state.new_estimated_time ? 
-                                
+                        {
+                            this.state.isCompleted &&
+                            (
+                                <Grid item xs={12} md={6} className={classes.paddingClass}>
+                                    <ImageCarousel isCompleted={true} image={complaintData ? complaintData.completed_complaint_url : ""} postedUsers={complaintData? complaintData.posted_users : null} />
+                                </Grid>
+                            )
+                        }
+                        {
+                            this.state.isCompleted &&
+                            (
+                                <Grid item xs={12} md={5} className={classes.paddingClass} style={{ margin: "20px", paddingLeft: "10px" }}>
+                                    <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? this.state.show_new_isEmergency ? "YES": "NO" : null)}</Typography>
+                                    <br/> 
+                                    <Typography>{ "Grievance :   ".toUpperCase() + (complaintData? complaintData.griev_type : null)} <Button color="secondary" size="small" style={{float: 'right', display: 'none'}}>view on map</Button></Typography>
+                                    <br />
+                                    <Typography>{ "Status :   ".toUpperCase() + (complaintData? this.state.show_new_complaint_status : null)}</Typography>  
+                                </Grid>  
+                            )
+                        }
+                        <Grid item xs={12} md={5} className={classes.paddingClass} style={{ paddingLeft: '35px', paddingTop: '20px' }}>
+                            {
+                                !this.state.isCompleted && 
+                                (
+                                    <div>
+                                    <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? this.state.show_new_isEmergency ? "YES": "NO" : null)}</Typography>
+                                    <br/> 
+                                    <Typography>{ "Grievance :   ".toUpperCase() + (complaintData? complaintData.griev_type : null)} <Button color="secondary" size="small" style={{float: 'right', display: 'none'}}>view on map</Button></Typography>
+                                    <br />
+                                    <Typography>{ "Status :   ".toUpperCase() + (complaintData? this.state.show_new_complaint_status : null)}</Typography> 
+                                    <br />
+                                    </div>
+                                )
+                            }
+                            <Typography>{ "Date :   ".toUpperCase() + 
+                            (complaintData
+                                        ? new Date(complaintData.time)
+                                            .toLocaleDateString("en-US",{
+                                                weekday: 'long', 
+                                                year: 'numeric', 
+                                                month: 'long', 
+                                                day: 'numeric' 
+                                            }) 
+                                        : null)}
+                            </Typography>
+                            { this.state.new_estimated_time ? 
                                 <Typography><br />{ "Estimated Date :   ".toUpperCase() + getFormatedDate(this.state.new_estimated_time)}</Typography> : null }
-                               
-                               <br/>     <br/>
-                                    <Button variant="outlined" size="small" style={{width:"100%"}} onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button>
-                                    
-                         </Grid>   
-                         </Grid>
+                                <br/>
+                                <Button variant="outlined" size="small" style={{width:"100%"}} onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button> 
+                        </Grid> 
+                    </Grid>
                 </Dialog>
 
                 <Snackbar
