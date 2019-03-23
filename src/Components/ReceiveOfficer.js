@@ -13,6 +13,10 @@ import Select from "react-select";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Divider from '@material-ui/core/Divider';
+import {
+    getCookie,
+    url,
+  } from "../constants";
 
 const styles = (theme) => ({
     textField: {
@@ -27,7 +31,10 @@ const styles = (theme) => ({
 
 class ReceiveOfficerComponent extends Component {
     state={ 
+        postData:[],
+        officerData:[],
         value: 0,
+        post:"",
         openDialog : false,
     }
 
@@ -50,18 +57,125 @@ class ReceiveOfficerComponent extends Component {
         this.setState({ value });
       };
 
-    handleOfficerChange = (value) => {
-        console.log("check",value);
+      handleOfficerChange = (value) => {
         if (value == null) {
           value = { value: "" };
         }
     
         this.setState({
-          officerName: value
+            officerName: value
+        });
+      };
+      
+      handlePostChange = (e) => {
+        let value=e.label;
+        console.log("check 3",e);
+        if (value == null) {
+          value = { value: "" };
+        }
+    
+        this.setState({
+             post: e
         });
       };
 
+    componentWillMount = () => {
+            fetch( url + "getUnallocatedOfficers/", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'auth': 'token ' + getCookie("roadGPortalAuth")
+                },
+                method: "GET",
+            }
+        )
+        .then(res => res.json())
+        .then(res => {
+            if(res.success){
+                console.log("data",res.data);
+                this.setState({
+                    officerData:res.data,
+                })
+                
+            }else{
+            }
+        })
+        .catch(err => {
+            console.log(err);   
+            this.handleDialogOpen(err,"Please try again later ");        
+        });
+
+    fetch( url + "getAllJrPosts/", {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'auth': 'token ' + getCookie("roadGPortalAuth")
+        },
+        method: "GET",
+    }
+    )
+    .then(res => res.json())
+    .then(res => {
+        if(res.success){
+            this.setState({
+                postData:res.data,
+            })
+        }else{
+        }
+    })
+    .catch(err => {
+        console.log(err);   
+        this.handleDialogOpen(err,"Please try again later ");        
+    });
+
+    }
+
+    handleAssignPost = () =>{
+        console.log("Before");
+        
+        if(this.state.post.label.length>0 && this.state.officerName.label.length > 0){
+            console.log("after");
+            fetch( url + "hierarchyTransfer/", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'auth': 'token ' + getCookie("roadGPortalAuth")
+                },
+                method: "POST",
+                body: JSON.stringify({
+                     post_id: this.state.post.value._id,
+                     officer_id: this.state.officerName.value,
+                     post_office_type: this.state.post.value.office_type
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.success){
+                    //success
+                    console.log("Succes : ",res);
+                }else{
+                    //Error
+                    console.log("Error : ",res);
+                }
+            })
+            .catch(err => {
+                console.log(err);   
+                this.handleDialogOpen(err, "Please try again later ");        
+            });
+        }
+    }
+
     render(){
+        const allOfficer = this.state.officerData
+        .map(op => ({
+          value: op._id,
+          label: op.name +" ( "+op.phoneNo+" )",
+        }));
+        const allPost = this.state.postData
+        .map(op => ({
+          value: op,
+          label: op.post_id,
+        }));
         const { classes, theme } = this.props;
         const selectStyles = {
             input: base => ({
@@ -72,7 +186,7 @@ class ReceiveOfficerComponent extends Component {
               }
             })
           };
-
+        
         return(
             <div className={classes.wrapper}>
             <GeneralDialog 
@@ -96,6 +210,7 @@ class ReceiveOfficerComponent extends Component {
             <Select
                 classes={classes}
                 styles={selectStyles && {marginTop:"200dp"}}
+                options={allOfficer}
                 value={this.state.officerName}
                 onChange={this.handleOfficerChange}
                 placeholder="Select Transferred Officer"
@@ -121,20 +236,16 @@ class ReceiveOfficerComponent extends Component {
                 <Paper elevation="0"  style={{padding : "40px"}}>
                     <Select
                         classes={classes}
-                        styles={selectStyles && {marginTop:"0px"}}
-                        value={this.state.officerName}
-                        placeholder="Select Role Of Officer"
-                    /><br/> 
-                    <Select
-                        classes={classes}
                         styles={selectStyles && {marginTop:"100dp"}}
-                        value={this.state.officerName}
+                        options={allPost}
+                        value={this.state.post}
+                        onChange={(e) => this.handlePostChange(e)}
                         placeholder="Select Post Of Officer"
                     />
                     <br/>  
                     <Button
                          style={{width:"100%"}}
-                         onClick={this.chargeTransfer}
+                         onClick={this.handleAssignPost}
                          color="secondary"
                          variant="outlined"
                     >
