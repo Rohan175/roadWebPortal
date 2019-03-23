@@ -39,6 +39,7 @@ import ComplaintCount from "../Components/complaintCount";
 import ComplaintChipCount from "../Components/complaintChipCount";
 import ComplaintFullView from "../Components/ComplaintFullView";
 import ManageCharge from "./ManageCharge";
+import ReceiveOfficer from "../Components/ReceiveOfficer"
 import {
   griev_type,
   status_type,
@@ -126,6 +127,7 @@ class ManageOfficer extends Component {
     page: 0,
     rowsPerPage: 10,
 
+    openReceiveOfficerDialog:false,
     openOfficerDialogState: false,
     openComplaintDialogState: false,
     openChargeDialog: false,
@@ -415,6 +417,16 @@ class ManageOfficer extends Component {
       sideFilterDialogOpen: false
     })
   }
+  handleReceive = () =>{
+    this.setState({
+      openReceiveOfficerDialog : true
+    });
+  }
+  handleReceiveOfficerDialogClose = () =>{
+    this.setState({
+      openReceiveOfficerDialog: false
+    });
+  }
 
   sideFilter = (classes, officerRoleRender) => (
       <div>
@@ -451,8 +463,6 @@ class ManageOfficer extends Component {
           <br />
           <Divider />
           <br />
-
-          <br />
           <Button
             style={{ width: '100%' }}
             onClick={() => {
@@ -464,6 +474,15 @@ class ManageOfficer extends Component {
             variant="outlined"
           >
             View All COMPLAINTS
+          </Button>
+          <br/><br/>
+          <Button
+            style={{ width: '100%' }}
+            onClick={this.handleReceive}
+            color="secondary"
+            variant="outlined"
+          >
+            RECEIVE OFFICER
           </Button>
         </div>
       </div>
@@ -517,6 +536,24 @@ class ManageOfficer extends Component {
         >
           {this.sideFilter(classes, officerRoleRender)}
         </GeneralDialog>
+
+        <Dialog
+          fullScreen
+          open={this.state.openReceiveOfficerDialog}
+          onClose={this.handleReceiveOfficerDialogClose}
+          TransitionComponent={Transition}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              onClick={this.handleReceiveOfficerDialogClose}
+              aria-label="Close"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Toolbar>
+          <ReceiveOfficer/>
+        </Dialog>
 
         <Dialog
           fullScreen

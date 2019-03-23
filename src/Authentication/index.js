@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 
 import LoginComponent from '../Components/LoginComponent';
-// import ForgotPasswordComponent from '../Components/ForgotPasswordComponent';
+import ForgotPasswordComponent from '../Components/ForgotPasswordComponent';
 
 import { url } from "../constants";
 import GeneralDialog from '../Components/GeneralDialog';
@@ -136,11 +136,10 @@ class Login extends Component {
         return (
           <div className={classes.wrapper}>
            <Paper style={{margin:'auto',padding:'50px'}}>
-            {/* { this.state.loginTab 
+            { this.state.loginTab 
                 ? 
-                <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} /> 
-                : <ForgotPasswordComponent toLoginTab={this.toLoginTab} /> } */}
                 <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} loginText={this.state.loginText} disableLogin={this.state.disableLogin}/> 
+                : <ForgotPasswordComponent toLoginTab={this.toLoginTab} /> }
             </Paper>
             <GeneralDialog 
                 openDialogState = {this.state.openDialog}

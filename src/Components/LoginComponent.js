@@ -83,7 +83,7 @@ let LoginComponent = (props) => {
                         </Button>
                     </div>
                 </form>
-                {/* <div>
+                <div>
                     <Button 
                         variant="flat" 
                         className={classes.forgotPasswordBtn}
@@ -91,7 +91,7 @@ let LoginComponent = (props) => {
                     >
                         Forgot Password?
                     </Button>
-                </div> */}
+                </div>
             {/* </CardContent> */}
         </div>
     )

@@ -4,7 +4,7 @@ import { HashRouter, Route, Redirect, Switch } from 'react-router-dom';
 import Login from './Authentication/';
 import Dasboard from './Officer';
 import AdminDasboard from './Admin';
-
+import Resetpassword from './Components/ResetPasswordComponent.'
 import { getCookie } from './constants';
 
 class App extends Component {
@@ -53,6 +53,10 @@ class App extends Component {
     return this.state.isLoggedIn && this.state.userType === 'admin' ? (<AdminDasboard />) : <Redirect to="/Login" />;
   }
 
+  handlereset = () =>{
+    return <Resetpassword/>;
+  }
+
   //main render method
   render() {
     return (
@@ -60,10 +64,11 @@ class App extends Component {
         <div>
           {/* main routes for app */}
           <Switch>
+            <Route exact path="/Resetpassword/:id" render={(props) => <Resetpassword {...props} />} / >
             <Route exact path="/Login" render={this.checkLoginStatus} />
             <Route exact path="/Dashboard*" render={this.redirectIfNotLoggedInOfficer} />
             <Route path="/Admin" render={this.redirectIfNotLoggedInAdmin} />
-            <Route exact path="/">
+            <Route path="/">
               <Redirect to="/Dashboard/" />
             </Route>
           </Switch>
