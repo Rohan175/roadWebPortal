@@ -64,16 +64,26 @@ class Manage extends Component {
                         <Tabbed value={value} onChange={this.handleChange} centered>
                             <Tab label="Manage Grievances" />
                             <Tab label="Manage Rejection Reasons" />
-                            <Tab label="CRUD" />
+                            <Tab label="Manage Roads" />
                         </Tabbed>
                     </AppBar>
-                    {value === 0 && <Grievances />}
-                    {value === 1 && <RejectionReasons />}
-                    {value === 2 && <Crud   tableName={"Road"}
+
+                    {value === 0 && <Crud   tableName={"Grievances"}
+                                            crudUrl={'manage/grienvances/'}
+                                            columns={[{ name: "Name" , api: "name"}, 
+                                                      { name: "Duration", api:"duration" }, 
+                                                    ]} />}
+
+                    {value === 1 && <Crud   tableName={"Road"}
                                             crudUrl={'manage/rejections/'}
-                                            columns={[{ name: "Rejection Reason" , api: "name"}, 
-                                                      { name: "Road Name" }, 
-                                                      { name: "Road District" }]} />}
+                                            columns={[{ name: "Rejection Reason" , api: "name"}]} />}
+
+                    {value === 2 && <Crud   tableName={"Road"}
+                                            crudUrl={'manage/roads/'}
+                                            columns={[ { name: "Road Name",api: "name" }, 
+                                                      { name: "Road Code",api: "road_code",disable : true}, 
+                                                      { name: "Road Division",api: "division" }, 
+                                                      { name: "Road District",api: "district" }]} />}
                 </Paper>
             </div>
         );

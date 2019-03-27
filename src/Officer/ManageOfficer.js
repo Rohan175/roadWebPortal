@@ -383,7 +383,7 @@ class ManageOfficer extends Component {
       .then(res => {
         console.table(res.data);
         //console.log(res.data);
-
+        res.data = res.data.reverse();
         this.allOfficersData = res.data;
         if (res.success) {
           this.setState({
@@ -476,14 +476,14 @@ class ManageOfficer extends Component {
             View All COMPLAINTS
           </Button>
           <br/><br/>
-          <Button
+          {/* <Button
             style={{ width: '100%' }}
             onClick={this.handleReceive}
             color="secondary"
             variant="outlined"
           >
             RECEIVE OFFICER
-          </Button>
+          </Button> */}
         </div>
       </div>
   )
@@ -537,7 +537,7 @@ class ManageOfficer extends Component {
           {this.sideFilter(classes, officerRoleRender)}
         </GeneralDialog>
 
-        <Dialog
+        {/* <Dialog
           fullScreen
           open={this.state.openReceiveOfficerDialog}
           onClose={this.handleReceiveOfficerDialogClose}
@@ -553,7 +553,7 @@ class ManageOfficer extends Component {
             </IconButton>
           </Toolbar>
           <ReceiveOfficer/>
-        </Dialog>
+        </Dialog> */}
 
         <Dialog
           fullScreen

@@ -38,158 +38,158 @@ class ReceiveOfficerComponent extends Component {
         openDialog : false,
     }
 
-    handleDialogOpen = (dialogMsg, dialogTitle) => {        
-        this.setState({ 
-            openDialog: true,
-            dialogMsg: dialogMsg,
-            dialogTitle: dialogTitle
-        });
-    };
+    // handleDialogOpen = (dialogMsg, dialogTitle) => {        
+    //     this.setState({ 
+    //         openDialog: true,
+    //         dialogMsg: dialogMsg,
+    //         dialogTitle: dialogTitle
+    //     });
+    // };
     
-    handleClose = () => {
-        this.setState({ openDialog: false });
-        if(this.state.toLogin){
-            this.props.history.push('/');
-        }
-    };
+    // handleClose = () => {
+    //     this.setState({ openDialog: false });
+    //     if(this.state.toLogin){
+    //         this.props.history.push('/');
+    //     }
+    // };
 
-    handleTabChange = (event, value) => {
-        this.setState({ value });
-      };
+    // handleTabChange = (event, value) => {
+    //     this.setState({ value });
+    //   };
 
-      handleOfficerChange = (value) => {
-        if (value == null) {
-          value = { value: "" };
-        }
+    //   handleOfficerChange = (value) => {
+    //     if (value == null) {
+    //       value = { value: "" };
+    //     }
     
-        this.setState({
-            officerName: value
-        });
-      };
+    //     this.setState({
+    //         officerName: value
+    //     });
+    //   };
       
-      handlePostChange = (e) => {
-        let value=e.label;
-        console.log("check 3",e);
-        if (value == null) {
-          value = { value: "" };
-        }
+    //   handlePostChange = (e) => {
+    //     let value=e.label;
+    //     console.log("check 3",e);
+    //     if (value == null) {
+    //       value = { value: "" };
+    //     }
     
-        this.setState({
-             post: e
-        });
-      };
+    //     this.setState({
+    //          post: e
+    //     });
+    //   };
 
-    componentWillMount = () => {
-            fetch( url + "getUnallocatedOfficers/", {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'auth': 'token ' + getCookie("roadGPortalAuth")
-                },
-                method: "GET",
-            }
-        )
-        .then(res => res.json())
-        .then(res => {
-            if(res.success){
-                console.log("data",res.data);
-                this.setState({
-                    officerData:res.data,
-                })
+    // componentWillMount = () => {
+    //         fetch( url + "getUnallocatedOfficers/", {
+    //             headers: {
+    //                 'Accept': 'application/json',
+    //                 'Content-Type': 'application/json',
+    //                 'auth': 'token ' + getCookie("roadGPortalAuth")
+    //             },
+    //             method: "GET",
+    //         }
+    //     )
+    //     .then(res => res.json())
+    //     .then(res => {
+    //         if(res.success){
+    //             console.log("data",res.data);
+    //             this.setState({
+    //                 officerData:res.data,
+    //             })
                 
-            }else{
-            }
-        })
-        .catch(err => {
-            console.log(err);   
-            this.handleDialogOpen(err,"Please try again later ");        
-        });
+    //         }else{
+    //         }
+    //     })
+    //     .catch(err => {
+    //         console.log(err);   
+    //         this.handleDialogOpen(err,"Please try again later ");        
+    //     });
 
-    fetch( url + "getAllJrPosts/", {
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'auth': 'token ' + getCookie("roadGPortalAuth")
-        },
-        method: "GET",
-    }
-    )
-    .then(res => res.json())
-    .then(res => {
-        if(res.success){
-            this.setState({
-                postData:res.data,
-            })
-        }else{
-        }
-    })
-    .catch(err => {
-        console.log(err);   
-        this.handleDialogOpen(err,"Please try again later ");        
-    });
+    // fetch( url + "getAllJrPosts/", {
+    //     headers: {
+    //         'Accept': 'application/json',
+    //         'Content-Type': 'application/json',
+    //         'auth': 'token ' + getCookie("roadGPortalAuth")
+    //     },
+    //     method: "GET",
+    // }
+    // )
+    // .then(res => res.json())
+    // .then(res => {
+    //     if(res.success){
+    //         this.setState({
+    //             postData:res.data,
+    //         })
+    //     }else{
+    //     }
+    // })
+    // .catch(err => {
+    //     console.log(err);   
+    //     this.handleDialogOpen(err,"Please try again later ");        
+    // });
 
-    }
+    // }
 
-    handleAssignPost = () =>{
-        console.log("Before");
+    // handleAssignPost = () =>{
+    //     console.log("Before");
         
-        if(this.state.post.label.length>0 && this.state.officerName.label.length > 0){
-            console.log("after");
-            fetch( url + "hierarchyTransfer/", {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'auth': 'token ' + getCookie("roadGPortalAuth")
-                },
-                method: "POST",
-                body: JSON.stringify({
-                     post_id: this.state.post.value._id,
-                     officer_id: this.state.officerName.value,
-                     post_office_type: this.state.post.value.office_type
-                })
-            })
-            .then(res => res.json())
-            .then(res => {
-                if(res.success){
-                    //success
-                    console.log("Succes : ",res);
-                }else{
-                    //Error
-                    console.log("Error : ",res);
-                }
-            })
-            .catch(err => {
-                console.log(err);   
-                this.handleDialogOpen(err, "Please try again later ");        
-            });
-        }
-    }
+    //     if(this.state.post.label.length>0 && this.state.officerName.label.length > 0){
+    //         console.log("after");
+    //         fetch( url + "hierarchyTransfer/", {
+    //             headers: {
+    //                 'Accept': 'application/json',
+    //                 'Content-Type': 'application/json',
+    //                 'auth': 'token ' + getCookie("roadGPortalAuth")
+    //             },
+    //             method: "POST",
+    //             body: JSON.stringify({
+    //                  post_id: this.state.post.value._id,
+    //                  officer_id: this.state.officerName.value,
+    //                  post_office_type: this.state.post.value.office_type
+    //             })
+    //         })
+    //         .then(res => res.json())
+    //         .then(res => {
+    //             if(res.success){
+    //                 //success
+    //                 console.log("Succes : ",res);
+    //             }else{
+    //                 //Error
+    //                 console.log("Error : ",res);
+    //             }
+    //         })
+    //         .catch(err => {
+    //             console.log(err);   
+    //             this.handleDialogOpen(err, "Please try again later ");        
+    //         });
+    //     }
+    // }
 
     render(){
-        const allOfficer = this.state.officerData
-        .map(op => ({
-          value: op._id,
-          label: op.name +" ( "+op.phoneNo+" )",
-        }));
-        const allPost = this.state.postData
-        .map(op => ({
-          value: op,
-          label: op.post_id,
-        }));
+        // const allOfficer = this.state.officerData
+        // .map(op => ({
+        //   value: op._id,
+        //   label: op.name +" ( "+op.phoneNo+" )",
+        // }));
+        // const allPost = this.state.postData
+        // .map(op => ({
+        //   value: op,
+        //   label: op.post_id,
+        // }));
         const { classes, theme } = this.props;
-        const selectStyles = {
-            input: base => ({
-              ...base,
-              color: theme.palette.text.primary,
-              "& input": {
-                font: "inherit"
-              }
-            })
-          };
+        // const selectStyles = {
+        //     input: base => ({
+        //       ...base,
+        //       color: theme.palette.text.primary,
+        //       "& input": {
+        //         font: "inherit"
+        //       }
+        //     })
+        //   };
         
         return(
             <div className={classes.wrapper}>
-            <GeneralDialog 
+            {/* <GeneralDialog 
                 openDialogState = {this.state.openDialog}
                 dialogTitle = {this.state.dialogTitle}
                 dialogMsg = {this.state.dialogMsg}  
@@ -253,7 +253,7 @@ class ReceiveOfficerComponent extends Component {
                     </Button>    
                 </Paper>
             }            
-            </Paper>
+            </Paper> */}
         </div>
         );
     }
