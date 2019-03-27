@@ -757,7 +757,7 @@ class ComplaintFullView extends Component {
                                         </div>
                                     }
                                             
-                                <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary" disabled={this.state.isSaving}>{!this.state.isSaving ? "Save" : "Saving"}</Button>
+                                <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary" disabled={this.state.isSaving}>{!this.state.isSaving ? "Save" : "Saving..."}</Button>
                                     </Grid>
                              </Paper>
                             }
