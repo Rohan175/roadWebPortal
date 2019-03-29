@@ -9,6 +9,7 @@ import DatePicker from 'material-ui-pickers/DatePicker';
 
 import Divider from '@material-ui/core/Divider';
 import FormGroup from '@material-ui/core/FormGroup';
+import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
@@ -53,6 +54,13 @@ class SideFilter extends Component {
         this.setState(state => ({ [Eventame] : !state[Eventame] }));
     };
 
+    handleChange = name => event => {
+        this.setState({
+          [name]: event.target.value,
+        });
+    };
+
+    
     render() {
 
         const { classes } = this.props;
@@ -70,8 +78,27 @@ class SideFilter extends Component {
 
 
         return (
-            <div>
+            <div>                        
                 <div className={classes.wrapperItem} style={{paddingRight:'0px'}}>
+                    
+                    <div className={classes.alignLeft}>
+                        <TextField
+                                id="outlined-name"
+                                style={{width:'100%'}}
+                                label="Search"
+                                className={classes.textField}
+                                value={this.props.searchQuery}
+                                onChange={this.props.doSearch}
+                                margin="normal"
+                                variant="outlined"
+                                />
+                    </div>
+                    <br/>
+                    <Divider />
+                </div>
+
+                <div className={classes.wrapperItem} style={{paddingRight:'0px'}}>
+
                     <div className={classes.alignLeft}>
                         <Typography variant="subheading">Only Emergency Complaints</Typography>
                         
