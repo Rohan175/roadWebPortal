@@ -31,11 +31,11 @@ const navBarItems = [
         path: '/Admin/Manage',
         icon: TableChart
     },
-    {
-        name: 'Add Officer',
-        path: '/Admin/AddOfficer',
-        icon: AddBox
-    },
+    // {
+    //     name: 'Add Officer',
+    //     path: '/Admin/AddOfficer',
+    //     icon: AddBox
+    // },
     {
         name: 'Profile',
         path: '/Admin/Profile',
@@ -69,12 +69,12 @@ class AdminDashboard extends Component {
           <div className={classes.wrapper}>
             <NavBar navBarItems={navBarItems} />
             <Switch>
-                <Route exact path="/Admin/" render={() => (<AdminRoot />)} />
+                <Route exact path="/Admin/" render={() => (<Manage />)} />
                 <Route exact path="/Admin/Manage/" render={() => (<Manage />)} />
                 <Route exact path="/Admin/AddOfficer/" render={() => (<AddOfficer />)} />
                 <Route exact path="/Admin/Profile" render={() => (<Profile />)} />
                 <Route path="/Admin/*">
-                    <Redirect to="/Admin" />
+                    <Redirect to="/Admin/Manage" />
                 </Route>
             </Switch>
           </div>  
