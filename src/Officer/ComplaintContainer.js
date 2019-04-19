@@ -478,6 +478,7 @@ class ComplaintContainer extends Component {
         let headers = new Headers();
 
         headers.append('origin', '*');
+        headers.append('Content-Type', 'application/json');
         headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
 
         let req;
@@ -499,7 +500,7 @@ class ComplaintContainer extends Component {
                 method: "POST",
                 headers: headers,
                 body: JSON.stringify({
-                    officerIds : "hello",
+                    officerIds : query
                 })
             });
 

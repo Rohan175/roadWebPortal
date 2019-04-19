@@ -138,7 +138,7 @@ class ManageOfficer extends Component {
     OfficerData: [],
 
     OfficerMap: null,
-    // searchFieldValue: "",
+    searchQuery : "",
     OfficerDialogData: null,
     ComplaintDialogData: null,
 
@@ -150,46 +150,79 @@ class ManageOfficer extends Component {
   officerMap = null;
   allOfficersData = [];
   mapForFilteringOfficerRole = new Map(hierarchy1);
-
+  mapForSearchingOfficerRole = new Map(hierarchy1.map(e => e.slice().reverse()));
   
     
   doSearch = e => {
     let searchQuery = e.target.value.toLowerCase();
 
-    console.log(Object.keys(this.state.OfficerData),this.state.OfficerData,searchQuery);
+    console.log("doSearch => ",this.state.OfficerData,searchQuery);
     this.setState(oldState => {
         let newSearchedData;
 
         if(searchQuery.length < oldState.searchQuery.length){
 
-            newSearchedData = this.allComplaints.filter(complaint => {
-                return complaint.complaint_status
-                    && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
-                    && complaint.griev_type
-                    && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
-                    && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
-                    && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
+          console.log(this.mapForSearchingOfficerRole);
+          
+            newSearchedData = this.allOfficersData.filter(complaint => {
+                return complaint.officer_type
+                    && oldState.OfficerMap.get(this.mapForSearchingOfficerRole.get(complaint.officer_type.toUpperCase()))
                     && Object.keys(complaint).some(k => {
                         let bool = false;
                         if(complaint[k] && complaint[k].includes && complaint[k].toLowerCase)
                             bool = complaint[k].toLowerCase().includes(searchQuery)
-                        console.log("Inside some : ",bool);
+
+                        if(k === "officer_id"){
+
+                          console.log(complaint[k]);
+                          
+                          bool = Object.keys(complaint[k]).some(x => {
+          
+                              let bool = false;
+                              if(complaint[k][x] && complaint[k][x].includes && complaint[k][x].toLowerCase){
+                                console.log("Gone inside ! => ",complaint[k][x].toLowerCase(),searchQuery)
+                                bool = complaint[k][x].toLowerCase().includes(searchQuery)
+                              }
+                              return bool;
+                          })
+                      }
+      
                         
-                        return bool;
+                      console.log("Inside some : ",bool);
+                      
+                      return bool;
                     })
             })
 
         }else{
             newSearchedData = oldState.OfficerData.filter(c => {
-                console.log("Individual complaint :",c);
-                console.log("Keys : ", Object.keys(c));
+                //console.log("Individual complaint :",c);
+                //console.log("Keys : ", Object.keys(c));
                 
                 let b =  Object.keys(c).some(k => {
                     console.log("Keys : ", c[k], k);
                     
                     let bool = false;
-                    if(c[k] && c[k].includes && c[k].toLowerCase)
-                        bool = c[k].toLowerCase().includes(searchQuery)
+                    if(c[k] && c[k].includes && c[k].toLowerCase){
+                      console.log("Gone inside ! => ",c[k].toLowerCase(),searchQuery)
+                      bool = c[k].toLowerCase().includes(searchQuery)
+                    }
+
+                    if(k === "officer_id"){
+
+                        console.log(c[k]);
+                        
+                        bool = Object.keys(c[k]).some(x => {
+        
+                            let bool = false;
+                            if(c[k][x] && c[k][x].includes && c[k][x].toLowerCase){
+                              console.log("Gone inside ! => ",c[k][x].toLowerCase(),searchQuery)
+                              bool = c[k][x].toLowerCase().includes(searchQuery)
+                            }
+                            return bool;
+                        })
+                    }
+
                     console.log("Inside some : ",bool);
                     
                     return bool;
@@ -198,8 +231,10 @@ class ManageOfficer extends Component {
                 console.log("inside filter : ",b);
                 return b;    
             })
-        }
 
+            console.log("newSearchedData",newSearchedData)
+        }
+        this.getTotalCountOfComplaintTypes(newSearchedData);
         return{searchQuery:searchQuery, OfficerData:newSearchedData }
     })
     
