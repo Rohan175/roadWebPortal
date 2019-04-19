@@ -52,7 +52,8 @@ class ReceiveOfficerComponent extends Component {
     generateBtnDisable: false,
     assignBtnDisable: false,
     sanctioned_Post: "",
-    sanctionedPostLable: "DEE"
+    sanctionedPostLable: "DEE",
+    districts: "",
   };
 
   handleDialogOpen = (dialogMsg, dialogTitle) => {

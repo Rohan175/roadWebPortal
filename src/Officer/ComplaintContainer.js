@@ -109,7 +109,7 @@ class ComplaintContainer extends Component {
                         && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
                         && Object.keys(complaint).some(k => {
                             let bool = false;
-                            if(complaint[k].includes && complaint[k].toLowerCase)
+                            if(complaint[k] && complaint[k].includes && complaint[k].toLowerCase)
                                 bool = complaint[k].toLowerCase().includes(searchQuery)
                             console.log("Inside some : ",bool);
                             
@@ -119,10 +119,14 @@ class ComplaintContainer extends Component {
 
             }else{
                 newSearchedData = oldState.filteredComplaints.filter(c => {
-                    console.log(c);
+                    console.log("Individual complaint :",c);
+                    console.log("Keys : ", Object.keys(c));
+                    
                     let b =  Object.keys(c).some(k => {
+                        console.log("Keys : ", c[k], k);
+                        
                         let bool = false;
-                        if(c[k].includes && c[k].toLowerCase)
+                        if(c[k] && c[k].includes && c[k].toLowerCase)
                             bool = c[k].toLowerCase().includes(searchQuery)
                         console.log("Inside some : ",bool);
                         

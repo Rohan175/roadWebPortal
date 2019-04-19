@@ -151,6 +151,60 @@ class ManageOfficer extends Component {
   allOfficersData = [];
   mapForFilteringOfficerRole = new Map(hierarchy1);
 
+  
+    
+  doSearch = e => {
+    let searchQuery = e.target.value.toLowerCase();
+
+    console.log(Object.keys(this.state.OfficerData),this.state.OfficerData,searchQuery);
+    this.setState(oldState => {
+        let newSearchedData;
+
+        if(searchQuery.length < oldState.searchQuery.length){
+
+            newSearchedData = this.allComplaints.filter(complaint => {
+                return complaint.complaint_status
+                    && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
+                    && complaint.griev_type
+                    && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
+                    && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
+                    && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
+                    && Object.keys(complaint).some(k => {
+                        let bool = false;
+                        if(complaint[k] && complaint[k].includes && complaint[k].toLowerCase)
+                            bool = complaint[k].toLowerCase().includes(searchQuery)
+                        console.log("Inside some : ",bool);
+                        
+                        return bool;
+                    })
+            })
+
+        }else{
+            newSearchedData = oldState.OfficerData.filter(c => {
+                console.log("Individual complaint :",c);
+                console.log("Keys : ", Object.keys(c));
+                
+                let b =  Object.keys(c).some(k => {
+                    console.log("Keys : ", c[k], k);
+                    
+                    let bool = false;
+                    if(c[k] && c[k].includes && c[k].toLowerCase)
+                        bool = c[k].toLowerCase().includes(searchQuery)
+                    console.log("Inside some : ",bool);
+                    
+                    return bool;
+                })
+
+                console.log("inside filter : ",b);
+                return b;    
+            })
+        }
+
+        return{searchQuery:searchQuery, OfficerData:newSearchedData }
+    })
+    
+}
+
   handleChange = name => e => {
     this.setState({
       Loading: true
@@ -437,39 +491,27 @@ class ManageOfficer extends Component {
     });
   };
 
-          <Collapse
-            in={this.state.expandOfficerFilters}
-            timeout="auto"
-          >
-            <FormGroup>{officerRoleRender}</FormGroup>
-          </Collapse>
-          <br />
-          <Divider />
-          <br />
-          <Button
-            style={{ width: '100%' }}
-            onClick={() => {
-              this.handleComplaintDialogOpen(
-                this.allOfficersData
-              );
-            }}
-            color="secondary"
-            variant="outlined"
-          >
-            View All COMPLAINTS
-          </Button>
-          <br/><br/>
-          {/* <Button
-            style={{ width: '100%' }}
-            onClick={this.handleReceive}
-            color="secondary"
-            variant="outlined"
-          >
-            RECEIVE OFFICER
-          </Button> */}
-
 sideFilter = (classes, officerRoleRender) => (
-    <div>
+    <div>                  
+      <div className={classes.wrapperItem} style={{paddingRight:'0px'}}>
+          
+          <div className={classes.alignLeft}>
+              <TextField
+                      id="outlined-name"
+                      style={{width:'100%'}}
+                      label="Search"
+                      className={classes.textField}
+                      value={this.state.searchQuery}
+                      onChange={this.doSearch}
+                      margin="normal"
+                      variant="outlined"
+                      />
+          </div>
+          <br/>
+          <Divider />
+      </div>
+
+
       <div className={classes.wrapperItem}>
         <div className={classes.alignLeft}>
           <Typography variant="subheading">Officer Role</Typography>
@@ -579,7 +621,7 @@ sideFilter = (classes, officerRoleRender) => (
           {this.sideFilter(classes, officerRoleRender)}
         </GeneralDialog>
 
-        {/* <Dialog
+        <Dialog
           fullScreen
           open={this.state.openReceiveOfficerDialog}
           onClose={this.handleReceiveOfficerDialogClose}
