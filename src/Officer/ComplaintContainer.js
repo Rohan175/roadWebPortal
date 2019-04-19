@@ -86,8 +86,57 @@ class ComplaintContainer extends Component {
         SideFilter: true,
         emptyList: true,
         filteredComplaints: [],
-
+        searchQuery: "",
         mobileFilterDialogOpen: false,
+    }
+
+    
+    doSearch = e => {
+        let searchQuery = e.target.value.toLowerCase();
+
+        console.log(Object.keys(this.state.filteredComplaints),this.state.filteredComplaints,searchQuery);
+        this.setState(oldState => {
+            let newSearchedData;
+
+            if(searchQuery.length < oldState.searchQuery.length){
+
+                newSearchedData = this.allComplaints.filter(complaint => {
+                    return complaint.complaint_status
+                        && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
+                        && complaint.griev_type
+                        && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
+                        && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
+                        && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
+                        && Object.keys(complaint).some(k => {
+                            let bool = false;
+                            if(complaint[k].includes && complaint[k].toLowerCase)
+                                bool = complaint[k].toLowerCase().includes(searchQuery)
+                            console.log("Inside some : ",bool);
+                            
+                            return bool;
+                        })
+                })
+
+            }else{
+                newSearchedData = oldState.filteredComplaints.filter(c => {
+                    console.log(c);
+                    let b =  Object.keys(c).some(k => {
+                        let bool = false;
+                        if(c[k].includes && c[k].toLowerCase)
+                            bool = c[k].toLowerCase().includes(searchQuery)
+                        console.log("Inside some : ",bool);
+                        
+                        return bool;
+                    })
+    
+                    console.log("inside filter : ",b);
+                    return b;    
+                })
+            }
+
+            return{searchQuery:searchQuery, filteredComplaints:newSearchedData }
+        })
+        
     }
     
     handleIndividualComplaintChange = (complaintData,isComplainForwarded) => {
@@ -431,7 +480,7 @@ class ComplaintContainer extends Component {
 
         if(this.props.manageOfficer){
             
-            let query = 'getJrOfficerComplaints?officerIds=';
+            let query = '';
             console.log(this.props.OfficerIdArray);
 
             for(let i = 0; i < this.props.OfficerIdArray.length; i++){
@@ -442,10 +491,12 @@ class ComplaintContainer extends Component {
             console.log(query);
 
             query = query.slice(0,query.length-1)
-            req = new Request(url  + query,{
-                method: "GET",
+            req = new Request(url + "getJrOfficerComplaints",{
+                method: "POST",
                 headers: headers,
-                mode: 'cors'
+                body: JSON.stringify({
+                    officerIds : "hello",
+                })
             });
 
         }else{
@@ -579,6 +630,7 @@ class ComplaintContainer extends Component {
                 handleChange={this.handleChange}
                 handleEndingDateChange = {this.handleEndingDateChange}
                 handleStartingDateChange ={this.handleStartingDateChange}
+                doSearch = {this.doSearch}
             />
         )
     }
@@ -655,7 +707,7 @@ class ComplaintContainer extends Component {
                                 </div>
                             )
                         } 
-                                                        <Button variant="extendedFab" color="secondary" onClick={this.handleFilterOpen} className={classes.sideFilterButton}><FilterIcon />&nbsp;Filter</Button>
+                        <Button variant="extendedFab" color="secondary" onClick={this.handleFilterOpen} className={classes.sideFilterButton}><FilterIcon />&nbsp;Filter</Button>
                     </Grid>
                 </Grid>
                 }

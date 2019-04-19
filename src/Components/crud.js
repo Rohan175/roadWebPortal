@@ -29,7 +29,6 @@ class CRUD extends Component {
     };
 
     state = {
-        _id: '',
         updateDialogOpen: false,
         update: false,  // Used for difference between Update and Add dialog ui/api calls
         currentPage: 0,
@@ -55,8 +54,7 @@ class CRUD extends Component {
         this.setState({
             update: true,
             updateDialogOpen: true,
-            _id: item._id,
-            name: item.name,
+            ...item
         })
     };
 
@@ -100,7 +98,7 @@ class CRUD extends Component {
                     'Content-Type': 'application/json'
                 },
                 method: "POST",
-                body: JSON.stringify({name: this.state.name})
+                body: JSON.stringify(this.state)
             })
             
         } else {
@@ -110,15 +108,16 @@ class CRUD extends Component {
                     'Content-Type': 'application/json'
                 },
                 method: "PUT",
-                body: JSON.stringify({_id: this.state._id, name: this.state.name})
+                body: JSON.stringify(this.state)
             })
         }
 
         res = await res.json()
             
         if(res.success){
+            this.handleUpdateDialogClose();
             this.handleFetchAll();
-            this.handleClose();                
+                        
         }else {
             console.log("Err", res);
             alert(res.data);                
@@ -126,6 +125,37 @@ class CRUD extends Component {
     }catch(e){ console.log(e) };
     
     }
+
+    
+    handleDelete = (item) => {
+
+        fetch(url + this.props.crudUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            method: "DELETE",
+            body: JSON.stringify({_id: item._id})
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.success){
+                this.setState({
+                    lists: this.state.lists.filter(listItem => {
+                        return listItem._id != item._id
+                    })
+                })
+                // this.handleClose();                
+            }else {
+                console.log("Err", res.data);
+                alert(res.data);                
+            }
+        })
+        .catch(err => {
+            console.log("new errre",err);
+        });
+    };
+
 
 
     componentWillMount() {
@@ -173,6 +203,7 @@ class CRUD extends Component {
                                 margin="dense"
                                 id="name"
                                 label={c.name}
+                                disabled = {(this.state.update && c.disable) | false}
                                 type={c.type}
                                 value={this.state[c.api] ? this.state[c.api] : ""}
                                 onChange={(e) => {
