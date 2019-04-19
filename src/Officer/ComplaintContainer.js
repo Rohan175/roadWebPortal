@@ -480,7 +480,7 @@ class ComplaintContainer extends Component {
 
         if(this.props.manageOfficer){
             
-            let query = 'getJrOfficerComplaints?officerIds=';
+            let query = '';
             console.log(this.props.OfficerIdArray);
 
             for(let i = 0; i < this.props.OfficerIdArray.length; i++){
@@ -491,10 +491,12 @@ class ComplaintContainer extends Component {
             console.log(query);
 
             query = query.slice(0,query.length-1)
-            req = new Request(url  + query,{
-                method: "GET",
+            req = new Request(url + "getJrOfficerComplaints",{
+                method: "POST",
                 headers: headers,
-                mode: 'cors'
+                body: JSON.stringify({
+                    officerIds : "hello",
+                })
             });
 
         }else{
