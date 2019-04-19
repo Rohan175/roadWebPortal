@@ -3,12 +3,13 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Slide from '@material-ui/core/Slide';
 
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 import SideFilter from "../Components/SideFilter";
 import ComplaintTable from "./ComplaintTable";
 import ComplaintReport from "./ComplaintReport";
@@ -17,6 +18,8 @@ import GeneralDialog from '../Components/GeneralDialog';
 import { griev_type,status_type,getCookie, url } from '../constants';
 // import Card from '@material-ui/core/Card';
 import Empty from '../res/empty.svg';
+import { Button } from '@material-ui/core';
+import FilterIcon from '@material-ui/icons/FilterList';
 
 const styles = theme => ({
     progressWrapper: {
@@ -49,6 +52,24 @@ const styles = theme => ({
     },
     padding10: {
         padding: '10px'
+    },
+    sideFilterGrid: {
+        height: '97vh',
+        paddingTop: '56px', 
+        overflowY: 'scroll', 
+        overflowX: 'hidden',
+        [theme.breakpoints.down('sm')]: {
+            display: 'none',
+        },
+    },
+    sideFilterButton: {
+        position: 'fixed', 
+        bottom: '20px', 
+        right: '20px',
+        display: 'none',
+        [theme.breakpoints.down('sm')]: {
+          display: 'flex',
+        },
     }
 })
 
@@ -64,7 +85,38 @@ class ComplaintContainer extends Component {
         lodding : true,
         SideFilter: true,
         emptyList: true,
-        filteredComplaints: []
+        filteredComplaints: [],
+
+        mobileFilterDialogOpen: false,
+    }
+    
+    handleIndividualComplaintChange = (complaintData,isComplainForwarded) => {
+
+        console.log(complaintData,isComplainForwarded);
+        
+        if(isComplainForwarded){
+
+            this.allComplaints.splice(this.allComplaints.findIndex(c => c._id === complaintData._id),1);
+            this.setState(oldState =>{
+                oldState.filteredComplaints.splice(oldState.filteredComplaints.findIndex(c => c._id === complaintData._id),1);
+
+                return {
+                    filteredComplaints : oldState.filteredComplaints,
+                }
+            })
+            
+
+        }else{
+            let c = this.allComplaints.find(c => c._id === complaintData.complaint_id)
+            c.complaint_status = complaintData.complaint_status;
+            c.isEmergency = complaintData.isEmergency
+
+            this.setState((oldState) => {
+                let cod = oldState.filteredComplaints.find(c => c._id === complaintData.complaint_id);
+                cod.complaint_status = complaintData.complaint_status;
+                cod.isEmergency = complaintData.isEmergency;
+            })
+        }
     }
 
     handleStartingDateChange = (date) => {
@@ -91,8 +143,8 @@ class ComplaintContainer extends Component {
                                 
                     return complaint.complaint_status
                         && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
-                        && complaint.grievType
-                        && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        && complaint.griev_type
+                        && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                         && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                         && (complaint.time >= date && complaint.time <= oldState.EndingDate)
                 });
@@ -134,8 +186,8 @@ class ComplaintContainer extends Component {
                                 
                     return complaint.complaint_status
                         && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
-                        && complaint.grievType
-                        && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        && complaint.griev_type
+                        && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                         && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                         && (complaint.time >= oldState.StartingDate && complaint.time <= date)
                         
@@ -182,8 +234,8 @@ class ComplaintContainer extends Component {
                 
                 if(name === "status_type_map"){
 
-                    console.log("here2",oldState.emergency_state,this.allComplaints[0].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[0].isEmergency));
-                    console.log("here3",oldState.emergency_state,this.allComplaints[1].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[1].isEmergency));
+                    // console.log("here2",oldState.emergency_state,this.allComplaints[0].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[0].isEmergency));
+                    // console.log("here3",oldState.emergency_state,this.allComplaints[1].isEmergency,(oldState.emergency_state===true || oldState.emergency_state !== this.allComplaints[1].isEmergency));
                     // console.log("adding status : " + value ) 
                     // console.log(this.allComplaints);
                     // console.log(oldState.griev_type_map);
@@ -192,8 +244,8 @@ class ComplaintContainer extends Component {
                             
                             return complaint.complaint_status
                                 && complaint.complaint_status.toUpperCase() == value.toUpperCase() 
-                                && complaint.grievType
-                                && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                                && complaint.griev_type
+                                && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                                 && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
                                 && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
                         });
@@ -209,8 +261,8 @@ class ComplaintContainer extends Component {
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
                             
-                            return complaint.grievType
-                                && complaint.grievType.toUpperCase() == value.toUpperCase() 
+                            return complaint.griev_type
+                                && complaint.griev_type.toUpperCase() == value.toUpperCase() 
                                 && complaint.complaint_status
                                 && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
                                 && (oldState.emergency_state===true || oldState.emergency_state !== complaint.isEmergency)
@@ -226,8 +278,8 @@ class ComplaintContainer extends Component {
                     
                     newFilteredComplaints = this.allComplaints.filter(complaint => {
                         
-                        return complaint.grievType
-                            && oldState.griev_type_map.get(complaint.grievType.toUpperCase())
+                        return complaint.griev_type
+                            && oldState.griev_type_map.get(complaint.griev_type.toUpperCase())
                             && complaint.complaint_status
                             && oldState.status_type_map.get(complaint.complaint_status.toUpperCase())
                             && (complaint.time >= oldState.StartingDate && complaint.time <= oldState.EndingDate)
@@ -262,7 +314,7 @@ class ComplaintContainer extends Component {
                     if(name === "status_type_map"){
                         jsonName = "complaint_status";
                     }else if(name === "griev_type_map"){
-                        jsonName = "grievType"
+                        jsonName = "griev_type"
                     }
 
                     //console.log(value,oldState.filteredComplaints[0][jsonName] && (oldState.filteredComplaints[0][jsonName].toUpperCase()));
@@ -299,20 +351,28 @@ class ComplaintContainer extends Component {
         });
     };
 
-    handleClose = () => {
-        this.setState({ openDialog: false });
+    handleClose = name => () => {
+        this.setState({ [name]: false });
     };
+
+    handleFilterOpen = () => {
+        this.setState({
+            mobileFilterDialogOpen: true
+        })
+    }
 
     exportExcel(e){
 
+        console.log("Excel : ");        
+        console.log(this);
+        
         console.log(this.state.filteredComplaints);
         var Headers = Object.keys(this.state.filteredComplaints[0]);
         console.log(Headers);
-        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","grievType",
+        //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","griev_type",
         // "description","complaint_status","time","estimated_completion"];
             
-          
-        let mHeaders = ["longitude","latitude", "complaint_status", "isEmergency", "_id", "road_code", "name", "grievType", "description", "time", "estimated_completion"];
+        let mHeaders = ["longitude","latitude", "complaint_status", "isEmergency", "_id", "road_code", "name", "griev_type", "time", "estimated_completion"];
         var CsvString = "";
 
         mHeaders.forEach(function(ColItem, ColIndex) {
@@ -329,9 +389,12 @@ class ComplaintContainer extends Component {
 
                     console.log(RowItem[ColItem]);
                 }
-            if(ColItem!=='comments' && ColItem!== 'postedUsers'){
+            if(ColItem!=='comments' && ColItem!== 'posted_users'){
                 console.log(ColItem, "  ", RowItem[ColItem]);
                 CsvString += RowItem[ColItem] + ',';
+            }else{
+                console.log("Skiiping commenst & posted Uswers");
+                
             }
           });
           CsvString += "\r\n";
@@ -340,8 +403,11 @@ class ComplaintContainer extends Component {
         console.log(CsvString);
         
         let link = document.createElement('a');
+        console.log("Excel ", document, link);
+        document.body.appendChild(link);
         link.setAttribute('href','data:application/vnd.ms-excel;charset=utf-8,'+encodeURIComponent(CsvString));
         link.setAttribute('download','R&BPortal_Data.csv');
+        link.setAttribute('target', '_self');
         link.click();
 
         //e.downlaod = "R&BPortal_Data.xls"
@@ -357,15 +423,40 @@ class ComplaintContainer extends Component {
         })
 
         let headers = new Headers();
+
         headers.append('origin', '*');
         headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
 
-        let req = new Request(url  + "getComplaints?isPaginated=0", {
-            method: "GET",
-            headers: headers,
-            mode: 'cors'
-        });
+        let req;
 
+        if(this.props.manageOfficer){
+            
+            let query = 'getJrOfficerComplaints?officerIds=';
+            console.log(this.props.OfficerIdArray);
+
+            for(let i = 0; i < this.props.OfficerIdArray.length; i++){
+                
+                query+= this.props.OfficerIdArray[i] + ';';
+                //console.log(i);
+            }
+            console.log(query);
+
+            query = query.slice(0,query.length-1)
+            req = new Request(url  + query,{
+                method: "GET",
+                headers: headers,
+                mode: 'cors'
+            });
+
+        }else{
+                
+            req = new Request(url  + "getComplaints?isPaginated=0", {
+                method: "GET",
+                headers: headers,
+                mode: 'cors'
+            });
+        }
+        
         fetch(req)
             .then(res => res.json())
             .then(res => {
@@ -376,9 +467,10 @@ class ComplaintContainer extends Component {
                     
                     console.log(res.complaints);
                     
-                    
+                    let new_griv_type = new Map();
                     res.complaints.map(complaint => {
                         complaint.time = new Date(complaint.time).setHours(0,0,0,0);
+                        new_griv_type.set(complaint.griev_type,true);
                     })
                     
                     res.complaints = res.complaints.filter(c =>  {
@@ -441,7 +533,8 @@ class ComplaintContainer extends Component {
                     }
 
                     this.setState({
-                        lodding : false
+                        lodding : false,
+                        griev_type_map : new_griv_type
                     });
 
                     
@@ -471,9 +564,28 @@ class ComplaintContainer extends Component {
         })
     }
 
+    sideFilter = () => {
+        console.log("SideFilter : ");
+        console.log(this, this instanceof ComplaintContainer);
+
+        return (
+            <SideFilter 
+                status_type_map={this.state.status_type_map} 
+                griev_type_map={this.state.griev_type_map} 
+                StartingDate={this.state.StartingDate}
+                EndingDate={this.state.EndingDate}
+                exportExcel = {this.exportExcel.bind(this)}
+                emergency_state={this.state.emergency_state}
+                handleChange={this.handleChange}
+                handleEndingDateChange = {this.handleEndingDateChange}
+                handleStartingDateChange ={this.handleStartingDateChange}
+            />
+        )
+    }
+
     render() {
         let { classes } = this.props;
-        console.log(this.props);
+        //console.log(this.props);
         
         return (    
           <div className={classes.wrapper}>
@@ -481,10 +593,25 @@ class ComplaintContainer extends Component {
                 openDialogState = {this.state.openDialog}
                 dialogTitle = {this.state.dialogTitle}
                 dialogMsg = {this.state.dialogMsg}  
-                handleClose={this.handleClose}
+                handleClose={this.handleClose("openDialog")}
                 handleDialogOpen={this.handleDialogOpen}
             >
                 {/* <Button>Hello</Button> */}
+            </GeneralDialog>
+
+            {this.props.manageOfficer && 
+            (<IconButton color="inherit" style={{position: 'absolute', top: '10px', left: '10px'}} onClick={this.props.handleComplaintDialogClose} aria-label="Close">
+                <CloseIcon />
+            </IconButton>)}
+
+            <GeneralDialog 
+                openDialogState = {this.state.mobileFilterDialogOpen}
+                dialogTitle = {"Filters"}
+                dialogMsg = {""}  
+                handleClose={this.handleClose("mobileFilterDialogOpen")}
+                handleDialogOpen={this.handleFilterOpen}
+            >
+                {this.sideFilter()}
             </GeneralDialog>
             
 
@@ -492,34 +619,29 @@ class ComplaintContainer extends Component {
                 
                 {!this.state.lodding && this.allComplaints && this.allComplaints.length !== 0 &&
                 <Grid container spacing={0} style={{margin:'auto'}}>
-                    <Grid item md={3} xs={12} style={{height: '97vh', paddingTop: '56px', overflowY: 'scroll', overflowX: 'hidden'}}>
-                        <SideFilter 
-                            status_type_map={this.state.status_type_map} 
-                            griev_type_map={this.state.griev_type_map} 
-                            StartingDate={this.state.StartingDate}
-                            EndingDate={this.state.EndingDate}
-                            exportExcel = {this.exportExcel.bind(this)}
-                            emergency_state={this.state.emergency_state}
-                            handleChange={this.handleChange}
-                            handleEndingDateChange = {this.handleEndingDateChange}
-                            handleStartingDateChange ={this.handleStartingDateChange}
-                        />
+                    <Grid item md={3} xs={12} className={classes.sideFilterGrid}>
+                        {this.sideFilter()}
                     </Grid>
                     <Grid item md={9} xs={12} >
                         {   
 
                             (this.state.filteredComplaints && this.state.filteredComplaints.length != 0) ?
-                            (<div style={{paddingTop: '50px'}}>
-                                <Switch >
-                                    <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints} />)} />
-                                    <Route path="/Dashboard/Complaints/*">
-                                        <Redirect to="/Dashboard/" />
-                                    </Route>
-                                </Switch>
-                            </div>)
+                            (this.props.manageOfficer ? 
 
+                            (<div style={{paddingTop: '0px'}}>
+                                    <ComplaintTable manageOfficer complaintsData={this.state.filteredComplaints} />
+                            </div>)
+                            : (<div style={{paddingTop: '50px'}}>
+                                    <Switch >
+                                        <Route exact path="/Dashboard/Complaints/Table" render={() => (<ComplaintTable complaintsData={this.state.filteredComplaints} handleIndividualComplaintChange={this.handleIndividualComplaintChange}/>)} />
+                                        <Route exact path="/Dashboard/Complaints/Reports" render={() => (<ComplaintReport complaintsData={this.state.filteredComplaints} />)} />
+                                        <Route exact path="/Dashboard/Complaints/Maps" render={() => (<ComplaintMap complaintsData={this.state.filteredComplaints } handleIndividualComplaintChange={this.handleIndividualComplaintChange} />)} />
+                                        <Route path="/Dashboard/Complaints/*">
+                                            <Redirect to="/Dashboard/" />
+                                        </Route>
+                                    </Switch>
+                                </div>)
+                            )
                             : (
                                 <div className={classes.progressWrapper} style={{height: '100vh'}}>
                                     <div style={{margin: 'auto', textAlign: 'center'}}>
@@ -533,6 +655,7 @@ class ComplaintContainer extends Component {
                                 </div>
                             )
                         } 
+                                                        <Button variant="extendedFab" color="secondary" onClick={this.handleFilterOpen} className={classes.sideFilterButton}><FilterIcon />&nbsp;Filter</Button>
                     </Grid>
                 </Grid>
                 }

@@ -71,6 +71,16 @@ class Login extends Component {
             disableLogin : true
         })
 
+        if(!phoneNo){
+            this.handleDialogOpen("Please enter phone number.", "Error")
+            this.setState({
+                loginText:"Login",
+                disableLogin:false
+            })
+
+            return;
+        }
+
         if(phoneNo && password && password.length >= 6 && password.length < 12) {
             fetch(url + "login/", {
                     headers: {
@@ -88,8 +98,12 @@ class Login extends Component {
                     this.setCookie("roadGPortalAuth", res.data, 1);
                     this.setCookie("roadGPortalUserType", res.loginType, 1);
                     this.setCookie("roadGPortalRole", res.role, 1);
+                    this.setCookie("roadGPortalPosts", JSON.stringify(res.posts), 1);
+                    this.setCookie("roadGPortalCurrentPosts", JSON.stringify(res.posts[0]), 1);
+                    this.setCookie("firstTimeLogin", true, 1);
                     this.setCookie("isUpdated", res.isUpdated, 1);
                     this.props.setLogin(res.loginType);
+                    console.log("posts available",res.posts);
                 }else{
                     this.handleDialogOpen(res.data, "Error");
                     this.setState({
@@ -122,11 +136,10 @@ class Login extends Component {
         return (
           <div className={classes.wrapper}>
            <Paper style={{margin:'auto',padding:'50px'}}>
-            {/* { this.state.loginTab 
+            { this.state.loginTab 
                 ? 
-                <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} /> 
-                : <ForgotPasswordComponent toLoginTab={this.toLoginTab} /> } */}
                 <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} loginText={this.state.loginText} disableLogin={this.state.disableLogin}/> 
+                : <ForgotPasswordComponent toLoginTab={this.toLoginTab} /> }
             </Paper>
             <GeneralDialog 
                 openDialogState = {this.state.openDialog}

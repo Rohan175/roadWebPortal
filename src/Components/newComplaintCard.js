@@ -17,16 +17,18 @@ import CardIcon from '@material-ui/icons/ArrowForward';
 import Typography from '@material-ui/core/Typography';
 
 // import bgImage from '../res/newComplaint.png';
+import { getCookie} from '../constants';
+import { Tooltip } from '@material-ui/core';
 
 
 const styles = theme => ({
     imageClass: {
 
     },
-    Card: { 
-        //minWidth: '350px',
-        // display:'inline-block', 
-        margin: '15px',
+    Card: {
+        // display:'inline-block',
+        minWidth: '250px', 
+        marginTop: '15px',
         height:'91%',
         position: 'relative',
         color: 'white',
@@ -34,10 +36,9 @@ const styles = theme => ({
         //display: 'inline-block',
         backgroundColor: 'black',
         [theme.breakpoints.down('sm')]: {
-            // // marginTop: '-66px',
-             display: 'inline-block',
-            minWidth: '150px'
-        },
+            minWidth: '150px',
+            margin: '5px'
+        }
     },
     CardButton: {
         width:'100%',
@@ -87,7 +88,6 @@ const styles = theme => ({
     },
     mobileCard: {
         [theme.breakpoints.down('sm')]: {
-            // marginTop: '-66px',
             display: 'inline-block',
         },
         display: 'none'
@@ -115,22 +115,29 @@ const CardBox = props => {
         }
     }
 
+    let postId =(JSON.parse(getCookie("roadGPortalCurrentPosts"))).post_id;
+
     return (
         <Zoom in={props.startAnimation}>
             <Paper className={classNames(classes.Card, getClassName(props.CardColor))} >
                 <Link to="/Dashboard/Complaints/Table" style={{textDecoration: 'none'}}>
-                    <div className={classes.uppderDiv}>
-                        <div className={classes.numberWrapper}>
-                            <Typography variant="display2" style={{margin: 'auto auto 0px 0px', padding: '20px', color: 'white', textDecoration: ''}}>{props.CardValue}</Typography>
+                    {/* <div style={{ minWidth: '250px', }}> */}
+                        <div className={classes.uppderDiv}>
+                            <div className={classes.numberWrapper}>
+                                <Typography variant="display2" style={{margin: 'auto auto 0px 0px', padding: '20px', color: 'white', textDecoration: ''}}>{props.CardValue}</Typography>
+                            </div>
+                            <div className={classes.iconWrapper} >
+                                <Typography variant="display1" style={{margin: '0px 0px auto auto', padding: '20px', color: 'white'}}>{<CardIcon fontSize="large" />}</Typography>                        </div>
                         </div>
-                        <div className={classes.iconWrapper} >
-                            <Typography variant="display1" style={{margin: '0px 0px auto auto', padding: '20px', color: 'white'}}>{<CardIcon fontSize="large" />}</Typography>                        </div>
-                    </div>
-                    <div className={classes.lowerDiv}>
-                        <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
-                        <br />
-                        <Typography variant="Subheading" style={{color: 'rgba(0,0,0,0.54)'}}>Unseen <br />compaints</Typography>
-                    </div>
+                        <div className={classes.lowerDiv}>
+                            <Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{props.CardName} Complaints</Typography>
+                            <br />
+                            <br/>
+                            <Typography variant="Subheading" style={{color: 'rgba(0,0,0,0.54)'}}>Logged in as :</Typography>
+                            <br/>
+                            <Tooltip title ={postId}><Typography variant="title" style={{color: 'rgba(0,0,0,0.54)'}}>{postId.length > 15 ? (postId).slice(0,15)+"..." : postId}</Typography></Tooltip>
+                        </div>
+                    {/* </div> */}
                     <div style={{margin: 'auto'}} className={classes.mobileCard} >
                         <CardContent>
                             <Typography variant="display1">{<props.CardIcon fontSize="large" />}</Typography>

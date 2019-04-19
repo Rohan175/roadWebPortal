@@ -239,37 +239,6 @@ class Profile extends Component {
         return (
           <div className={classes.wrapper}>
 
-            
-                <Dialog
-                    onClose={this.handleClose}
-                    aria-labelledby="customized-dialog-title"
-                    open={this.state.openUpdateDialog}
-                >
-                    <DialogTitle id="customized-dialog-title" onClose={this.handleClose}>
-                        Verification Process
-            </DialogTitle>
-                    <DialogContent>
-
-                        <Typography gutterBottom>
-                            Please check your details.
-                </Typography>
-                        <Typography gutterBottom>
-                            If found incorrect, please modify your details, change your password and click on "SAVE" button.
-                </Typography>
-
-                
-                <Typography gutterBottom>
-                            If your details are proper, please change your password and click on "SAVE" button.
-                </Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleClose} color="primary">
-                            Ok
-                </Button>
-                    </DialogActions>
-                </Dialog>
-
-
             <GeneralDialog
                 openDialogState = {this.state.openDialog}
                 dialogTitle = {this.state.dialogTitle}
@@ -371,6 +340,7 @@ class Profile extends Component {
                         <Button color="primary" disabled={!this.state.changed} onClick={this.handleSave}>Save</Button>&nbsp;
                         <Button color="secondary" onClick={ () => {
                             setCookie("roadGPortalAuth", {}, -1);
+                            setCookie("firstTimeLogin", false, -1);
                             window.location.reload();
                         } }>Logout</Button>
                     </Grid>

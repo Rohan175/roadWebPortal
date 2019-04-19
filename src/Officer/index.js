@@ -24,7 +24,12 @@ const styles = theme => ({
     wrapper: {
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'bottom'
+        backgroundPosition: 'bottom',
+        [theme.breakpoints.down('sm')]: {
+            backgroundImage: `url(${bgImage})`,
+            backgroundPosition: '-250px 20px'
+            // background: 'white'
+        },
     },
     backgr: {
         position: 'absolute',
@@ -52,7 +57,7 @@ class Dashboard extends Component {
     state = {
         navBarItems: [
             {
-                name: 'Complaints',
+                name: 'My Complaints',
                 path: '/Dashboard/Complaints/Table',
                 icon: TableChart
             },
@@ -62,20 +67,20 @@ class Dashboard extends Component {
                 icon: Place
             },
             ... getCookie('roadGPortalRole') !== hierarchy[0] ? [{
-                name: 'Manage Officer',
+                name: 'All Complaints & Manage Officer',
                 path: '/Dashboard/ManageOfficer',
                 icon: PieChart
             }] : [],
-            ... getCookie('roadGPortalRole') === hierarchy[hierarchy.length - 1] ? [{
-                name: 'Add Officer',
-                path: '/Dashboard/AddOfficer',
-                icon: PieChart
-            }] : [],
+            // ... getCookie('roadGPortalRole') === hierarchy[hierarchy.length - 1] ? [{
+            //     name: 'Add Officer',
+            //     path: '/Dashboard/AddOfficer',
+            //     icon: PieChart
+            // }] : [],
             {
                 name: 'Profile',
                 path: '/Dashboard/Profile',
                 icon: AccountCircle
-            }
+            },
         ]
     }
 

@@ -1,12 +1,12 @@
-import React from 'react';
-
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-
+import GeneralDialog from '../Components/GeneralDialog';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
 import logo from '../res/emblem.svg';
+import {url} from "../constants";
 
 const styles = theme => ({
     Card: {
@@ -34,54 +34,120 @@ const styles = theme => ({
     }
 })
 
-let ForgotPasswordComponent = (props) => {
-    let { classes } = props;
+    class ForgotPasswordComponent extends Component {
+        state={
+            openDialog : false,
+            phonenumber:"",
+            toLogin:false,
+        }
+
+        handleDialogOpen = (dialogMsg, dialogTitle) => {        
+            this.setState({ 
+                openDialog: true,
+                dialogMsg: dialogMsg,
+                dialogTitle: dialogTitle
+            });
+        };
+
+        
+        handleClose = () => {
+            this.setState({ openDialog: false });
+            if(this.state.toLogin){
+                //this.props.history.push('/');
+            }
+        };
+    
+        handleforgot = () => {       
+            if(this.state.phonenumber.length==10){
+
+            fetch( url + "forgotPassword/", {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    method: "POST",
+                    body: JSON.stringify({phoneNo:this.state.phonenumber})
+                }
+            )
+            .then(res => res.json())
+            .then(res => {
+             
+                if(res.success){
+                    this.setState({
+                        toLogin:true,
+                    })
+                    this.handleDialogOpen("Go to the link which has been messaged on "+this.state.phonenumber+" .","To reset your password ");
+                }else{
+                    this.handleDialogOpen(res.data,"Error");  
+                }
+            })
+            .catch(err => {
+                console.log(err);   
+                this.handleDialogOpen(err,"Error Occur");        
+            });
+            
+
+            }
+            else{
+                this.handleDialogOpen("Phone number must contain 10 digits","Error");
+            }
+        }
+
+        handlechange = (event) =>{
+            this.setState({
+                phonenumber:event.target.value,
+            })       
+        }
+
+render(){
+        let { classes } = this.props;
 
     return (
         <div className={classes.Card}>
+        
+        <GeneralDialog 
+                openDialogState = {this.state.openDialog}
+                dialogTitle = {this.state.dialogTitle}
+                dialogMsg = {this.state.dialogMsg}  
+                handleClose={this.handleClose}
+                handleDialogOpen={this.handleDialogOpen}
+            >
+                <Button onClick={this.handleClose}>OK</Button>
+            </GeneralDialog>
+
             {/* <CardContent> */}
                 <div className={classes.logoWrapper}>
                     <img src={logo} className={classes.logo} alt="Road and Building" />
                 </div>
-                <form onSubmit={
-                    e => {
-                        e.preventDefault();
-                    }
-                }>
                     <div>
                         <TextField
                             id="phoneNo"
                             label="Phone Number"
+                            type="Number"
+                            value={this.state.phonenumber}
+                            onChange={this.handlechange}
+                            min="1000000000"
+                            max="9999999999"
                             className={classes.textField}
                             margin="normal" />
                     </div>
                     <div>
-                        <TextField
-                            id="password"
-                            label="Password"
-                            type="password"
-                            style={{visibility: 'hidden'}}
-                            className={classes.textField}
-                            margin="small" />
-                    </div>
-                    <div>
-                        <Button type="submit" variant="contained" className={classes.loginBtn}>
+                        <Button type="submit" variant="contained" onClick={this.handleforgot} className={classes.loginBtn}>
                             Reset Password
                         </Button>
                     </div>
-                </form>
                 <div>
                     <Button 
                         variant="flat" 
                         className={classes.forgotPasswordBtn}
-                        onClick={props.toLoginTab}
+                        onClick={this.props.toLoginTab}
                     >
                         Login
                     </Button>
                 </div>
-            {/* </CardContent> */}
         </div>
     )
+    }
 }
 
 ForgotPasswordComponent.propTypes = {

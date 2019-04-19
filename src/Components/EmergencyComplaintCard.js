@@ -35,6 +35,7 @@ const styles = theme => ({
         backgroundColor: 'black',
         [theme.breakpoints.down('sm')]: {
             // // marginTop: '-66px',
+            margin: '5px',
              display: 'inline-block',
             minWidth: '150px'
         },
@@ -118,7 +119,7 @@ const CardBox = props => {
     return (
         <Zoom in={props.startAnimation}>
             <Paper className={classNames(classes.Card, getClassName(props.CardColor))} >
-                <Link to="/Dashboard/Complaints/Table" style={{textDecoration: 'none'}}>
+                <Link  to={{ pathname: "/Dashboard/Complaints/Table", state: {dashboardButton : props.CardName} }} style={{textDecoration: 'none'}} >
                     <div className={classes.uppderDiv}>
                         <div className={classes.numberWrapper}>
                             <Typography variant="display2" style={{margin: 'auto auto 0px 0px', padding: '20px', color: 'white', textDecoration: ''}}>{props.CardValue}</Typography>

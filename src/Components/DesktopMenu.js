@@ -13,11 +13,11 @@ import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
     appDesktop: {
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             display: 'none',
         },
-        [theme.breakpoints.up('sm')]: {
-            display: 'flex',
+        [theme.breakpoints.up('md')]: {
+            display: 'inline-flex',
         },
     },
     activeLink: {

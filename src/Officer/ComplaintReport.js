@@ -331,7 +331,7 @@ class ComplaintReport extends Component {
                                 .map((item, index) => (
                                     <TableRow key={index}>
 
-                                        <TableCell>{item.grievType}</TableCell>
+                                        <TableCell>{item.griev_type}</TableCell>
                                         <TableCell>{item.complaint_status}</TableCell>
                                         <TableCell>NO</TableCell>
                                         <TableCell>
