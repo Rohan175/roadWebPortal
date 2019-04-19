@@ -11,12 +11,13 @@ import Button from '@material-ui/core/Button';
 
 import logo from '../res/emblem.svg';
 import {url} from "../constants";
+import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
     Card: {
         margin: 'auto',
         textAlign: 'center',
-        minWidth: '270px'
+        minWidth: '320px'
     },
     logoWrapper: {
         position: 'relative',
@@ -28,7 +29,7 @@ const styles = theme => ({
     },
     loginBtn: {
         marginTop: '20px',
-        width: '200px'
+        width: '100%',
     },
     forgotPasswordBtn: {
         marginTop: '20px',
@@ -135,11 +136,14 @@ class ForgotPasswordComponent extends Component {
             >
                 <Button onClick={this.handleClose}>OK</Button>
             </GeneralDialog>
-            <Paper style={{margin:'auto',padding:'50px'}}>
+            <Paper style={{margin:'auto',padding:'20px 50px 50px 50px'}}>
             {/* <CardContent> */}
-                <div className={classes.logoWrapper}>
-                    <img src={logo} className={classes.logo} alt="Road and Building" />
+                <div>
+                    <Typography variant="headline" style={{ textTransform: 'capitalize', textAlign: 'center', margin: '0px 0px 20px 0px' }}>Reset your password here</Typography>
                 </div>
+                {/* <div className={classes.logoWrapper}>
+                    <img src={logo} className={classes.logo} alt="Road and Building" />
+                </div> */}
                 <form onSubmit={
                     e => {
                         e.preventDefault();
@@ -170,7 +174,8 @@ class ForgotPasswordComponent extends Component {
                             />
                     </div>
                     <div>
-                        <Button type="submit" onClick={this.handleReset} variant="contained" className={classes.loginBtn}>
+                        <br/>
+                        <Button type="submit" variant="contained" onClick={this.handleReset} color="primary" className={classes.loginBtn}>
                             Reset Password
                         </Button>
                     </div>

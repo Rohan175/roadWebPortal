@@ -362,7 +362,6 @@ class ReceiveOfficerComponent extends Component {
               </Button>
             </Paper>
           )}
-
           {this.state.value == 1 && (
             <Paper
               elevation="0"

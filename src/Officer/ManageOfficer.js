@@ -383,7 +383,7 @@ class ManageOfficer extends Component {
       .then(res => {
         console.table(res.data);
         //console.log(res.data);
-
+        res.data = res.data.reverse();
         this.allOfficersData = res.data;
         if (res.success) {
           this.setState({
@@ -437,7 +437,38 @@ class ManageOfficer extends Component {
     });
   };
 
-  sideFilter = (classes, officerRoleRender) => (
+          <Collapse
+            in={this.state.expandOfficerFilters}
+            timeout="auto"
+          >
+            <FormGroup>{officerRoleRender}</FormGroup>
+          </Collapse>
+          <br />
+          <Divider />
+          <br />
+          <Button
+            style={{ width: '100%' }}
+            onClick={() => {
+              this.handleComplaintDialogOpen(
+                this.allOfficersData
+              );
+            }}
+            color="secondary"
+            variant="outlined"
+          >
+            View All COMPLAINTS
+          </Button>
+          <br/><br/>
+          {/* <Button
+            style={{ width: '100%' }}
+            onClick={this.handleReceive}
+            color="secondary"
+            variant="outlined"
+          >
+            RECEIVE OFFICER
+          </Button> */}
+
+sideFilter = (classes, officerRoleRender) => (
     <div>
       <div className={classes.wrapperItem}>
         <div className={classes.alignLeft}>
@@ -454,6 +485,7 @@ class ManageOfficer extends Component {
           >
             <ExpandMoreIcon />
           </IconButton>
+
         </div>
         <br />
         <Divider />
@@ -547,7 +579,7 @@ class ManageOfficer extends Component {
           {this.sideFilter(classes, officerRoleRender)}
         </GeneralDialog>
 
-        <Dialog
+        {/* <Dialog
           fullScreen
           open={this.state.openReceiveOfficerDialog}
           onClose={this.handleReceiveOfficerDialogClose}

@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 
 import logo from '../res/emblem.svg';
 import {url} from "../constants";
+import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
     Card: {
@@ -53,7 +54,8 @@ const styles = theme => ({
         handleClose = () => {
             this.setState({ openDialog: false });
             if(this.state.toLogin){
-                //this.props.history.push('/');
+                // this.props.history.push('/');
+                this.props.toLoginTab()
             }
         };
     
@@ -114,7 +116,6 @@ render(){
             >
                 <Button onClick={this.handleClose}>OK</Button>
             </GeneralDialog>
-
             {/* <CardContent> */}
                 <div className={classes.logoWrapper}>
                     <img src={logo} className={classes.logo} alt="Road and Building" />
@@ -132,7 +133,7 @@ render(){
                             margin="normal" />
                     </div>
                     <div>
-                        <Button type="submit" variant="contained" onClick={this.handleforgot} className={classes.loginBtn}>
+                        <Button type="submit" variant="contained" color="primary" onClick={this.handleforgot} className={classes.loginBtn}>
                             Reset Password
                         </Button>
                     </div>

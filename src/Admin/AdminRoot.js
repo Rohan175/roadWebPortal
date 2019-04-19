@@ -32,13 +32,13 @@ class AdminRoot extends Component {
         startAnimation: false,
         cardData: [
             {
-                name: "Add Officer",
+                name: "Manage",
                 //value: 10,
                 icon: AllInbox,
                 color: "primary"
             },
             {
-                name: "Admin Profile",
+                name: "Profile",
                 //value: 10,
                 icon: AddAlert,
                 color: "alert"
@@ -74,7 +74,7 @@ class AdminRoot extends Component {
                     <Grid item xs={12} md>
                         <Grid container>
                             <Grid item xs={6}>
-                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.cardData[0].value} CardColor={this.state.cardData[0].color} fromAdmin={true} link={"/Admin/AddOfficer"}/>
+                                <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[0].icon} CardName={this.state.cardData[0].name} CardValue={this.state.cardData[0].value} CardColor={this.state.cardData[0].color} fromAdmin={true} link={"/Admin/Manage"}/>
                             </Grid>
                             <Grid item xs={6}>
                                 <CardBox startAnimation={this.state.startAnimation} CardIcon={this.state.cardData[1].icon} CardName={this.state.cardData[1].name} CardValue={this.state.cardData[1].value} CardColor={this.state.cardData[1].color} fromAdmin={true} link={'/Admin/Profile'}/>

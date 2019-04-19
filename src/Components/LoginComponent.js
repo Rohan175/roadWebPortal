@@ -73,9 +73,11 @@ let LoginComponent = (props) => {
                             margin="small" />
                     </div>
                     <div>
+                        <br/>
                         <Button
                         type="submit"
-                        variant="contained" 
+                        variant="contained"
+                        color="primary" 
                         disabled={props.disableLogin}
                         className={classes.loginBtn}
                         >

@@ -355,7 +355,7 @@ class ComplaintFullView extends Component {
             if(res.success) {
                 this.setState({
                     openSnackbarState: true,
-                    snackbarMessage: 'Complaint is now foreworded',
+                    snackbarMessage: 'Complaint is now forwarded',
                     isSaving: false
                 })
                 this.props.handleComplaintDialogClose();
@@ -640,7 +640,7 @@ class ComplaintFullView extends Component {
 
                             {
                             (getCookie("roadGPortalRole") !== hierarchy[hierarchy.length - 1]) &&
-                            <Tab label="FOREWORD COMPLAIN" />
+                            <Tab label="FORWARD COMPLAIN" />
                             }
                             </Tabs>
                           </Paper>
@@ -757,7 +757,7 @@ class ComplaintFullView extends Component {
                                         </div>
                                     }
                                             
-                                <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary" disabled={this.state.isSaving}>{!this.state.isSaving ? "Save" : "Saving"}</Button>
+                                <Button variant="raised" onClick={this.handleSave} style={{width: '100%', color: 'white'}} color="secondary" disabled={this.state.isSaving}>{!this.state.isSaving ? "Save" : "Saving..."}</Button>
                                     </Grid>
                              </Paper>
                             }
@@ -770,7 +770,7 @@ class ComplaintFullView extends Component {
                                <Grid item xs={12} md className={classes.textWrapper}> 
                                <br/>
                                <FormControl style={{width: '100%'}} className={classes.formControl} >
-                                    <InputLabel htmlFor="new_forword_complaint">Forword Complaint To</InputLabel>
+                                    <InputLabel htmlFor="new_forword_complaint">Forward Complaint To</InputLabel>
                                     <Select
                                         value={this.state.new_forword_complaint}
                                         onChange={this.handleChange}
