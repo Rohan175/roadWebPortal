@@ -3,30 +3,37 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 
-import GeneralDialog from "../Components/GeneralDialog";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
-import Toolbar from "@material-ui/core/Toolbar";
+import Grid from "@material-ui/core/Grid";
+import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
+import Toolbar from "@material-ui/core/Toolbar";
+import Button from "@material-ui/core/Button";
+import Paper from "@material-ui/core/Paper";
 import Select from "react-select";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Divider from "@material-ui/core/Divider";
-import { getCookie, url } from "../constants";
-import TextField from "@material-ui/core/TextField";
+import RoadCode from "../Components/RoadCode";
+import GeneralDialog from "../Components/GeneralDialog";
+import { url, getCookie } from "../constants";
+//import ChipInput from "material-ui-chip-input";
 
 const styles = theme => ({
-  textField: {
-    width: "100%",
-    textAlign: "left"
-  },
   wrapper: {
+    // marginTop: '-56px',
     width: "100vw",
     height: "100vh",
     display: "flex",
     textAlign: "center"
   },
-  ReceiveOfficerWrapper: {
+  textWrapper: {
+    padding: "10px"
+  },
+  textField: {
+    width: "100%",
+    textAlign: "left"
+  },
+  AddOfficerWrapper: {
     margin: "auto",
     padding: "10px",
     [theme.breakpoints.up("sm")]: {
@@ -35,24 +42,42 @@ const styles = theme => ({
   }
 });
 
-class ReceiveOfficerComponent extends Component {
+class AddNewOfficer extends Component {
   state = {
-    postData: [],
-    officerData: [],
+    startAnimation: false,
+    name: "",
+    email: "",
+    phoneNo: "",
     value: 0,
+    postData: [],
     post: "",
-    post1: {
-      label: ""
-    },
-    openDialog: false,
-    officerName1: {
-      label: ""
-    },
-    officerName: "",
-    generateBtnDisable: false,
-    assignBtnDisable: false,
+    sanctionedPostLable: "DEE",
     sanctioned_Post: "",
-    sanctionedPostLable: "DEE"
+    districts: "",
+    generateBtnDisable: false,
+    assignBtnDisable: false
+  };
+
+  handleTabChange = (event, value) => {
+    this.setState({ value });
+  };
+
+  handlePostChange = e => {
+    let value = e.label;
+    console.log("check 3", e);
+    if (value == null) {
+      value = { value: "" };
+    }
+
+    this.setState({
+      post: e
+    });
+  };
+
+  handleChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
   };
 
   handleDialogOpen = (dialogMsg, dialogTitle) => {
@@ -65,67 +90,123 @@ class ReceiveOfficerComponent extends Component {
 
   handleClose = () => {
     this.setState({ openDialog: false });
-    if (this.state.toLogin) {
-      this.props.history.push("/");
-    }
   };
 
-  handleTabChange = (event, value) => {
-    this.setState({ value });
-  };
+  performValidataion = flag => {
+    //Flag 0 For Assign Post
+    //Flag 1 For Generate Post
 
-  handleOfficerChange = value => {
-    if (value == null) {
-      value = { value: "" };
-    }
-    this.setState({
-      officerName1: value,
-      officerName: value
-    });
-  };
-
-  handlePostChange = e => {
-    let value = e.label;
-    console.log("check 3", e);
-    if (value == null) {
-      value = { value: "" };
-    }
-
-    this.setState({
-      post1: e,
-      post: e
-    });
-  };
-  handleChange = e => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  };
-
-  componentWillMount = () => {
-    fetch(url + "getUnallocatedOfficers/", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        auth: "token " + getCookie("roadGPortalAuth")
-      },
-      method: "GET"
-    })
-      .then(res => res.json())
-      .then(res => {
-        if (res.success) {
-          console.log("data", res.data);
-          this.setState({
-            officerData: res.data
-          });
-        } else {
+    if (
+      this.state.name.length > 0 &&
+      this.state.phoneNo.length === 10 &&
+      this.state.email.length > 0
+    ) {
+      if (flag === 0 && this.state.post.label.length > 0) return true;
+      if (flag === 1) {
+        if (this.state.sanctioned_Post.length > 0) {
+          if (
+            this.state.officerRole === "EE" &&
+            this.state.districts.length === 0
+          ) {
+            return false;
+          }
+          return true;
         }
-      })
-      .catch(err => {
-        console.log(err);
-        this.handleDialogOpen(err.message, "Please try again later ");
-      });
+      }
+      return false;
+    }
+  };
 
+  handleGeneratePost = () => {
+    if (this.performValidataion(1)) {
+      getCookie("roadGPortalCurrentPosts");
+      this.setState({ generateBtnDisable: true });
+      fetch(url + "addOfficer", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          auth: "token " + getCookie("roadGPortalAuth")
+        },
+
+        method: "POST",
+        body: JSON.stringify({
+          officer_name: this.state.name,
+          post_office_type: this.state.sanctioned_Post,
+          officer_phoneNo: this.state.phoneNo,
+          officer_email: this.state.email,
+          operationFlag: "nonp",
+          post_districts: this.state.districts.split(",")
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            //success
+            this.handleDialogOpen(res.data, "Notice");
+          } else {
+            //Error
+            this.handleDialogOpen(res.data, "Error");
+            console.log("Error : ", res);
+          }
+          this.setState({ generateBtnDisable: false });
+        })
+        .catch(err => {
+          console.log(err);
+          this.handleDialogOpen("Please try again later ");
+          this.setState({ generateBtnDisable: false });
+        });
+    } else {
+      this.handleDialogOpen("Please Fill In All The Fields ", "Error");
+    }
+  };
+  handleAssignPost = () => {
+    console.log("Before");
+
+    if (this.performValidataion(0)) {
+      this.setState({ assignBtnDisable: true });
+      console.log("after");
+      fetch(url + "addOfficer/", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          auth: "token " + getCookie("roadGPortalAuth")
+        },
+        method: "POST",
+        body: JSON.stringify({
+          post_id: this.state.post.value._id,
+          post_office_type: this.state.post.value.office_type,
+          officer_name: this.state.name,
+          officer_phoneNo: this.state.phoneNo,
+          officer_email: this.state.email,
+          operationFlag: "noop"
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          this.setState({ assignBtnDisable: false });
+          if (res.success) {
+            //success
+            this.handleDialogOpen(res.data, "Notice");
+          } else {
+            //Error
+            this.handleDialogOpen(res.data, "Error");
+            console.log("Error : ", res);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.handleDialogOpen(err.message, "Please try again later ");
+          this.setState({ assignBtnDisable: false });
+        });
+    } else {
+      this.handleDialogOpen("Please Fill In All The Fields ", "Error");
+    }
+  };
+  handleDistrictChange = chips => {
+    console.log("Disticts" + chips);
+    //  this.setState({districts:chips})
+  };
+  componentWillMount = () => {
     fetch(url + "getAllJrPosts/", {
       headers: {
         Accept: "application/json",
@@ -140,6 +221,7 @@ class ReceiveOfficerComponent extends Component {
           this.setState({
             postData: res.data
           });
+          console.log("Response data" + res.data);
         } else {
         }
       })
@@ -165,115 +247,13 @@ class ReceiveOfficerComponent extends Component {
     this.setState({ sanctionedPostLable: label, officerRole: role });
   };
 
-  performValidataion = flag => {
-    if (this.state.officerName1.label.length > 0) {
-      //Flag 0 For Assign Post
-      //Flag 1 For Generate Post
-
-      if (flag === 0 && this.state.post1.label.length > 0) return true;
-      if (flag === 1) {
-        if (this.state.sanctioned_Post.length > 0) {
-          if (
-            this.state.officerRole === "EE" &&
-            this.state.districts.length === 0
-          ) {
-            return false;
-          }
-          return true;
-        }
-      }
-      return false;
-    }
-  };
-
-  handleGeneratePost = () => {
-    if (this.performValidataion(1)) {
-      this.setState({ generateBtnDisable: true });
-      fetch(url + "addOfficer", {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          auth: "token " + getCookie("roadGPortalAuth")
-        },
-
-        method: "POST",
-        body: JSON.stringify({
-          post_office_type: this.state.sanctioned_Post,
-          officer_id: this.state.officerName.value,
-          operationFlag: "oonp",
-          post_districts: this.state.districts.split(",")
-        })
-      })
-        .then(res => res.json())
-        .then(res => {
-          if (res.success) {
-            //success
-            this.handleDialogOpen(res.data, "Notice");
-          } else {
-            //Error
-            this.handleDialogOpen(res.data, "Error");
-            console.log("Error : ", res);
-          }
-          this.setState({ generateBtnDisable: false });
-        })
-        .catch(err => {
-          console.log(err);
-          this.handleDialogOpen("Please try again later ");
-          this.setState({ generateBtnDisable: false });
-        });
-    } else {
-      this.handleDialogOpen("Please Fill In All The Fields ", "Error");
-    }
-  };
-
-  handleAssignPost = () => {
-    console.log("Before");
-
-    if (this.performValidataion(0)) {
-      this.setState({ assignBtnDisable: true });
-
-      console.log("after");
-      fetch(url + "hierarchyTransfer/", {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          auth: "token " + getCookie("roadGPortalAuth")
-        },
-        method: "POST",
-        body: JSON.stringify({
-          post_id: this.state.post.value._id,
-          officer_id: this.state.officerName.value,
-          post_office_type: this.state.post.value.office_type
-        })
-      })
-        .then(res => res.json())
-        .then(res => {
-          this.setState({ assignBtnDisable: false });
-
-          if (res.success) {
-            //success
-            this.handleDialogOpen(res.data, "Notice");
-          } else {
-            //Error
-            console.log(res.data, "Error :");
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.setState({ assignBtnDisable: false });
-
-          this.handleDialogOpen(err.message, "Please try again later ");
-        });
-    } else {
-      this.handleDialogOpen("Please Fill In all Fields", "Error ");
-    }
-  };
+  componentDidMount() {
+    this.setState({
+      startAnimation: true
+    });
+  }
 
   render() {
-    const allOfficer = this.state.officerData.map(op => ({
-      value: op._id,
-      label: op.name + " ( " + op.phoneNo + " )"
-    }));
     const allPost = this.state.postData.map(op => ({
       value: op,
       label: op.post_id
@@ -300,26 +280,53 @@ class ReceiveOfficerComponent extends Component {
         >
           <Button onClick={this.handleClose}>OK</Button>
         </GeneralDialog>
-        <Paper className={classes.ReceiveOfficerWrapper}>
+        <Paper className={classes.AddOfficerWrapper}>
+          {/* <Collapse in={this.state.startAnimation}> */}
           <Toolbar>
             <Typography
               variant="headline"
               style={{ textAlign: "center", width: "100%" }}
             >
-              Receive Officer
+              Add New Officer
             </Typography>
           </Toolbar>
+          <Grid container>
+            <Grid item xs={12} className={classes.textWrapper}>
+              <TextField
+                id="name"
+                label="Name"
+                name="name"
+                className={classes.textField}
+                value={this.state.name}
+                onChange={this.handleChange}
+                margin="none"
+              />
+            </Grid>
+            <Grid item xs={12} md={6} className={classes.textWrapper}>
+              <TextField
+                id="email"
+                label="Email"
+                name="email"
+                className={classes.textField}
+                value={this.state.email}
+                onChange={this.handleChange}
+                margin="none"
+              />
+            </Grid>
+            <Grid item xs={12} md={6} className={classes.textWrapper}>
+              <TextField
+                id="phoneNo"
+                label="Phone Number"
+                name="phoneNo"
+                className={classes.textField}
+                value={this.state.phoneNo}
+                onChange={this.handleChange}
+                margin="none"
+              />
+            </Grid>
+          </Grid>
+          {/* </Collapse> */}
           <br />
-          <Select
-            classes={classes}
-            styles={selectStyles && { marginTop: "200dp" }}
-            options={allOfficer}
-            value={this.state.officerName}
-            onChange={this.handleOfficerChange}
-            placeholder="Select Transferred Officer"
-          />
-          <br />
-          <Divider />
           <Paper
             elevation="0"
             className={classes.root}
@@ -362,6 +369,7 @@ class ReceiveOfficerComponent extends Component {
               </Button>
             </Paper>
           )}
+
           {this.state.value == 1 && (
             <Paper
               elevation="0"
@@ -392,7 +400,6 @@ class ReceiveOfficerComponent extends Component {
                   margin="none"
                 />
               )}
-
               <br />
               <br />
               <Button
@@ -414,9 +421,9 @@ class ReceiveOfficerComponent extends Component {
   }
 }
 
-ReceiveOfficerComponent.propTypes = {
+AddNewOfficer.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ReceiveOfficerComponent);
+export default withStyles(styles, { withTheme: true })(AddNewOfficer);
