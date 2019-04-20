@@ -10,6 +10,12 @@ import DatePicker from 'material-ui-pickers/DatePicker';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TablePagination from "@material-ui/core/TablePagination";
+import TableRow from "@material-ui/core/TableRow";
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -37,6 +43,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 
 import ImageCarousel from "./ImageCarousel";
+import History from "./History";
 import { getFormatedDate,openLocationInGoogleMaps, getCookie, url, hierarchy } from "../constants";
 import { tr } from 'date-fns/esm/locale';
 // import { tr } from 'date-fns/esm/locale';
@@ -144,8 +151,6 @@ class ComplaintFullView extends Component {
         openSnackbarState: false,
         snackbarMessage: '',
         snackbarVarient: '',
-        
-
         comments : [],
         Comment: null,
         new_forword_complaint: "",
@@ -166,7 +171,10 @@ class ComplaintFullView extends Component {
         fileUploadName: '',
         uploadFile:"",
         isRetry:false,
-        isSaving: false
+        isSaving: false,
+
+        //history dialog
+        history_open: false
     }
 
     handleIsEmergency = () => {        
@@ -373,8 +381,8 @@ class ComplaintFullView extends Component {
 
     handleTabChange = (event, value) => {
         this.setState({ value });
-        this.setState({ Comment:""});
-      };
+        this.setState({ Comment:""}); 
+    }
     
 
     handleSnackbarClose = () => {
@@ -409,7 +417,10 @@ class ComplaintFullView extends Component {
         });
     }
 
+
     componentWillMount() {
+        
+        console.log("will mount");
         fetch(url + "getSrIdsForeword/", {
             headers: {
                 'Accept': 'application/json',
@@ -437,19 +448,17 @@ class ComplaintFullView extends Component {
     }
 
     componentDidMount() {
+        console.log("Did mount");
         this.read();
     }
 
 
     componentWillReceiveProps(nextProps) {
-       let ComplaintDialogData = nextProps.ComplaintDialogData;
-       
-       console.log("-----");
-       console.log(">>>>>" ,this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "");
-       
-       console.log(ComplaintDialogData);
+        console.log("will receive props", this.props.ComplaintDialogData);
 
-        this.setState({        
+        let ComplaintDialogData = nextProps.ComplaintDialogData;
+       
+        let setStateData = {
             fileUploadBtn: 'Upload Image',
             fileUploadBtnColor: '',
             fileUploadName: '',
@@ -464,7 +473,22 @@ class ComplaintFullView extends Component {
             new_complaint_status: ComplaintDialogData ? ComplaintDialogData.complaint_status : "Pending",
             new_estimated_time: ComplaintDialogData && ComplaintDialogData.estimated_completion ? ComplaintDialogData.estimated_completion : new Date(),
             new_isEmergency: ComplaintDialogData ? ComplaintDialogData.isEmergency : false
-        })
+        }
+
+        console.log(nextProps,this.props.ComplaintDialogData,nextProps.ComplaintDialogData != this.props.ComplaintDialogData);
+        
+        if(nextProps.ComplaintDialogData != null && nextProps.ComplaintDialogData != this.props.ComplaintDialogData ){
+            console.log("if called")
+            setStateData.history=[]
+            setStateData.value=0
+        }
+
+        console.log(">>>>>" ,this.props.ComplaintDialogData ? this.props.ComplaintDialogData.complaint_status : "");
+        console.log("-----");
+       
+       console.log("ComplaintDialogDta: ",ComplaintDialogData);
+
+        this.setState({...setStateData})
     }
 
     handleFileFetch = async (file) => {
@@ -538,6 +562,36 @@ class ComplaintFullView extends Component {
                     <Tooltip title={complaintData? "Location : "+complaintData.location.join(","):""}>
                     <Button variant="outlined" size="small" style={{ width: '70%' }} onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button>
                     </Tooltip>
+                    <br/><br/>
+                    <Button variant="outlined" size="small" style={{ width: '70%' }} onClick={() => {
+                        fetch(url + "getComplaintHistory/?complaint_id="+this.props.ComplaintDialogData._id, {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'auth': 'token ' + getCookie("roadGPortalAuth")
+                                },
+                                method: "GET",
+                            })
+                            .then(res => res.json())
+                            .then(res => {
+                                console.log("kaushik",res);
+                                if(res.success) {
+                                    if(res.data !=null ){
+                                        this.setState({
+                                            history:res.data,
+                                            history_open: true
+                                        })   
+                                    }
+                                
+                                }
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            });
+
+
+                    }} color="secondary">HISTORY</Button>
+                   
                 </div>
             )
         }
@@ -796,6 +850,13 @@ class ComplaintFullView extends Component {
                                     <Button variant="raised" style={{width: '100%', color: 'white'}} onClick={this.handleForeword} color="secondary" disabled={this.state.isSaving} >{this.state.isSaving ? "Forwording" : "Forword"}</Button>
                           </Paper>
                             }
+                            <History open={this.state.history_open} onClose={() => {
+                                this.setState({
+                                    history_open: false
+                                })
+                            }} data={this.state.history}>
+                            </History>
+                            
                         </Grid>
                     </Grid>
                 </Dialog>

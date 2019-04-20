@@ -38,7 +38,6 @@ class ComplaintTable extends Component {
     //handling complaint full view
     handleComplaintDialogClose = () => {
         this.setState({
-            ComplaintDialogData: null,
             openComplaintDialogState: false
         })
     }
