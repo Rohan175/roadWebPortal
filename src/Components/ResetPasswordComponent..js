@@ -51,6 +51,7 @@ class ForgotPasswordComponent extends Component {
         newPassword:"",
         confirmPassword:"",
         toLogin:false,
+        reset_name:"Reset Password"
     }
 
     handleDialogOpen = (dialogMsg, dialogTitle) => {        
@@ -82,12 +83,14 @@ class ForgotPasswordComponent extends Component {
 
     handleReset = () => {
         console.log(this.props.match);
-        
         if(!(this.state.newPassword.length > 5)){
             this.handleDialogOpen("Password must contain 6 charachters","Error");
             return ;
         }
         if(this.state.confirmPassword === this.state.newPassword){
+            this.setState({
+                reset_name:"PLEASE WAIT"
+            })
             fetch( url + "verifyForgotPassword/", {
                 headers: {
                     'Accept': 'application/json',
@@ -101,6 +104,7 @@ class ForgotPasswordComponent extends Component {
         .then(res => {
             this.setState({
                 toLogin:true,
+                reset_name:"Reset Password"
             })
             if(res.success){
                 this.handleDialogOpen("Your password has been changed successfully !");
@@ -111,6 +115,7 @@ class ForgotPasswordComponent extends Component {
         .catch(err => {
             this.setState({
                 toLogin:true,
+                reset_name:"Reset Password"
             })
             console.log(err);   
             this.handleDialogOpen(err,"Please try again later ");        
@@ -175,8 +180,10 @@ class ForgotPasswordComponent extends Component {
                     </div>
                     <div>
                         <br/>
-                        <Button type="submit" variant="contained" onClick={this.handleReset} color="primary" className={classes.loginBtn}>
-                            Reset Password
+                        <Button 
+                        disabled={this.state.reset_name=="Reset Password"?false:true}
+                        type="submit" variant="contained" onClick={this.handleReset} color="primary" className={classes.loginBtn}>
+                            {this.state.reset_name}
                         </Button>
                     </div>
                 </form>

@@ -13,14 +13,40 @@ import ForgotPasswordComponent from '../Components/ForgotPasswordComponent';
 
 import { url } from "../constants";
 import GeneralDialog from '../Components/GeneralDialog';
-            
+import roadImage from '../res/road.svg';
+import emblem from '../res/emblem.svg';
 
 const styles = theme => ({
     wrapper: {
         width: '100vw',
         height: '100vh',
-        display: 'flex'
+        // display: 'flex'
     },
+    paper: {
+        padding:'20px',
+        width:'270px',
+        position: 'absolute',
+        right: '120px',
+        top: '90px'
+    },
+    roadImage: {
+        width: '100vw',
+        position: 'fixed',
+        bottom: '-260px',
+        left: '-160px'
+    },
+    logo: {
+        width: '50px',
+        padding: '20px',
+        margin: '40px 0px 40px 40px',
+        display: 'inline-block'
+    },
+    title: {
+        // display: 'inline-block',
+        padding: '0px',
+        margin: '0px',
+        marginTop: '60px'
+    }
 })
 
 class Login extends Component {
@@ -135,7 +161,15 @@ class Login extends Component {
 
         return (
           <div className={classes.wrapper}>
-           <Paper style={{margin:'auto',padding:'50px'}}>
+            <div style={{width: '610px'}}>
+                <img src={emblem} className={classes.logo} />
+                <span style={{float: 'right'}}>
+                    <h1 className={classes.title} style={{color: '#263238'}}>Roads & Buildings Department</h1>
+                    <h2 style={{color: '#263238', margin: '0px'}}>Government of Gujarat</h2>
+                </span>
+            </div>
+            <img src={roadImage} className={classes.roadImage} />
+           <Paper className={classes.paper}>
             { this.state.loginTab 
                 ? 
                 <LoginComponent handleLogin={this.handleLogin} toForgotPassTab={this.toForgotPassTab} loginText={this.state.loginText} disableLogin={this.state.disableLogin}/> 

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+import CacheRoute, { CacheSwitch } from 'react-router-cache-route';
 
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -95,16 +96,16 @@ class Dashboard extends Component {
             {/* <div className={classes.backgr}></div> */}
             {/* Insert Navbar here */}
             <NavBar navBarItems={this.state.navBarItems} />
-            <Switch>
-                <Route exact path="/Dashboard/" render={() => (<DashboardRoot />)} />
-                <Route exact path="/Dashboard/Complaints/*" render={(locationProps) => (<ComplaintContainer {...locationProps.location.state}/>)} />
-                <Route exact path="/Dashboard/ManageOfficer" render={() => (<ManageOfficer />)} />
-                <Route exact path="/Dashboard/AddOfficer" render={() => (<AddOfficer />)} />
-                <Route exact path="/Dashboard/Profile" render={() => (<Profile />)} />
-                <Route path="/Dashboard/*">
+            <CacheSwitch>
+                <CacheRoute exact path="/Dashboard/" render={() => (<DashboardRoot />)} />
+                <CacheRoute exact path="/Dashboard/Complaints/*" render={(locationProps) => (<ComplaintContainer {...locationProps.location.state}/>)} />
+                <CacheRoute exact path="/Dashboard/ManageOfficer" render={() => (<ManageOfficer />)} />
+                <CacheRoute exact path="/Dashboard/AddOfficer" render={() => (<AddOfficer />)} />
+                <CacheRoute exact path="/Dashboard/Profile" render={() => (<Profile />)} />
+                <CacheRoute path="/Dashboard/*">
                     <Redirect to="/Dashboard/" />
-                </Route>
-            </Switch>
+                </CacheRoute>
+            </CacheSwitch>
           </div>  
         );
     }

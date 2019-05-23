@@ -162,13 +162,18 @@ class ComplaintContainer extends Component {
         }else{
             let c = this.allComplaints.find(c => c._id === complaintData.complaint_id)
             c.complaint_status = complaintData.complaint_status;
-            c.isEmergency = complaintData.isEmergency
+            c.isEmergency = complaintData.isEmergency;
+            c.completed_complaint_url = complaintData.completed_complaint_url;
+            
+            console.log("Test Completed", complaintData);
 
             this.setState((oldState) => {
                 let cod = oldState.filteredComplaints.find(c => c._id === complaintData.complaint_id);
                 cod.complaint_status = complaintData.complaint_status;
                 cod.isEmergency = complaintData.isEmergency;
+                cod.completed_complaint_url = complaintData.completed_complaint_url;
             })
+            
         }
     }
 
@@ -478,12 +483,8 @@ class ComplaintContainer extends Component {
         let headers = new Headers();
 
         headers.append('origin', '*');
-<<<<<<< HEAD
-        headers.append('Content-Type', 'application/json');
-=======
         headers.append('Content-Type','application/json');
->>>>>>> history done , complaint individual history done
-        headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
+   headers.append('auth', 'token ' + getCookie("roadGPortalAuth"));
 
         let req;
 

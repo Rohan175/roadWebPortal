@@ -11,12 +11,13 @@ import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
     Card: {
-        margin: 'auto',
+        // margin: 'auto',
         textAlign: 'center',
-        minWidth: '270px'
+        width: '270px'
     },
     logoWrapper: {
-        position: 'relative'
+        position: 'relative',
+        marginTop: '20px'
     },
     logo: {
         width: '70px',
@@ -40,6 +41,7 @@ const styles = theme => ({
             openDialog : false,
             phonenumber:"",
             toLogin:false,
+            reset_name:"Reset Password",
         }
 
         handleDialogOpen = (dialogMsg, dialogTitle) => {        
@@ -62,6 +64,9 @@ const styles = theme => ({
         handleforgot = () => {       
             if(this.state.phonenumber.length==10){
 
+                this.setState({
+                    reset_name:"PLEASE WAIT"
+                })
             fetch( url + "forgotPassword/", {
                     headers: {
                         'Accept': 'application/json',
@@ -74,6 +79,9 @@ const styles = theme => ({
             .then(res => res.json())
             .then(res => {
              
+                this.setState({
+                    reset_name:"Reset Password"
+                })
                 if(res.success){
                     this.setState({
                         toLogin:true,
@@ -84,6 +92,10 @@ const styles = theme => ({
                 }
             })
             .catch(err => {
+                
+                this.setState({
+                    reset_name:"Reset Password"
+                })
                 console.log(err);   
                 this.handleDialogOpen(err,"Error Occur");        
             });
@@ -118,7 +130,7 @@ render(){
             </GeneralDialog>
             {/* <CardContent> */}
                 <div className={classes.logoWrapper}>
-                    <img src={logo} className={classes.logo} alt="Road and Building" />
+                    <h1 style={{ color: '#263238' }}>Forgot Password</h1>
                 </div>
                     <div>
                         <TextField
@@ -133,8 +145,10 @@ render(){
                             margin="normal" />
                     </div>
                     <div>
-                        <Button type="submit" variant="contained" color="primary" onClick={this.handleforgot} className={classes.loginBtn}>
-                            Reset Password
+                        <Button type="submit" 
+                        disabled={this.state.reset_name=="Reset Password"?false:true}
+                        variant="contained" color="primary" onClick={this.handleforgot} className={classes.loginBtn}>
+                            {this.state.reset_name}
                         </Button>
                     </div>
                 <div>

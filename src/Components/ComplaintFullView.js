@@ -148,6 +148,7 @@ class ComplaintFullView extends Component {
 
     state = {
         value: 0,
+        history_name:"HISTORY",
         openSnackbarState: false,
         snackbarMessage: '',
         snackbarVarient: '',
@@ -174,7 +175,8 @@ class ComplaintFullView extends Component {
         isSaving: false,
 
         //history dialog
-        history_open: false
+        history_open: false,
+        history : []
     }
 
     handleIsEmergency = () => {        
@@ -282,7 +284,7 @@ class ComplaintFullView extends Component {
                 complaint_status: this.state.new_complaint_status,
                 isEmergency: this.state.new_isEmergency,
                 comment: this.state.Comment,
-                complaint_completion_url: "",
+                completed_complaint_url: "",
                 ... (await extraChange())
             }    
 
@@ -307,6 +309,8 @@ class ComplaintFullView extends Component {
                         isSaving: false,
                         Comment:"",
                     })
+
+                    reqBody['completed_complaint_url'] = "https://imagescdn.herokuapp.com/" + reqBody['completed_complaint_url'];
 
                     this.props.handleIndividualComplaintChange(reqBody,false);
                     if(this.state.new_complaint_status == "Completed")
@@ -560,10 +564,16 @@ class ComplaintFullView extends Component {
                     <Typography>{ "Emergency :   ".toUpperCase() + (complaintData? this.state.show_new_isEmergency ? "YES": "NO" : null)}</Typography>
                     <br/>
                     <Tooltip title={complaintData? "Location : "+complaintData.location.join(","):""}>
-                    <Button variant="outlined" size="small" style={{ width: '70%' }} onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button>
+                    <Button variant="outlined" 
+                    size="small" style={{ width: '70%' }} onClick={() => { openLocationInGoogleMaps(... (complaintData? complaintData.location: [1,2]) ) }}  color="secondary">SHOW ON MAP</Button>
                     </Tooltip>
                     <br/><br/>
-                    <Button variant="outlined" size="small" style={{ width: '70%' }} onClick={() => {
+                    <Button variant="outlined" 
+                    disabled={this.state.history_name=="HISTORY"?false:true}
+                    size="small" style={{ width: '70%' }} onClick={() => {
+                        this.setState({
+                            history_name:"FETCHING HISTORY.."
+                        })
                         fetch(url + "getComplaintHistory/?complaint_id="+this.props.ComplaintDialogData._id, {
                                 headers: {
                                     'Accept': 'application/json',
@@ -579,18 +589,22 @@ class ComplaintFullView extends Component {
                                     if(res.data !=null ){
                                         this.setState({
                                             history:res.data,
-                                            history_open: true
+                                            history_open: true,
+                                            history_name:"HISTORY"
                                         })   
                                     }
                                 
                                 }
                             })
                             .catch(err => {
+                                this.setState({
+                                    history_name:"HISTORY"
+                                })
                                 console.log(err);
                             });
+                            
 
-
-                    }} color="secondary">HISTORY</Button>
+                    }} color="secondary">{this.state.history_name}</Button>
                    
                 </div>
             )

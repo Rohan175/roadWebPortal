@@ -7,15 +7,17 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
 import logo from '../res/emblem.svg';
+import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
     Card: {
-        margin: 'auto',
+        // margin: 'auto',
         textAlign: 'center',
-        minWidth: '270px'
+        width: '270px',
     },
     logoWrapper: {
-        position: 'relative'
+        position: 'relative',
+        marginTop: '20px'
     },
     logo: {
         width: '70px',
@@ -42,7 +44,7 @@ let LoginComponent = (props) => {
         <div className={classes.Card}>
             {/* <CardContent> */}
                 <div className={classes.logoWrapper}>
-                    <img src={logo} className={classes.logo} alt="Road and Building" />
+                    <h1 style={{ color: '#263238' }}>Welcome</h1>
                 </div>
                 <form
                     onSubmit={(e) => { 
