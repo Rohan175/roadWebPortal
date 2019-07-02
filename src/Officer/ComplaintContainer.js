@@ -426,7 +426,7 @@ class ComplaintContainer extends Component {
         
         console.log(this.state.filteredComplaints);
         var Headers = Object.keys(this.state.filteredComplaints[0]);
-        console.log(Headers);
+        console.log("Headers -----"+Headers);
         //     ["_id", "road_code", "name", "postedUsers","location","isEmergency","griev_type",
         // "description","complaint_status","time","estimated_completion"];
             
@@ -440,14 +440,26 @@ class ComplaintContainer extends Component {
         this.state.filteredComplaints.forEach(function(RowItem, RowIndex) {
             Headers.forEach(function(ColItem, ColIndex) {
                 
-                if(ColItem === 'time' || ColItem ==='estimated_completion'){
-
+                if(ColItem === 'time'){
+                    console.log("Date ---> ",RowItem[ColItem]);
                     let mDate = new Date(RowItem[ColItem]);
+                    console.log("Date ---> ",mDate);
                     RowItem[ColItem] = mDate.getDate() + "-" + mDate.getMonth() + "-" + mDate.getFullYear();
 
                     console.log(RowItem[ColItem]);
                 }
-            if(ColItem!=='comments' && ColItem!== 'posted_users'){
+                if(ColItem ==='estimated_completion'){
+                    if(RowItem["complaint_status"] == "Pending"){
+                        RowItem[ColItem]="No Estimated date";
+                    }
+                    else{
+                        let mDate = new Date(RowItem[ColItem]);
+                        RowItem[ColItem] = mDate.getDate() + "-" + mDate.getMonth() + "-" + mDate.getFullYear();
+                        console.log(RowItem[ColItem]);
+                    }
+                    
+                }
+            if(ColItem!=='comments' && ColItem!== 'posted_users' && ColItem!== 'completed_complaint_url'){
                 console.log(ColItem, "  ", RowItem[ColItem]);
                 CsvString += RowItem[ColItem] + ',';
             }else{
